@@ -1,0 +1,11 @@
+name: nativas_app
+title:
+account: sollano
+server: shinyapps.io
+appId: 125500
+bundleId: 702712
+url: https://sollano.shinyapps.io/nativas_app/
+when: 1486415392.13174
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: www/bootstrap.css|www/bootstrap2.css|www/bootstrap3.css|www/bootstrap4.css|www/bootstrap5.css|www/bootstrap6.css|www/bootstrap7.css|www/bootstrap9.css|www/green.css|www/green_paper.css|www/green_yeti.css|www/intro_picture_orig.jpg
