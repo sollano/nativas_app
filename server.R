@@ -605,7 +605,7 @@ shinyServer(function(input, output, session) {
       # plot the dendrogram; note use of color=cluster in geom_text(...)
       
       x <- ggdendro::ggdendrogram(dendr) +
-        geom_text(data=label(dendr), aes(x, y, label=label, hjust=.5,color=cluster), size=4) +
+        geom_text(data=ggdendro::label(dendr), aes(x, y, label=label, hjust=.5,color=cluster), size=4) +
         ggdendro::theme_dendro()
       
       x    }
