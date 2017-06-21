@@ -1,6 +1,6 @@
 library(shiny)
 library(DT)
-library(plotly)
+#library(plotly)
 library(formattable)
 #library(plyr)
 library(tidyr)
@@ -172,9 +172,11 @@ shinyServer(function(input, output, session) {
     
     if(input$Loadfiltrar){
       
+      # so filtra a linha se o usuario selecionar alguma coluna para isso
+      if( input$filtrar_dados_col1 !="" ){
       data <- data %>% 
         filter_(interp( ~ ! var %in% input$filtrar_dados_col1_filtro, var = as.name(input$filtrar_dados_col1) )   )
-      
+      }
       data[, input$filtrar_dados_rm_cols] <- NULL
       
       data
@@ -577,9 +579,9 @@ shinyServer(function(input, output, session) {
   
   output$msim1_graph_ <- renderPlot({
     
-    g <- msim1_graph()
+    gmsim1 <- msim1_graph()
     
-    g
+    gmsim1
     
   })
 
@@ -616,9 +618,9 @@ shinyServer(function(input, output, session) {
   
   output$msim2_graph_ <- renderPlot({
     
-   g <- msim2_graph()
+   gmsim2 <- msim2_graph()
    
-   g
+   gmsim2
     
     
   })
@@ -1204,13 +1206,14 @@ shinyServer(function(input, output, session) {
     
   })
   
-  output$BDq_graph_ <- plotly::renderPlotly({
-    
+  output$BDq_graph_ <- renderPlot({
+    #plotly::renderPlotly
     if(is.null(BDq_graph() ) ) return(NULL)
     
     g <- BDq_graph()
     
-    plotly::ggplotly(p=g) 
+  #  plotly::ggplotly(p=g) 
+    g
     
   })
   
