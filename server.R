@@ -174,9 +174,12 @@ shinyServer(function(input, output, session) {
       
       # so filtra a linha se o usuario selecionar alguma coluna para isso
       if( input$filtrar_dados_col1 !="" ){
+        
       data <- data %>% 
         filter_(interp( ~ ! var %in% input$filtrar_dados_col1_filtro, var = as.name(input$filtrar_dados_col1) )   )
+      
       }
+      
       data[, input$filtrar_dados_rm_cols] <- NULL
       
       data
@@ -444,7 +447,7 @@ shinyServer(function(input, output, session) {
   
   output$selec_rotuloNImsim <- renderUI({
     
-    if(is.null(input$col.especiesmsim)){return(NULL)}
+    if(is.null(input$col.especiesmsim)){return()}
 
     data <- rawData()
 
@@ -610,7 +613,9 @@ shinyServer(function(input, output, session) {
         geom_text(data=ggdendro::label(dendr), aes(x, y, label=label, hjust=.5,color=cluster), size=4) +
         ggdendro::theme_dendro()
       
-      x    }
+      x   
+      
+      }
     
     
     
