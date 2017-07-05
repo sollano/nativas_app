@@ -8,7 +8,7 @@ library(dplyr)
 library(lazyeval)
 library(ggplot2)
 library(xlsx)
-#library(xlsxjars)
+library(xlsxjars)
 library(markdown)
 
 # Data e functions
@@ -120,8 +120,8 @@ shinyServer(function(input, output, session) {
       raw_data <- read.csv(inFile$datapath, header=TRUE, sep=input$sep, dec=input$dec,quote='"')
     } else {
       file.copy(inFile$datapath,
-                      paste(inFile$datapath, "xlsx", sep="."));
-      raw_data <- readxl::read_excel(paste(inFile$datapath, "xlsx", sep="."), 1) 
+                      paste(inFile$datapath, "xlsx", sep="."))
+      raw_data <- as.data.frame( readxl::read_excel(paste(inFile$datapath, "xlsx", sep="."), 1)) 
       }
     
     # Carregamos o arquivo em um objeto
