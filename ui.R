@@ -340,6 +340,22 @@ shinyUI(
 
              navbarMenu("Inventario",
                         
+                        # Estimação de volume ####
+                        
+                        tabPanel("Estimaçao de Volume",
+                                 
+                                 sidebarLayout(
+                                   sidebarPanel(
+                                     
+                                     
+                                   ),
+                                   mainPanel(
+                                     
+                                   )
+                                 )
+                        ), # Fim de Estimação de Volume
+                        
+                        
                         # Painel Totalização de Parcelas ####
                         tabPanel("Totalização de Parcelas",
                                  
