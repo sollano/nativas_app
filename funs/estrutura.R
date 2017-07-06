@@ -105,7 +105,17 @@ estrutura = function(data, col.especies, col.dap, col.parcelas, area.parcela, es
     AcDoAi = sum(DoA)
     DoR = DoA / AcDoAi * 100
     result["DoR"] = round(DoR, 6)
-    rm(AB, AcDAi, AcDoAi, AcFAi, cplots, DoA, DoR, FA, FAi, FR, DA, DR, tableFreq, i, contagem)
+    
+    # Calcula Valor de Cobertura
+    VC = (DR + DoR)/2
+    result["VC"] = round(VC, 6)
+    
+    # Calcula valor de Importancia
+    VI = (FR + DR + DoR)/3
+    result["VI"] = round(VI, 6)
+    
+    
+    rm(AB, AcDAi, AcDoAi, AcFAi, cplots, DoA, DoR, FA, FAi, FR, DA, DR, VC, VI, tableFreq, i, contagem)
     
     if (!is.na(est.vertical)){
       # Estrutura vertical
