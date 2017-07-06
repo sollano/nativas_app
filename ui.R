@@ -347,6 +347,14 @@ shinyUI(
                                  sidebarLayout(
                                    sidebarPanel(
                                      
+                                     h4("Selecione o modelo para ser utilizado:"),
+                                     
+                                     radioButtons("area_radio_new",
+                                                  "Escolher coluna da lista de colunas, ou inserir os valores manualmente?",
+                                                  c("Lista de colunas", "Manualmente"),
+                                                  "Manualmente")
+                                    
+                                     
                                      
                                    ),
                                    mainPanel(
