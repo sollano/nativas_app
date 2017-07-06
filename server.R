@@ -2,14 +2,18 @@ library(shiny)
 library(DT)
 #library(plotly)
 library(formattable)
-#library(plyr)
+library(readxl)
+library(plyr)
 library(tidyr)
 library(dplyr)
 library(lazyeval)
 library(ggplot2)
-library(xlsx)
-library(xlsxjars)
-library(markdown)
+library(ggdendro)
+library(ggthemes)
+#library(xlsx)
+#library(rJava)
+#library(xlsxjars)
+library(rmarkdown)
 
 # Data e functions
 
@@ -2067,7 +2071,9 @@ shinyServer(function(input, output, session) {
       }
       else if(input$datasetformat==".xlsx")
       {
-        xlsx::write.xlsx2(as.data.frame( datasetInput() ), file, row.names = F)
+        write.csv2(datasetInput(), file, row.names = F)
+        
+        #xlsx::write.xlsx2(as.data.frame( datasetInput() ), file, row.names = F)
       }
       
       

@@ -1,14 +1,20 @@
 library(shiny)
 library(DT)
+#library(plotly)
 library(formattable)
-#library(plyr)
+library(readxl)
+library(plyr)
 library(tidyr)
 library(dplyr)
 library(lazyeval)
 library(ggplot2)
-library(xlsx)
-library(xlsxjars)
-library(markdown)
+library(ggdendro)
+library(ggthemes)
+#library(xlsx)
+#library(rJava)
+#library(xlsxjars)
+library(rmarkdown)
+
 shinyUI(
   
   tagList(tags$style(HTML(".irs-single, .irs-bar-edge, .irs-bar{background: #00a90a}")), # this is actually .css; this changes the color for the sliders
@@ -317,8 +323,8 @@ shinyUI(
                      mainPanel(
                        tabsetPanel(
                          tabPanel("BDq", DT::dataTableOutput("BDq1") ),
-                       #  tabPanel("Gráfico", plotly::plotlyOutput( "BDq_graph_" ) ),
-                         tabPanel("Gráfico", plotOutput( "BDq_graph_" ) ),
+                         tabPanel("Gráfico", plotly::plotlyOutput( "BDq_graph_" ) ),
+                       #  tabPanel("Gráfico", plotOutput( "BDq_graph_" ) ),
                          tabPanel("Coeficientes", DT::dataTableOutput("BDq3", "70%") )
                        )
                        
