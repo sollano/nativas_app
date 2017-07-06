@@ -11,6 +11,10 @@ m.similaridade=function(data, col.especies, col.comparison, rotulo.NI = "NI", in
   # modifiquei para aceitar multiplas entradas
   semNI = data[! data[ ,col.especies] %in% rotulo.NI,]
   
+  # Converter variaveis categoricas em fatores
+  data[,col.especies] <- as.factor(data[,col.especies])
+  data[,col.comparison] <- as.factor(data[,col.comparison])
+  
   compair = levels(data[,col.comparison])
   
   SO = matrix(1, nrow = length(compair), ncol = length(compair))

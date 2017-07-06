@@ -19,6 +19,10 @@ estrutura = function(data, col.especies, col.dap, col.parcelas, area.parcela, es
     INTERNA = est.interno
     NI = nao.identificada
     
+    # Converter variaveis categoricas em fatores
+    data[,PLOTS] <- as.factor(data[,PLOTS])
+    data[,SPECIES] <- as.factor(data[,SPECIES])
+    
     # converter rotulos NI (aplicativo)
     if(is.null(NI)){NI <- "NI"}
     
