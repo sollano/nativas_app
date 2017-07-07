@@ -1,0 +1,4 @@
+Title: App Nativas
+Author: Sollano Rabelo Braga
+DisplayMode: Showcase
+Type: Shiny
