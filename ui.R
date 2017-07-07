@@ -10,9 +10,9 @@ library(lazyeval)
 library(ggplot2)
 library(ggdendro)
 library(ggthemes)
-#library(xlsx)
-#library(rJava)
-#library(xlsxjars)
+library(xlsx)
+library(rJava)
+library(xlsxjars)
 library(rmarkdown)
 
 shinyUI(

@@ -10,9 +10,9 @@ library(lazyeval)
 library(ggplot2)
 library(ggdendro)
 library(ggthemes)
-#library(xlsx)
-#library(rJava)
-#library(xlsxjars)
+library(xlsx)
+library(rJava)
+library(xlsxjars)
 library(rmarkdown)
 
 # Data e functions
@@ -2071,9 +2071,7 @@ shinyServer(function(input, output, session) {
       }
       else if(input$datasetformat==".xlsx")
       {
-        write.csv2(datasetInput(), file, row.names = F)
-        
-        #xlsx::write.xlsx2(as.data.frame( datasetInput() ), file, row.names = F)
+       xlsx::write.xlsx2(as.data.frame( datasetInput() ), file, row.names = F)
       }
       
       
