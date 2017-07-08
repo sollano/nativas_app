@@ -121,7 +121,7 @@ shinyServer(function(input, output, session) {
     validate(need(input$df_select == "Fazer o upload" & input$df_extension == ".xlsx (Excel)", "" )  )
     
     list(    
-      
+      # Selecionar numero da planilha
       numericInput(inputId = "sheet_n",
                    label   = "Numero da planilha",
                    value   = 1,
@@ -136,6 +136,7 @@ shinyServer(function(input, output, session) {
       
       label = "Selecione o arquivo: (.xlsx)", # nome que sera mostrado na UI
       
+      # So aceita .xlsx
       accept=c('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                  '.xlsx')),
         
@@ -150,9 +151,10 @@ shinyServer(function(input, output, session) {
   
   upData <- reactive({ # Criamos uma nova funcao reactive. este sera o objeto filtrado, utilizado nos calculos
   
-    if(input$df_select == "Utilizar o dado de exemplo"){return(NULL)}  
+    # sera nulo caso nao sejam selecionados "fazer o upload"
+    validate(need(input$df_select == "Fazer o upload" , NULL )  )
     
-    #if(input$Load==0){return()} # se o botao load nao for pressionado(==0), retornar nada
+    # Salva o caminho do arquivo uploadado em um arquivo, dependendo do que o usuario selecionar
     if(input$df_extension == ".csv (Valor separado por virgulas) ou .txt (arquivo de texto)"){
       inFile <- input$file1
     }else if( input$df_extension == ".xlsx (Excel)"){
@@ -182,9 +184,12 @@ shinyServer(function(input, output, session) {
     
   })
   
-  # rawData_ (com traco) sera o dado bruto sem filtro
+  # rawData_ (com traco) sera o dado bruto sem filtro. Este dataframe sera utilizado em todo o app
   rawData_ <- reactive({
-      
+    
+    # raw data, sera definido como o exemplo, ou o dado de upload, dependendo do usuario.
+    # para evitar erros, caso seja selecionado "Fazer o upload" mas o dado ainda não tenha sido uploadado,
+    # sera retornanado vazio
     switch(input$df_select, 
            "Fazer o upload" = if(is.null(input$file1) && is.null(input$file2)){return()}else{upData()},
            "Utilizar o dado de exemplo" = ex)
