@@ -332,7 +332,7 @@ shinyServer(function(input, output, session) {
   tabdiversidade <- reactive({
     
     validate(need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" ),
-             need(input$col.especiesdiv != "","Please select the columns") )
+             need(input$col.especiesdiv != "","Por favor selecione a coluna referente a 'especies'  ") )
     
     {
       
@@ -367,11 +367,13 @@ shinyServer(function(input, output, session) {
         ) # options    
       ) # selctize
 
+      # obs: multiple = T & maxItems = 1, garantem que a celula fique vazia, caso o app falhe
+      # em tentar adivinhar o nome da especie
   })
   
   output$selec_rotuloNIdiv <- renderUI({
     
-    if(is.null(input$col.especiesdiv) || input$col.especiesdiv == ""){return(NULL)}
+    if(is.null(input$col.especiesdiv) || input$col.especiesdiv == ""){return()}
     
     data <- rawData()
     
@@ -407,10 +409,6 @@ shinyServer(function(input, output, session) {
   # tabela
   output$div <- renderDataTable({
     
-    validate(need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" ),
-             need(input$col.especiesdiv!= "","Please select the columns") 
-             )
-    {
       divdt <- tabdiversidade() 
       
       datatable( divdt,
@@ -422,8 +420,7 @@ shinyServer(function(input, output, session) {
                                   "}")
                  )   
       ) 
-    }
-    
+
   }) 
   
   # Matriz Similaridade ####
@@ -431,11 +428,12 @@ shinyServer(function(input, output, session) {
   # funcao m similaridade
   tabmsimilaridade1 <- reactive({
     
-    if(input$Loadmsim){
-      
-      validate(need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" )  )
-      
-      dados <- rawData()
+    validate(need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" ),
+             need(input$col.especiesmsim!= "","Por favor selecione a coluna referente a 'especies' "),
+             need(input$col.parcelasmsim!= "","Por favor selecione a coluna referente a 'parcelas' ") 
+    )
+    
+    dados <- rawData()
       
       x <- m.similaridade(data             = dados, 
                           col.especies     = input$col.especiesmsim,
@@ -445,15 +443,16 @@ shinyServer(function(input, output, session) {
       x <- as.data.frame(x[[1]])
       names(x) <- 1:length(x)
       x
-    }
+    
     
   })
   tabmsimilaridade2 <- reactive({
     
-    validate(need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" )  )
-    
-    if(input$Loadmsim){
-      
+    validate(need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" ),
+             need(input$col.especiesmsim!= "","Por favor selecione a coluna referente a 'especies' "),
+             need(input$col.parcelasmsim!= "","Por favor selecione a coluna referente a 'parcelas' ") 
+    )
+
       dados <- rawData()
       
       x <- m.similaridade(data             = dados, 
@@ -464,8 +463,7 @@ shinyServer(function(input, output, session) {
       x <- as.data.frame(x[[2]])
       names(x) <- 1:length(x)
       x
-    }
-    
+
   })
   
   # UI
@@ -478,15 +476,16 @@ shinyServer(function(input, output, session) {
       "col.especiesmsim", # Id
       "Selecione a coluna de espécies:", # nome que sera mostrado na UI
       choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
-      selected = especies_names,     
+      selected = especies_names,
+      multiple = T,
       options = list(
+        maxItems = 1,
         placeholder = 'selecione uma coluna abaixo'#,
         #onInitialize = I('function() { this.setValue(""); }')
       ) # options    
     )
     
   })
-  
   output$selec_parcelasmsim <- renderUI({
     
     data <- rawData()
@@ -495,15 +494,16 @@ shinyServer(function(input, output, session) {
       "col.parcelasmsim", # Id
       "Selecione a coluna da parcela:", # nome que sera mostrado na UI
       choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
-      selected = parcelas_names,     
+      selected = parcelas_names,
+      multiple = T,
       options = list(
+        maxItems = 1,
         placeholder = 'selecione uma coluna abaixo'#,
         #onInitialize = I('function() { this.setValue(""); }')
       ) # options    
     )
     
   })
-  
   output$selec_rotuloNImsim <- renderUI({
     
     if(is.null(input$col.especiesmsim)){return()}
@@ -520,7 +520,6 @@ shinyServer(function(input, output, session) {
                    ) )
 
   })
-  
   output$rb_slider_graphmsim1 <- renderUI({
     
     # precisa que o grafico seja selecionado na ui, caso contrario nao mostra nada
@@ -569,8 +568,8 @@ shinyServer(function(input, output, session) {
   
   # tabela
   output$msim1 <- renderDataTable({
-    
-    if(input$Loadmsim)
+
+ 
     {
       msimdt1 <- tabmsimilaridade1() 
       
@@ -589,7 +588,6 @@ shinyServer(function(input, output, session) {
   }) 
   output$msim2 <- renderDataTable({
     
-    if(input$Loadmsim)
     {
       msimdt2 <- tabmsimilaridade2() 
       
@@ -613,7 +611,10 @@ shinyServer(function(input, output, session) {
     #retornar vazio enquando input$rb_msim1_graph carrega (ele fica nulo quando carrega)
     if(is.null(input$rb_msim1_graph)){return("")} 
     
-    if(input$Loadmsim)
+    validate(need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" ),
+             need(input$col.especiesmsim!= "","Por favor selecione a coluna referente a 'especies' "),
+             need(input$col.parcelasmsim!= "","Por favor selecione a coluna referente a 'parcelas' ") 
+    )
     {
       dados <- rawData()
       df <- as.data.frame(tabmsimilaridade1() ) 
@@ -640,7 +641,6 @@ shinyServer(function(input, output, session) {
     
     
   })
-  
   output$msim1_graph_ <- renderPlot({
     
     gmsim1 <- msim1_graph()
@@ -654,7 +654,10 @@ shinyServer(function(input, output, session) {
     #retornar vazio enquando input$rb_msim1_graph carrega (ele fica nulo quando carrega)
     if(is.null(input$rb_msim2_graph)){return("")} 
     
-    if(input$Loadmsim)
+    validate(need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" ),
+             need(input$col.especiesmsim!= "","Por favor selecione a coluna referente a 'especies' "),
+             need(input$col.parcelasmsim!= "","Por favor selecione a coluna referente a 'parcelas' ") 
+    )
     {
       dados <- rawData()
       df <- as.data.frame(tabmsimilaridade2() ) 
@@ -681,7 +684,6 @@ shinyServer(function(input, output, session) {
     
     
   })
-  
   output$msim2_graph_ <- renderPlot({
     
    gmsim2 <- msim2_graph()
@@ -695,11 +697,15 @@ shinyServer(function(input, output, session) {
   # funcao p similaridade
   tabpsimilaridade <- reactive({
     
-    validate(need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" )  )
+    validate(need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" ),
+             need(input$col.especiespsim!= "","Por favor selecione a coluna referente a 'especies' "),
+             need(input$col.parcelaspsim!= "","Por favor selecione a coluna referente a 'parcelas' "),
+             need(input$psimselec_parc1!= "","Por favor selecione o primeiro item que se deseja comparar "),
+             need(input$psimselec_parc2!= "","Por favor selecione o segundo item que se deseja comparar ")
+             
+    )
     
-    if(input$Loadpsim){
-      
-      dados <- rawData()
+    dados <- rawData()
       
       #inv %>% 
       #filter_(.dots = interp(~ transect == "T01", transect = as.name("transect") ) ) %>% 
@@ -722,8 +728,7 @@ shinyServer(function(input, output, session) {
                        "Resultado" = c( x[1], x[2] )  )
       x
       
-    }
-    
+
   })
   
   # UI
@@ -737,14 +742,15 @@ shinyServer(function(input, output, session) {
       "Selecione a coluna de espécies:", # nome que sera mostrado na UI
       choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
       selected = especies_names,     
+      multiple = T,
       options = list(
+        maxItems = 1,
         placeholder = 'selecione uma coluna abaixo'#,
         #onInitialize = I('function() { this.setValue(""); }')
       ) # options    
     )
     
   })
-  
   output$selec_parcelaspsim <- renderUI({
     
     data <- rawData()
@@ -753,8 +759,10 @@ shinyServer(function(input, output, session) {
       "col.parcelaspsim", # Id
       "Selecione a coluna da parcela:", # nome que sera mostrado na UI
       choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
-      selected = parcelas_names,     
+      selected = parcelas_names,
+      multiple = T,
       options = list(
+        maxItems = 1,
         placeholder = 'selecione uma coluna abaixo'#,
         #onInitialize = I('function() { this.setValue(""); }')
       ) # options    
@@ -787,7 +795,7 @@ shinyServer(function(input, output, session) {
 
     
     selectizeInput("psimselec_parc1",
-                   label = "Selecione a Parcela 1:",
+                   label = "Selecione o primeiro item que se deseja comparar:",
                    choices = parcelas,
                    options = list(
                      placeholder = 'Selecione uma espécie abaixo',
@@ -806,7 +814,7 @@ shinyServer(function(input, output, session) {
     parcelas <- lista_parcelas_psim()
     
     selectizeInput("psimselec_parc2",
-                   label = "Selecione a Parcela 2:",
+                   label = "Selecione o segundo item que se deseja comparar:",
                    choices = parcelas,
                    options = list(
                      placeholder = 'Selecione uma espécie abaixo',
@@ -837,8 +845,6 @@ shinyServer(function(input, output, session) {
   # tabela
   output$psim <- renderDataTable({
     
-    if(input$Loadpsim)
-    {
       psimdt <- tabpsimilaridade() 
       
       datatable( psimdt,
@@ -849,8 +855,7 @@ shinyServer(function(input, output, session) {
                                   "$(this.api().table().header()).css({'background-color': '#00a90a', 'color': '#fff'});",
                                   "}")
                  )  ) 
-    }
-    
+
   }) 
  
   # Índices de agregacao ####

@@ -55,6 +55,7 @@ shinyUI(
                                        selected = "Fazer o upload"),
                           
                            uiOutput("upload"), # tipos de arquivos aceitos
+                          hr(),
                           uiOutput("upload_csv"), # tipos de arquivos aceitos
                           uiOutput("upload_xlsx") # tipos de arquivos aceitos
 
@@ -141,11 +142,7 @@ shinyUI(
                                      
                                      uiOutput("rb_slider_graphmsim1"),
                                      
-                                     uiOutput("rb_slider_graphmsim2"),
-                                     
-                                     actionButton( # botao que o usuario clica, e gera uma acao no server
-                                       "Loadmsim", # Id
-                                       "rodar")
+                                     uiOutput("rb_slider_graphmsim2")
                                      
                                    ), # sidebar Panel
                                    mainPanel(
