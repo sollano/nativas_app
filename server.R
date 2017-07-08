@@ -572,6 +572,7 @@ shinyServer(function(input, output, session) {
       datatable( msimdt1,
                  options = list(searching = FALSE,
                                 paging=FALSE,
+                                ordering=FALSE,
                                 initComplete = JS(
                                   "function(settings, json) {",
                                   "$(this.api().table().header()).css({'background-color': '#00a90a', 'color': '#fff'});",
@@ -590,6 +591,7 @@ shinyServer(function(input, output, session) {
       datatable( msimdt2,
                  options = list(searching = FALSE,
                                 paging=FALSE,
+                                ordering=FALSE,
                                 initComplete = JS(
                                   "function(settings, json) {",
                                   "$(this.api().table().header()).css({'background-color': '#00a90a', 'color': '#fff'});",
