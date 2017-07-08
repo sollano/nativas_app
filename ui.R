@@ -544,9 +544,9 @@ shinyUI(
                                   
                                   selectInput("graph_d", "Escolha uma grafico:", 
                                               choices = c(
-                                               "Distribuicao - BDq Meyer",
                                                 "Dendrograma - Jaccard",
-                                                "Dendrograma - Sorensen" )),
+                                                "Dendrograma - Sorensen",
+                                                "Distribuicao - BDq Meyer" )),
                                   
                                   selectInput("graphformat",
                                               "Escolha o formato do gráfico:",

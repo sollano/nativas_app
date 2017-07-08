@@ -2134,9 +2134,9 @@ shinyServer(function(input, output, session) {
   
   graphInput <- reactive({
     switch(input$graph_d,
-           "Distribuicao - BDq Meyer"  = BDq_graph(),
            "Dendrograma - Jaccard"     = msim1_graph(),
-           "Dendrograma - Sorensen"    = msim2_graph() )
+           "Dendrograma - Sorensen"    = msim2_graph(),
+           "Distribuicao - BDq Meyer"  = BDq_graph() )
   })
   
   output$graph_d_out <- renderPlot({
