@@ -3,8 +3,8 @@ title: nativas_app
 account: sollano
 server: shinyapps.io
 appId: 125500
-bundleId: 896645
+bundleId: 896661
 url: https://sollano.shinyapps.io/nativas_app/
-when: 1499538105.83919
+when: 1499541508.46953
 asMultiple: FALSE
 asStatic: FALSE
