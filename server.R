@@ -68,24 +68,29 @@ shinyServer(function(input, output, session) {
                                "Dados em nivel de parcela"),
                    selected = "Dados em nivel de arvore"),
       
-      fileInput( # input de arquivos
-      inputId = "file1", # Id
       
-      label = "Selecione o arquivo: (.csv, .txt ou .xlsx)", # nome que sera mostrado na UI
+      radioButtons("df_extension", 
+                   "Informe o formato do arquivo:", 
+                   choices = c(".csv (Valor separado por virgulas) ou .txt (arquivo de texto)",
+                               ".xlsx (Excel)"),
+                   selected = ".csv (Valor separado por virgulas) ou .txt (arquivo de texto)")
       
-      accept=c('text/csv/xlsx','.csv', ".txt", ".xlsx")),
       
-      checkboxInput(inputId = "excel",
-                    label = "Excel (.xls ou .xslx) ?",
-                    value = F),
-      
-      div("Recomendamos o uso do formato .csv", style = "color:blue"),
-      
+    )
     
-      radioButtons( # esta da ao usuario opcoes para clicar. Apenas uma e selecionada
+    
+  })
+  
+  output$upload_csv <- renderUI({
+    
+    validate(need(input$df_select == "Fazer o upload" & input$df_extension == ".csv (Valor separado por virgulas) ou .txt (arquivo de texto)", "" )  )
+    
+    list(    
+      
+       radioButtons( # esta da ao usuario opcoes para clicar. Apenas uma e selecionada
         inputId='sep',  #Id
         label='Separador:', # nome que sera mostrado na UI
-        choices=c(Virgula=',', "Ponto e Virgula"=';', Tab='\t'), # opcoes e seus nomes
+        choices=c(Virgula=',', "Ponto e Virgula"=';', Tabulação='\t'), # opcoes e seus nomes
         selected=','), # valor que sera selecionado inicialmente
       
       radioButtons( # esta da ao usuario opcoes para clicar. Apenas uma e selecionada
@@ -94,12 +99,15 @@ shinyServer(function(input, output, session) {
         choices=c(Ponto=".", Virgula=","), # opcoes e seus nomes
         selected="."), # valor que sera selecionado inicialmente
       
+      fileInput( # input de arquivos
+        inputId = "file1", # Id
+        
+        label = "Selecione o arquivo: (.csv ou .txt)", # nome que sera mostrado na UI
+        
+        accept=c('text/csv', ".txt",'.csv'))
       
       
-      actionButton( # botao que o usuario clica, e gera uma acao no server
-        "Load", # Id
-        "Carregue o arquivo")
-      
+
       
       
       
@@ -108,24 +116,64 @@ shinyServer(function(input, output, session) {
     
   })
   
-  upData <- reactive({ # Criamos uma nova funcao reactive. este sera o objeto filtrado, utilizado nos calculos
+  output$upload_xlsx <- renderUI({
     
-    if(input$Load==0){return()} # se o botao load nao for pressionado(==0), retornar nada
-    else(inFile <- input$file1) # caso contrario, salvar o caminho do arquivo carregado em inFile
+    validate(need(input$df_select == "Fazer o upload" & input$df_extension == ".xlsx (Excel)", "" )  )
+    
+    list(    
+      # Selecionar numero da planilha
+      numericInput(inputId = "sheet_n",
+                   label   = "Numero da planilha",
+                   value   = 1,
+                   min     = 1,
+                   max     = 10,
+                   step    = 1
+      ),
+      
+      
+      fileInput( # input de arquivos
+      inputId = "file2", # Id
+      
+      label = "Selecione o arquivo: (.xlsx)", # nome que sera mostrado na UI
+      
+      # So aceita .xlsx
+      accept=c('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                 '.xlsx')),
+        
+          
+      div("Recomendamos o uso do formato .csv", style = "color:blue")
+  
+      
+    )
+    
+    
+  })
+  
+  upData <- reactive({ # Criamos uma nova funcao reactive. este sera o objeto filtrado, utilizado nos calculos
+  
+    # sera nulo caso nao sejam selecionados "fazer o upload"
+    validate(need(input$df_select == "Fazer o upload" , NULL )  )
+    
+    # Salva o caminho do arquivo uploadado em um arquivo, dependendo do que o usuario selecionar
+    if(input$df_extension == ".csv (Valor separado por virgulas) ou .txt (arquivo de texto)"){
+      inFile <- input$file1
+    }else if( input$df_extension == ".xlsx (Excel)"){
+      inFile <- input$file2
+    } # caso contrario, salvar o caminho do arquivo carregado em inFile
     
     # input$file1 sera NULL inicialmente. apos o usuario selecionar
     # e upar um arquivo, ele sera um data frame com as colunas
     # 'size', 'type', e 'datapath' . A coluna 'datapath' 
     # ira conter os nomes dos arquivos locais onde o dado pode ser encontrado
     
-    if (is.null(inFile)){return(NULL)} # se o arquivo nao for carregado, retornar null
-    else if(input$excel == F)
+    if (is.null(inFile) ){return(NULL)} # se o arquivo nao for carregado, retornar null
+    else if(input$df_extension != ".xlsx (Excel)")
     {
       raw_data <- read.csv(inFile$datapath, header=TRUE, sep=input$sep, dec=input$dec,quote='"')
     } else {
       file.copy(inFile$datapath,
                       paste(inFile$datapath, "xlsx", sep="."))
-      raw_data <-  readxl::read_excel(paste(inFile$datapath, "xlsx", sep="."), 1) 
+      raw_data <-  readxl::read_excel(paste(inFile$datapath, "xlsx", sep="."), input$sheet_n) 
       raw_data <- as.data.frame(raw_data)
       }
     
@@ -136,13 +184,14 @@ shinyServer(function(input, output, session) {
     
   })
   
-  # rawData_ (com traco) sera o dado bruto sem filtro
+  # rawData_ (com traco) sera o dado bruto sem filtro. Este dataframe sera utilizado em todo o app
   rawData_ <- reactive({
     
-    
-    
+    # raw data, sera definido como o exemplo, ou o dado de upload, dependendo do usuario.
+    # para evitar erros, caso seja selecionado "Fazer o upload" mas o dado ainda não tenha sido uploadado,
+    # sera retornanado vazio
     switch(input$df_select, 
-           "Fazer o upload" = if(is.null(input$file1)){return()}else{upData()},
+           "Fazer o upload" = if(is.null(input$file1) && is.null(input$file2)){return()}else{upData()},
            "Utilizar o dado de exemplo" = ex)
     
   })

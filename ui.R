@@ -54,8 +54,9 @@ shinyUI(
                                        c("Fazer o upload", "Utilizar o dado de exemplo"), 
                                        selected = "Fazer o upload"),
                           
-                           uiOutput("upload") # tipos de arquivos aceitos
-                         
+                           uiOutput("upload"), # tipos de arquivos aceitos
+                          uiOutput("upload_csv"), # tipos de arquivos aceitos
+                          uiOutput("upload_xlsx") # tipos de arquivos aceitos
 
                           
                         ), # sidebarPanel
