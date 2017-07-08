@@ -324,8 +324,8 @@ shinyUI(
                      mainPanel(
                        tabsetPanel(
                          tabPanel("BDq", DT::dataTableOutput("BDq1") ),
-                         tabPanel("Gráfico", plotly::plotlyOutput( "BDq_graph_" ) ),
-                       #  tabPanel("Gráfico", plotOutput( "BDq_graph_" ) ),
+                       #  tabPanel("Gráfico", plotly::plotlyOutput( "BDq_graph_" ) ),
+                         tabPanel("Gráfico", plotOutput( "BDq_graph_" ) ),
                          tabPanel("Coeficientes", DT::dataTableOutput("BDq3", "70%") )
                        )
                        
