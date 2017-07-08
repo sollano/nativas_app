@@ -331,9 +331,10 @@ shinyServer(function(input, output, session) {
   # funcao diversidade
   tabdiversidade <- reactive({
     
-    validate(need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" )  )
+    validate(need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" ),
+             need(input$col.especiesdiv != "","Please select the columns") )
     
-    if(input$Loaddiv){
+    {
       
       dados <- rawData()
       
@@ -352,13 +353,15 @@ shinyServer(function(input, output, session) {
   output$selec_especiesdiv <- renderUI({
     
     data <- rawData()
-
+    
       selectizeInput( # cria uma lista de opcoes em que o usuario pode clicar
         "col.especiesdiv", # Id
         "Selecione a coluna de espécies:", # nome que sera mostrado na UI
         choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
-        selected = especies_names,     
+        selected = especies_names,
+        multiple=T,
         options = list(
+          maxItems = 1,
           placeholder = 'selecione uma coluna abaixo'#,
           #onInitialize = I('function() { this.setValue(""); }')
         ) # options    
@@ -368,7 +371,7 @@ shinyServer(function(input, output, session) {
   
   output$selec_rotuloNIdiv <- renderUI({
     
-    if(is.null(input$col.especiesdiv)){return(NULL)}
+    if(is.null(input$col.especiesdiv) || input$col.especiesdiv == ""){return(NULL)}
     
     data <- rawData()
     
@@ -404,7 +407,9 @@ shinyServer(function(input, output, session) {
   # tabela
   output$div <- renderDataTable({
     
-    if(input$Loaddiv)
+    validate(need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" ),
+             need(input$col.especiesdiv!= "","Please select the columns") 
+             )
     {
       divdt <- tabdiversidade() 
       

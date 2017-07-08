@@ -107,12 +107,7 @@ shinyUI(
                                      
                                      h4("Variável opcional: calcular índices por parcela"),
                                      
-                                     uiOutput("selec_parcelasdiv"),
-                                     
-                                     actionButton( # botao que o usuario clica, e gera uma acao no server
-                                       "Loaddiv", # Id
-                                       "rodar")
-                                     
+                                     uiOutput("selec_parcelasdiv")
                                      
                                    ), # sidebar Panel
                                    mainPanel(
