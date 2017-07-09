@@ -422,11 +422,7 @@ shinyUI(
                                                   c("Lista de colunas", "Manualmente"),
                                                   "Lista de colunas"),
                                      
-                                     uiOutput("as_ui2"),
-                                     
-                                     actionButton( # botao que o usuario clica, e gera uma acao no server
-                                       "Loadas", # Id
-                                       "Rodar Inventario")
+                                     uiOutput("as_ui2")
                                      
                                    ), # sidebarPanel
                                    mainPanel(
