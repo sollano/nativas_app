@@ -384,11 +384,7 @@ shinyUI(
                                    
                                    sidebarPanel(
 
-                                     uiOutput("ace_ui"),
-                                     
-                                     actionButton( # botao que o usuario clica, e gera uma acao no server
-                                       "Loadace", # Id
-                                       "Rodar Inventario")
+                                     uiOutput("ace_ui")
                                      
                                    ), # sidebarPanel
                                    mainPanel(

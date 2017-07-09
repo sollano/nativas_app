@@ -1308,8 +1308,10 @@ shinyServer(function(input, output, session) {
     
     if(is.null(input$df)){ return()}
     
+    # Se o dado for em nivel de arvore, a totalização de parcelas deve ser feita para que
+    # NewData possa ser inserido em acs. Sem essa condição a ui gera mensagens de erro
     switch(input$df, 
-           "Dados em nivel de arvore" = newData(),
+           "Dados em nivel de arvore" = if(is.null(input$area_totalacs) ){return()}else{ newData()},
            "Dados em nivel de parcela" = rawData() )
     
   })
@@ -1519,8 +1521,11 @@ shinyServer(function(input, output, session) {
   # funcao acs aplicada em invData
   tabacs <- reactive({
     
-    if(input$Loadacs){
-      
+    validate(need(input$VCCacs!= "","Por favor selecione a coluna referente a 'volume' "),
+             need(input$area_parcelaacs!= "","Por favor insira um valor ou selecione uma coluna referente a 'area da parcela' "),
+             need(input$area_totalacs!= "","Por favor insira um valor ou selecione uma coluna  referente a 'area total' ")
+             
+    )
       dados <- invData()
       
       x <-     acs(df             = dados,
@@ -1535,13 +1540,11 @@ shinyServer(function(input, output, session) {
                    pop            = input$popacs, 
                    tidy           = input$tidyacs)
       
-      x}
+      x
     
   })
   
   # UI: as opcoes (choices) sao os nomes de invData
-  
-  
   output$acs_ui1 <- renderUI({
     
     data <- invData()
@@ -1554,8 +1557,10 @@ shinyServer(function(input, output, session) {
         'VCCacs', # Id
         "Selecione a coluna do volume (m³):", # nome que sera mostrado na UI
         choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
-        selected = VCC_names,     
+        selected = VCC_names, 
+        multiple = T,
         options = list(
+          maxItems = 1,
           placeholder = 'selecione uma coluna abaixo'#,
           # onInitialize = I('function() { this.setValue(""); }')
         ) # options
@@ -1578,7 +1583,9 @@ shinyServer(function(input, output, session) {
                                                  label = "Selecione a coluna da área da parcela (m²):",
                                                  choices = names(data),
                                                  selected = area_parcela_names,     
+                                                 multiple = T,
                                                  options = list(
+                                                   maxItems = 1,
                                                    placeholder = 'Selecione uma coluna abaixo:'#,
                                                    #onInitialize = I('function() { this.setValue(""); }')
                                                  ) # options    
@@ -1594,7 +1601,9 @@ shinyServer(function(input, output, session) {
                                                  label = "Selecione a coluna da área total (ha):",
                                                  choices = names(data),
                                                  selected = area_total_names,     
+                                                 multiple = T,
                                                  options = list(
+                                                   maxItems = 1,
                                                    placeholder = 'Selecione uma coluna abaixo:'#,
                                                    #  onInitialize = I('function() { this.setValue(""); }')
                                                  ) # options    
@@ -1606,9 +1615,11 @@ shinyServer(function(input, output, session) {
       selectizeInput( # cria uma lista de opcoes em que o usuario pode clicar
         'idadeacs', # Id
         "Selecione a coluna da idade:", # nome que sera mostrado na UI
-        choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
+        choices = names(data), 
         #selected = idade_names,     
+        multiple = T,
         options = list(
+          maxItems = 1,
           placeholder = 'selecione uma coluna abaixo',
           onInitialize = I('function() { this.setValue(""); }')
         ) # options
@@ -1667,9 +1678,6 @@ shinyServer(function(input, output, session) {
   output$acs <- renderDataTable({
     
     acsdt <- tabacs() 
-    
-    if(input$Loadacs)
-    {
       # converte em datatable        # cria formattable
       as.datatable( formattable(acsdt, 
                                 list(    # colore a linha 6 da coluna dois de verde ou vemelho, se ela for menor ou maior que o numero da linha 1 coluna 2
@@ -1697,8 +1705,7 @@ shinyServer(function(input, output, session) {
       ) #as.datatable
       
       
-    } 
-    
+
   })
   
   # ACE ####
