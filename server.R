@@ -1311,7 +1311,7 @@ shinyServer(function(input, output, session) {
     # Se o dado for em nivel de arvore, a totalização de parcelas deve ser feita para que
     # NewData possa ser inserido em acs. Sem essa condição a ui gera mensagens de erro
     switch(input$df, 
-           "Dados em nivel de arvore" = if(is.null(input$area_totalacs) ){return()}else{ newData()},
+           "Dados em nivel de arvore" = if(is.null(input$VCCnew) ){return()}else{ newData()},
            "Dados em nivel de parcela" = rawData() )
     
   })
