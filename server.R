@@ -224,25 +224,31 @@ shinyServer(function(input, output, session) {
     
     data <- rawData_()
     
-    if(input$Loadfiltrar){
+     # se o usuario nao selecionar nada, retorna o dado normal 
+     # (isso faz com o que o dado original seja exibido logo que se entra na aba de filtrar),
+     # caso contrario ele filtra o dado conforme o usuario seleciona as variaveis
+
+      if( is.null(input$filtrar_dados_col1) || input$filtrar_dados_col1 ==""){
       
-      # so filtra a linha se o usuario selecionar alguma coluna para isso
-      if( input$filtrar_dados_col1 !="" ){
+        data
         
-      data <- data %>% 
-        filter_(interp( ~ ! var %in% input$filtrar_dados_col1_filtro, var = as.name(input$filtrar_dados_col1) )   )
-      
+      }else{
+        
+        data <- data[!data[[input$filtrar_dados_col1]] %in% input$filtrar_dados_col1_filtro,]
+        # data <- data %>% 
+           #filter( ! .data[[input$filtrar_dados_col1]] %in% input$filtrar_dados_col1_filtro )
+         data
+        
       }
-      
+    
+    # se o usuario nao selecionar nada, uma coluna vazia e definida como nula,
+    # ou seja, nao muda nada no dado.
+    # por isso nao e necessario utilizar condicionais nesse caso
+
       data[, input$filtrar_dados_rm_cols] <- NULL
       
       data
-      
-    }else{
-      
-      data
-      
-    }
+
   })
   
   output$filtrar_dados_col1_ui <- renderUI({

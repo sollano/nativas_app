@@ -75,12 +75,7 @@ shinyUI(
                         
                         uiOutput("filtrar_dados_col1_ui"),
                         uiOutput("filtrar_dados_col1_filtro_ui"),
-                        uiOutput("filtrar_dados_rm_cols_ui"),
-                        
-                        actionButton( # botao que o usuario clica, e gera uma acao no server
-                          "Loadfiltrar", # Id
-                          "Filtrar")
-                        
+                        uiOutput("filtrar_dados_rm_cols_ui")
                         
                       ),# sidebarPanel
                       
