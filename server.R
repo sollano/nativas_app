@@ -126,7 +126,7 @@ shinyServer(function(input, output, session) {
                    label   = "Numero da planilha",
                    value   = 1,
                    min     = 1,
-                   max     = 10,
+                   max     = 30,
                    step    = 1
       ),
       
