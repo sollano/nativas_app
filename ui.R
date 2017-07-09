@@ -10,9 +10,9 @@ library(lazyeval)
 library(ggplot2)
 library(ggdendro)
 library(ggthemes)
-#library(xlsx)
-#library(rJava)
-#library(xlsxjars)
+library(xlsx)
+library(rJava)
+library(xlsxjars)
 library(rmarkdown)
 
 shinyUI(
@@ -54,8 +54,10 @@ shinyUI(
                                        c("Fazer o upload", "Utilizar o dado de exemplo"), 
                                        selected = "Fazer o upload"),
                           
-                           uiOutput("upload") # tipos de arquivos aceitos
-                         
+                           uiOutput("upload"), # tipos de arquivos aceitos
+                          hr(),
+                          uiOutput("upload_csv"), # tipos de arquivos aceitos
+                          uiOutput("upload_xlsx") # tipos de arquivos aceitos
 
                           
                         ), # sidebarPanel
@@ -73,12 +75,7 @@ shinyUI(
                         
                         uiOutput("filtrar_dados_col1_ui"),
                         uiOutput("filtrar_dados_col1_filtro_ui"),
-                        uiOutput("filtrar_dados_rm_cols_ui"),
-                        
-                        actionButton( # botao que o usuario clica, e gera uma acao no server
-                          "Loadfiltrar", # Id
-                          "Filtrar")
-                        
+                        uiOutput("filtrar_dados_rm_cols_ui")
                         
                       ),# sidebarPanel
                       
@@ -106,12 +103,7 @@ shinyUI(
                                      
                                      h4("Variável opcional: calcular índices por parcela"),
                                      
-                                     uiOutput("selec_parcelasdiv"),
-                                     
-                                     actionButton( # botao que o usuario clica, e gera uma acao no server
-                                       "Loaddiv", # Id
-                                       "rodar")
-                                     
+                                     uiOutput("selec_parcelasdiv")
                                      
                                    ), # sidebar Panel
                                    mainPanel(
@@ -145,11 +137,7 @@ shinyUI(
                                      
                                      uiOutput("rb_slider_graphmsim1"),
                                      
-                                     uiOutput("rb_slider_graphmsim2"),
-                                     
-                                     actionButton( # botao que o usuario clica, e gera uma acao no server
-                                       "Loadmsim", # Id
-                                       "rodar")
+                                     uiOutput("rb_slider_graphmsim2")
                                      
                                    ), # sidebar Panel
                                    mainPanel(
@@ -181,11 +169,7 @@ shinyUI(
                                      
                                      uiOutput("selec_psimselec_parc2"),
                                      
-                                     uiOutput("selec_rotuloNIpsim"),
-                                     
-                                     actionButton( # botao que o usuario clica, e gera uma acao no server
-                                       "Loadpsim", # Id
-                                       "rodar")
+                                     uiOutput("selec_rotuloNIpsim")
                                      
                                    ), # sidebar Panel
                                    mainPanel(
@@ -208,11 +192,7 @@ shinyUI(
                                      
                                      uiOutput("selec_parcelasagreg"),
                                      
-                                     uiOutput("selec_rotuloNIagreg"),
-                                     
-                                     actionButton( # botao que o usuario clica, e gera uma acao no server
-                                       "Loadagreg", # Id
-                                       "rodar")
+                                     uiOutput("selec_rotuloNIagreg")
                                      
                                    ), #sidebarPanel
                                    mainPanel(
@@ -236,33 +216,21 @@ shinyUI(
                        h3("Estrutura"),
                        
                        uiOutput("selec_especiesestr"),
-                       
-                       uiOutput("selec_dapestr"),
-                       
                        uiOutput("selec_parcelasestr"),
-                       
+                       uiOutput("selec_dapestr"),
                        uiOutput("selec_area.parcelaestr"),
-                       
                        uiOutput("selec_rotuloNIestr"),
                        
                        h4("Variáveis opcionais:"),
                        
                        uiOutput("selec_est.verticalestr"),
-                       
                        uiOutput("selec_est.internoestr"),
-                       
                        sliderInput("cdestr", 
                                    label = "Selecione o nº de casas decimais:", 
                                    min = 0, 
                                    max = 10, 
                                    value = 2,
-                                   step = 1),
-                       
-                       
-                       
-                       actionButton( # botao que o usuario clica, e gera uma acao no server
-                         "Loadestr", # Id
-                         "rodar")
+                                   step = 1)
                        
                      ), # sidebar Panel
                      
@@ -313,18 +281,14 @@ shinyUI(
                                    min = 0, 
                                    max = 5, 
                                    value = 1.3,
-                                   step = .1),
-                       
-                       actionButton( # botao que o usuario clica, e gera uma acao no server
-                         "LoadBDq", # Id
-                         "rodar")
+                                   step = .1)
                        
                      ), # sidebar Panel
                      mainPanel(
                        tabsetPanel(
                          tabPanel("BDq", DT::dataTableOutput("BDq1") ),
-                         tabPanel("Gráfico", plotly::plotlyOutput( "BDq_graph_" ) ),
-                       #  tabPanel("Gráfico", plotOutput( "BDq_graph_" ) ),
+                       #  tabPanel("Gráfico", plotly::plotlyOutput( "BDq_graph_" ) ),
+                         tabPanel("Gráfico", plotOutput( "BDq_graph_" ) ),
                          tabPanel("Coeficientes", DT::dataTableOutput("BDq3", "70%") )
                        )
                        
@@ -380,12 +344,8 @@ shinyUI(
                                                   c("Lista de colunas", "Manualmente"),
                                                   "Manualmente"),
                                      
-                                     uiOutput("tot_parc_ui2"),
+                                     uiOutput("tot_parc_ui2")
                                      
-                                     actionButton( # botao que o usuario clica, e gera uma acao no server
-                                       "Loadnew", # Id
-                                       "Rodar")
-
                                    ), # sidebar panel
                                    
                                    mainPanel(
@@ -418,12 +378,7 @@ shinyUI(
                                                   c("Lista de colunas", "Manualmente"),
                                                   "Lista de colunas"),
                                      
-                                     uiOutput("acs_ui2"),
-                                     
-                                     actionButton( # botao que o usuario clica, e gera uma acao no server
-                                       "Loadacs", # Id
-                                       "Rodar Inventario")
-                                     
+                                     uiOutput("acs_ui2")
                                    ), # sidebarPanel
                                    mainPanel(
                                      
@@ -443,11 +398,7 @@ shinyUI(
                                    
                                    sidebarPanel(
 
-                                     uiOutput("ace_ui"),
-                                     
-                                     actionButton( # botao que o usuario clica, e gera uma acao no server
-                                       "Loadace", # Id
-                                       "Rodar Inventario")
+                                     uiOutput("ace_ui")
                                      
                                    ), # sidebarPanel
                                    mainPanel(
@@ -485,11 +436,7 @@ shinyUI(
                                                   c("Lista de colunas", "Manualmente"),
                                                   "Lista de colunas"),
                                      
-                                     uiOutput("as_ui2"),
-                                     
-                                     actionButton( # botao que o usuario clica, e gera uma acao no server
-                                       "Loadas", # Id
-                                       "Rodar Inventario")
+                                     uiOutput("as_ui2")
                                      
                                    ), # sidebarPanel
                                    mainPanel(
@@ -567,9 +514,9 @@ shinyUI(
                                   
                                   selectInput("graph_d", "Escolha uma grafico:", 
                                               choices = c(
-                                               "Distribuicao - BDq Meyer",
                                                 "Dendrograma - Jaccard",
-                                                "Dendrograma - Sorensen" )),
+                                                "Dendrograma - Sorensen",
+                                                "Distribuicao - BDq Meyer" )),
                                   
                                   selectInput("graphformat",
                                               "Escolha o formato do gráfico:",
