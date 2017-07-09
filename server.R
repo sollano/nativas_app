@@ -126,7 +126,7 @@ shinyServer(function(input, output, session) {
                    label   = "Numero da planilha",
                    value   = 1,
                    min     = 1,
-                   max     = 10,
+                   max     = 30,
                    step    = 1
       ),
       
@@ -331,9 +331,10 @@ shinyServer(function(input, output, session) {
   # funcao diversidade
   tabdiversidade <- reactive({
     
-    validate(need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" )  )
+    validate(need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" ),
+             need(input$col.especiesdiv != "","Por favor selecione a coluna referente a 'especies'  ") )
     
-    if(input$Loaddiv){
+    {
       
       dados <- rawData()
       
@@ -352,23 +353,27 @@ shinyServer(function(input, output, session) {
   output$selec_especiesdiv <- renderUI({
     
     data <- rawData()
-
+    
       selectizeInput( # cria uma lista de opcoes em que o usuario pode clicar
         "col.especiesdiv", # Id
         "Selecione a coluna de espécies:", # nome que sera mostrado na UI
         choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
-        selected = especies_names,     
+        selected = especies_names,
+        multiple=T,
         options = list(
+          maxItems = 1,
           placeholder = 'selecione uma coluna abaixo'#,
           #onInitialize = I('function() { this.setValue(""); }')
         ) # options    
       ) # selctize
 
+      # obs: multiple = T & maxItems = 1, garantem que a celula fique vazia, caso o app falhe
+      # em tentar adivinhar o nome da especie
   })
   
   output$selec_rotuloNIdiv <- renderUI({
     
-    if(is.null(input$col.especiesdiv)){return(NULL)}
+    validate(need(input$col.especiesdiv != "","") )
     
     data <- rawData()
     
@@ -404,8 +409,6 @@ shinyServer(function(input, output, session) {
   # tabela
   output$div <- renderDataTable({
     
-    if(input$Loaddiv)
-    {
       divdt <- tabdiversidade() 
       
       datatable( divdt,
@@ -417,8 +420,7 @@ shinyServer(function(input, output, session) {
                                   "}")
                  )   
       ) 
-    }
-    
+
   }) 
   
   # Matriz Similaridade ####
@@ -426,11 +428,12 @@ shinyServer(function(input, output, session) {
   # funcao m similaridade
   tabmsimilaridade1 <- reactive({
     
-    if(input$Loadmsim){
-      
-      validate(need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" )  )
-      
-      dados <- rawData()
+    validate(need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" ),
+             need(input$col.especiesmsim!= "","Por favor selecione a coluna referente a 'especies' "),
+             need(input$col.parcelasmsim!= "","Por favor selecione a coluna referente a 'parcelas' ") 
+    )
+    
+    dados <- rawData()
       
       x <- m.similaridade(data             = dados, 
                           col.especies     = input$col.especiesmsim,
@@ -440,15 +443,16 @@ shinyServer(function(input, output, session) {
       x <- as.data.frame(x[[1]])
       names(x) <- 1:length(x)
       x
-    }
+    
     
   })
   tabmsimilaridade2 <- reactive({
     
-    validate(need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" )  )
-    
-    if(input$Loadmsim){
-      
+    validate(need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" ),
+             need(input$col.especiesmsim!= "","Por favor selecione a coluna referente a 'especies' "),
+             need(input$col.parcelasmsim!= "","Por favor selecione a coluna referente a 'parcelas' ") 
+    )
+
       dados <- rawData()
       
       x <- m.similaridade(data             = dados, 
@@ -459,8 +463,7 @@ shinyServer(function(input, output, session) {
       x <- as.data.frame(x[[2]])
       names(x) <- 1:length(x)
       x
-    }
-    
+
   })
   
   # UI
@@ -473,15 +476,16 @@ shinyServer(function(input, output, session) {
       "col.especiesmsim", # Id
       "Selecione a coluna de espécies:", # nome que sera mostrado na UI
       choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
-      selected = especies_names,     
+      selected = especies_names,
+      multiple = T,
       options = list(
+        maxItems = 1,
         placeholder = 'selecione uma coluna abaixo'#,
         #onInitialize = I('function() { this.setValue(""); }')
       ) # options    
     )
     
   })
-  
   output$selec_parcelasmsim <- renderUI({
     
     data <- rawData()
@@ -490,19 +494,20 @@ shinyServer(function(input, output, session) {
       "col.parcelasmsim", # Id
       "Selecione a coluna da parcela:", # nome que sera mostrado na UI
       choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
-      selected = parcelas_names,     
+      selected = parcelas_names,
+      multiple = T,
       options = list(
+        maxItems = 1,
         placeholder = 'selecione uma coluna abaixo'#,
         #onInitialize = I('function() { this.setValue(""); }')
       ) # options    
     )
     
   })
-  
   output$selec_rotuloNImsim <- renderUI({
     
-    if(is.null(input$col.especiesmsim)){return()}
-
+    validate(need(input$col.especiesmsim != "","") )
+    
     data <- rawData()
 
     selectizeInput("rotutuloNImsim",
@@ -515,7 +520,6 @@ shinyServer(function(input, output, session) {
                    ) )
 
   })
-  
   output$rb_slider_graphmsim1 <- renderUI({
     
     # precisa que o grafico seja selecionado na ui, caso contrario nao mostra nada
@@ -564,8 +568,8 @@ shinyServer(function(input, output, session) {
   
   # tabela
   output$msim1 <- renderDataTable({
-    
-    if(input$Loadmsim)
+
+ 
     {
       msimdt1 <- tabmsimilaridade1() 
       
@@ -584,7 +588,6 @@ shinyServer(function(input, output, session) {
   }) 
   output$msim2 <- renderDataTable({
     
-    if(input$Loadmsim)
     {
       msimdt2 <- tabmsimilaridade2() 
       
@@ -608,7 +611,10 @@ shinyServer(function(input, output, session) {
     #retornar vazio enquando input$rb_msim1_graph carrega (ele fica nulo quando carrega)
     if(is.null(input$rb_msim1_graph)){return("")} 
     
-    if(input$Loadmsim)
+    validate(need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" ),
+             need(input$col.especiesmsim!= "","Por favor selecione a coluna referente a 'especies' "),
+             need(input$col.parcelasmsim!= "","Por favor selecione a coluna referente a 'parcelas' ") 
+    )
     {
       dados <- rawData()
       df <- as.data.frame(tabmsimilaridade1() ) 
@@ -635,7 +641,6 @@ shinyServer(function(input, output, session) {
     
     
   })
-  
   output$msim1_graph_ <- renderPlot({
     
     gmsim1 <- msim1_graph()
@@ -649,7 +654,10 @@ shinyServer(function(input, output, session) {
     #retornar vazio enquando input$rb_msim1_graph carrega (ele fica nulo quando carrega)
     if(is.null(input$rb_msim2_graph)){return("")} 
     
-    if(input$Loadmsim)
+    validate(need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" ),
+             need(input$col.especiesmsim!= "","Por favor selecione a coluna referente a 'especies' "),
+             need(input$col.parcelasmsim!= "","Por favor selecione a coluna referente a 'parcelas' ") 
+    )
     {
       dados <- rawData()
       df <- as.data.frame(tabmsimilaridade2() ) 
@@ -676,7 +684,6 @@ shinyServer(function(input, output, session) {
     
     
   })
-  
   output$msim2_graph_ <- renderPlot({
     
    gmsim2 <- msim2_graph()
@@ -690,11 +697,15 @@ shinyServer(function(input, output, session) {
   # funcao p similaridade
   tabpsimilaridade <- reactive({
     
-    validate(need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" )  )
+    validate(need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" ),
+             need(input$col.especiespsim!= "","Por favor selecione a coluna referente a 'especies' "),
+             need(input$col.parcelaspsim!= "","Por favor selecione a coluna referente a 'parcelas' "),
+             need(input$psimselec_parc1!= "","Por favor selecione o primeiro item que se deseja comparar "),
+             need(input$psimselec_parc2!= "","Por favor selecione o segundo item que se deseja comparar ")
+             
+    )
     
-    if(input$Loadpsim){
-      
-      dados <- rawData()
+    dados <- rawData()
       
       #inv %>% 
       #filter_(.dots = interp(~ transect == "T01", transect = as.name("transect") ) ) %>% 
@@ -717,8 +728,7 @@ shinyServer(function(input, output, session) {
                        "Resultado" = c( x[1], x[2] )  )
       x
       
-    }
-    
+
   })
   
   # UI
@@ -732,14 +742,15 @@ shinyServer(function(input, output, session) {
       "Selecione a coluna de espécies:", # nome que sera mostrado na UI
       choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
       selected = especies_names,     
+      multiple = T,
       options = list(
+        maxItems = 1,
         placeholder = 'selecione uma coluna abaixo'#,
         #onInitialize = I('function() { this.setValue(""); }')
       ) # options    
     )
     
   })
-  
   output$selec_parcelaspsim <- renderUI({
     
     data <- rawData()
@@ -748,8 +759,10 @@ shinyServer(function(input, output, session) {
       "col.parcelaspsim", # Id
       "Selecione a coluna da parcela:", # nome que sera mostrado na UI
       choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
-      selected = parcelas_names,     
+      selected = parcelas_names,
+      multiple = T,
       options = list(
+        maxItems = 1,
         placeholder = 'selecione uma coluna abaixo'#,
         #onInitialize = I('function() { this.setValue(""); }')
       ) # options    
@@ -782,10 +795,10 @@ shinyServer(function(input, output, session) {
 
     
     selectizeInput("psimselec_parc1",
-                   label = "Selecione a Parcela 1:",
+                   label = "Selecione o primeiro item que se deseja comparar:",
                    choices = parcelas,
                    options = list(
-                     placeholder = 'Selecione uma espécie abaixo',
+                     placeholder = 'Selecione um item abaixo',
                      onInitialize = I('function() { this.setValue(""); }')
                    ) # options    
     )
@@ -801,10 +814,10 @@ shinyServer(function(input, output, session) {
     parcelas <- lista_parcelas_psim()
     
     selectizeInput("psimselec_parc2",
-                   label = "Selecione a Parcela 2:",
+                   label = "Selecione o segundo item que se deseja comparar:",
                    choices = parcelas,
                    options = list(
-                     placeholder = 'Selecione uma espécie abaixo',
+                     placeholder = 'Selecione uma item abaixo',
                      onInitialize = I('function() { this.setValue(""); }')
                    ) # options    
     )
@@ -832,8 +845,6 @@ shinyServer(function(input, output, session) {
   # tabela
   output$psim <- renderDataTable({
     
-    if(input$Loadpsim)
-    {
       psimdt <- tabpsimilaridade() 
       
       datatable( psimdt,
@@ -844,18 +855,18 @@ shinyServer(function(input, output, session) {
                                   "$(this.api().table().header()).css({'background-color': '#00a90a', 'color': '#fff'});",
                                   "}")
                  )  ) 
-    }
-    
+
   }) 
  
   # Índices de agregacao ####
   
   tabagregate <- reactive({
     
-    validate(need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" )  )
+    validate(need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" ),
+             need(input$col.especiesagreg!= "","Por favor selecione a coluna referente a 'especies' "),
+             need(input$col.parcelasagreg!= "","Por favor selecione a coluna referente a 'parcelas' ")
+    )
     
-    if(input$Loadagreg){
-      
     dados <- rawData()
     
     x <- agregacao(data         =  dados, 
@@ -864,8 +875,7 @@ shinyServer(function(input, output, session) {
                    rotulo.NI    = input$rotutuloNIagreg  )
     
     x
-    }
-    
+
   })
   
   output$selec_especiesagreg <- renderUI({
@@ -877,8 +887,10 @@ shinyServer(function(input, output, session) {
       "col.especiesagreg", # Id
       "Selecione a coluna de espécies:", # nome que sera mostrado na UI
       choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
-      selected = especies_names,     
+      selected = especies_names, 
+      multiple = T,
       options = list(
+        maxItems = 1,
         placeholder = 'selecione uma coluna abaixo'#,
         #onInitialize = I('function() { this.setValue(""); }')
       ) # options    
@@ -895,7 +907,9 @@ shinyServer(function(input, output, session) {
       "Selecione a coluna das parcelas:", # nome que sera mostrado na UI
       choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
       selected = parcelas_names,     
+      multiple = T,
       options = list(
+        maxItems = 1,
         placeholder = 'selecione uma coluna abaixo'#,
         #onInitialize = I('function() { this.setValue(""); }')
       ) # options    
@@ -905,7 +919,9 @@ shinyServer(function(input, output, session) {
   
   output$selec_rotuloNIagreg <- renderUI({
 
-    if(is.null(input$col.especiesagreg)){return(NULL)}
+    validate(need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" ),
+             need(input$col.especiesagreg!= "","Por favor selecione a coluna referente a 'especies' ")
+    )
     
     data <- rawData()
     
@@ -922,9 +938,12 @@ shinyServer(function(input, output, session) {
   
   output$agreg <- renderDataTable({
     
-    if(input$Loadagreg)
-    {
-      agregdt <- tabagregate() 
+    validate(need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" ),
+             need(input$col.especiesagreg!= "","Por favor selecione a coluna referente a 'especies' "),
+             need(input$col.parcelasagreg!= "","Por favor selecione a coluna referente a 'parcelas' ")
+    )
+    
+    agregdt <- tabagregate() 
       
       datatable( agregdt,
                  options = list(searching = T,
@@ -934,8 +953,7 @@ shinyServer(function(input, output, session) {
                                   "$(this.api().table().header()).css({'background-color': '#00a90a', 'color': '#fff'});",
                                   "}")
                  )  ) 
-    }
-    
+
   }) 
   
   # Estrutura ####
@@ -943,24 +961,26 @@ shinyServer(function(input, output, session) {
   # funcao estrutura
   tabestrutura <- reactive({
     
-    validate(need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" )  )
+    validate(need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" ),
+             need(input$col.especiesestr!= "","Por favor selecione a coluna referente a 'especies' "),
+             need(input$col.parcelasestr!= "","Por favor selecione a coluna referente a 'parcelas' "),
+             need(input$col.dapestr!= "","Por favor selecione a coluna referente a 'dap' "),
+             need(input$area.parcelaestr!= "","Por favor selecione a coluna referente a 'area da parcela' ")
+    )
     
-    if(input$Loadestr){
-      
       dados <- rawData()
       
       x <- estrutura(data             = dados, 
                      col.especies     = input$col.especiesestr,
-                     col.dap          = input$col.dapestr,
                      col.parcelas     = input$col.parcelasestr,
+                     col.dap          = input$col.dapestr,
                      area.parcela     = input$area.parcelaestr,
                      est.vertical     = input$est.verticalestr,
                      est.interno      = input$est.internoestr,
                      nao.identificada = input$rotutuloNIestr  )
       
       as.tbl(x)
-    }
-    
+
   })
   
   # UI
@@ -972,32 +992,16 @@ shinyServer(function(input, output, session) {
       "col.especiesestr", # Id
       "Selecione a coluna de espécies:", # nome que sera mostrado na UI
       choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
-      selected = especies_names,     
+      selected = especies_names, 
+      multiple = T,
       options = list(
+        maxItems = 1,
         placeholder = 'selecione uma coluna abaixo'#,
         #onInitialize = I('function() { this.setValue(""); }')
       ) # options    
     )
     
   })
-  
-  output$selec_dapestr <- renderUI({
-    
-    data <- rawData()
-    
-    selectizeInput( # cria uma lista de opcoes em que o usuario pode clicar
-      "col.dapestr", # Id
-      "Selecione a coluna do DAP (cm):", # nome que sera mostrado na UI
-      choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
-      selected = DAP_names,     
-      options = list(
-        placeholder = 'selecione uma coluna abaixo'#,
-        #onInitialize = I('function() { this.setValue(""); }')
-      ) # options    
-    )
-    
-  })
-  
   output$selec_parcelasestr <- renderUI({
     
     data <- rawData()
@@ -1007,14 +1011,33 @@ shinyServer(function(input, output, session) {
       "Selecione a coluna da parcela:", # nome que sera mostrado na UI
       choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
       selected = parcelas_names,     
+      multiple = T,
       options = list(
+        maxItems = 1,
         placeholder = 'selecione uma coluna abaixo'#,
         #onInitialize = I('function() { this.setValue(""); }')
       ) # options    
     )
     
   })
-  
+  output$selec_dapestr <- renderUI({
+    
+    data <- rawData()
+    
+    selectizeInput( # cria uma lista de opcoes em que o usuario pode clicar
+      "col.dapestr", # Id
+      "Selecione a coluna do DAP (cm):", # nome que sera mostrado na UI
+      choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
+      selected = DAP_names,     
+      multiple = T,
+      options = list(
+        maxItems = 1,
+        placeholder = 'selecione uma coluna abaixo'#,
+        #onInitialize = I('function() { this.setValue(""); }')
+      ) # options    
+    )
+    
+  })
   output$selec_area.parcelaestr <- renderUI({
     
     data <- rawData()
@@ -1024,14 +1047,15 @@ shinyServer(function(input, output, session) {
       "Selecione a coluna da área da parcela (m²):", # nome que sera mostrado na UI
       choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
       selected = area_parcela_names,     
+      multiple = T,
       options = list(
+        maxItems = 1,
         placeholder = 'selecione uma coluna abaixo'#,
         #onInitialize = I('function() { this.setValue(""); }')
       ) # options    
     )
     
   })
-  
   output$selec_rotuloNIestr <- renderUI({
 
     if(is.null(input$col.especiesestr)){return(NULL)}
@@ -1048,7 +1072,6 @@ shinyServer(function(input, output, session) {
                    ) )
     
   })
-  
   output$selec_est.verticalestr <- renderUI({
     
     data <- rawData()
@@ -1065,7 +1088,6 @@ shinyServer(function(input, output, session) {
     )
     
   })
-  
   output$selec_est.internoestr <- renderUI({
     
     data <- rawData()
@@ -1086,8 +1108,6 @@ shinyServer(function(input, output, session) {
   # tabela
   output$estr <- renderDataTable({
     
-    if(input$Loadestr)
-    {
       estrdt <- round_df( tabestrutura(), input$cdestr )
       
       datatable( as.tbl(estrdt),
@@ -1098,8 +1118,7 @@ shinyServer(function(input, output, session) {
                                   "$(this.api().table().header()).css({'background-color': '#00a90a', 'color': '#fff'});",
                                   "}")
                  )  ) 
-    }
-    
+
   }) 
   
   
@@ -1108,10 +1127,12 @@ shinyServer(function(input, output, session) {
   # funcao BDq Meyer
   tabBDq1 <- reactive({
     
-    validate(need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" )  )
+    validate(need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" ),
+             need(input$col.parcelasBDq!= "","Por favor selecione a coluna referente a 'parcelas' "),
+             need(input$col.dapBDq!= "","Por favor selecione a coluna referente a 'dap' "),
+             need(input$area.parcelaBDq!= "","Por favor selecione a coluna referente a 'area da parcela' ")
+    )
     
-    if(input$LoadBDq){
-      
       dados <- rawData()
       
       x <- bdq.meyer(data             = dados, 
@@ -1123,15 +1144,15 @@ shinyServer(function(input, output, session) {
                      i.licourt        = input$i.licourtBDq  )
       
       x[[1]]
-    }
-    
+
   })
   tabBDq3 <- reactive({
     
-    validate(need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" )  )
-    
-    if(input$LoadBDq){
-      
+    validate(need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" ),
+             need(input$col.parcelasBDq!= "","Por favor selecione a coluna referente a 'parcelas' "),
+             need(input$col.dapBDq!= "","Por favor selecione a coluna referente a 'dap' "),
+             need(input$area.parcelaBDq!= "","Por favor selecione a coluna referente a 'area da parcela' ")
+    )
       dados <- rawData()
       
       x <- bdq.meyer(data             = dados, 
@@ -1145,8 +1166,7 @@ shinyServer(function(input, output, session) {
       x <-data.frame( "Coeficientes" = c("b0", "b1")  ,
                       "Valor"        = c( x[[3]][1], x[[3]][2] )  )
       x
-    }
-    
+
   })
   
   # UI
@@ -1159,8 +1179,10 @@ shinyServer(function(input, output, session) {
       "col.parcelasBDq", # Id
       "Selecione a coluna da parcela:", # nome que sera mostrado na UI
       choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
-      selected = parcelas_names,     
+      selected = parcelas_names,
+      multiple = T,
       options = list(
+        maxItems = 1,
         placeholder = 'selecione uma coluna abaixo'#,
         #onInitialize = I('function() { this.setValue(""); }')
       ) # options    
@@ -1176,8 +1198,10 @@ shinyServer(function(input, output, session) {
       "col.dapBDq", # Id
       "Selecione a coluna do DAP (cm):", # nome que sera mostrado na UI
       choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
-      selected = DAP_names,     
+      selected = DAP_names, 
+      multiple = T,
       options = list(
+        maxItems = 1,
         placeholder = 'selecione uma coluna abaixo'#,
         #onInitialize = I('function() { this.setValue(""); }')
       ) # options    
@@ -1193,8 +1217,10 @@ shinyServer(function(input, output, session) {
       "area.parcelaBDq", # Id
       "Selecione a coluna da área da parcela (m²):", # nome que sera mostrado na UI
       choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
-      selected = area_parcela_names,     
+      selected = area_parcela_names,   
+      multiple = T,
       options = list(
+        maxItems = 1,
         placeholder = 'selecione uma coluna abaixo'#,
         #onInitialize = I('function() { this.setValue(""); }')
       ) # options    
@@ -1205,8 +1231,6 @@ shinyServer(function(input, output, session) {
   # tabela
   output$BDq1 <- renderDataTable({
     
-    if(input$LoadBDq)
-    {
       BDqdt <- tabBDq1()
       
       datatable( as.data.frame(BDqdt),
@@ -1217,13 +1241,10 @@ shinyServer(function(input, output, session) {
                                   "$(this.api().table().header()).css({'background-color': '#00a90a', 'color': '#fff'});",
                                   "}")
                  )  ) 
-    }
-    
+
   }) 
   output$BDq3 <- renderDataTable({
     
-    if(input$LoadBDq)
-    {
       BDqdt <- tabBDq3()
 
       datatable(BDqdt,
@@ -1234,15 +1255,18 @@ shinyServer(function(input, output, session) {
                                   "$(this.api().table().header()).css({'background-color': '#00a90a', 'color': '#fff'});",
                                   "}")
                  )  ) 
-    }
-    
+
   }) 
 
   # grafico
   BDq_graph <- reactive({
     
-    if(input$LoadBDq){
-      
+    validate(need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" ),
+             need(input$col.parcelasBDq!= "","Por favor selecione a coluna referente a 'parcelas' "),
+             need(input$col.dapBDq!= "","Por favor selecione a coluna referente a 'dap' "),
+             need(input$area.parcelaBDq!= "","Por favor selecione a coluna referente a 'area da parcela' ")
+    )
+    
       data <- tabBDq1()
       
       graph_bdq <- data %>% 
@@ -1262,9 +1286,7 @@ shinyServer(function(input, output, session) {
       #ggthemes::theme_igray(base_size = 14)
       
       g
-    }
-    
-    
+
   })
   
   output$BDq_graph_ <- renderPlot({
@@ -1286,8 +1308,10 @@ shinyServer(function(input, output, session) {
     
     if(is.null(input$df)){ return()}
     
+    # Se o dado for em nivel de arvore, a totalização de parcelas deve ser feita para que
+    # NewData possa ser inserido em acs. Sem essa condição a ui gera mensagens de erro
     switch(input$df, 
-           "Dados em nivel de arvore" = newData(),
+           "Dados em nivel de arvore" = if(is.null(input$area_totalacs) ){return()}else{ newData()},
            "Dados em nivel de parcela" = rawData() )
     
   })
@@ -1298,10 +1322,15 @@ shinyServer(function(input, output, session) {
   # dados / funcao inv_summary
   newData <- reactive({
     
-    validate(need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" )  )
+    validate(need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" ),
+             need(input$DAPnew!= "","Por favor selecione a coluna referente a 'dap' "),
+             need(input$HTnew!= "","Por favor selecione a coluna referente a 'altura' "),
+             need(input$VCCnew!= "","Por favor selecione a coluna referente a 'volume' "),
+             need(input$area_parcelanew!= "","Por favor insira um valor ou selecione uma coluna referente a 'area da parcela' "),
+             need(input$area_totalnew!= "","Por favor insira um valor ou selecione uma coluna  referente a 'area total' ")
+             
+    )
     
-    if(input$Loadnew){    
-      
       dados <- rawData()
       
       x <- inv_summary(df           = dados, 
@@ -1317,8 +1346,6 @@ shinyServer(function(input, output, session) {
       
       x
       
-    }
-    
   })
   
   # UI
@@ -1335,7 +1362,9 @@ shinyServer(function(input, output, session) {
       "Selecione a coluna do DAP (cm):", # nome que sera mostrado na UI
       choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
       selected = DAP_names,
+      multiple = T,
       options = list(
+        maxItems = 1,
         placeholder = 'selecione uma coluna abaixo'# ,
         # onInitialize = I('function() { this.setValue(""); }')
       ) # options
@@ -1346,7 +1375,9 @@ shinyServer(function(input, output, session) {
       "Selecione a coluna da altura (m):", # nome que sera mostrado na UI
       choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
       selected = HT_names,
+      multiple = T,
       options = list(
+        maxItems = 1,
         placeholder = 'selecione uma coluna abaixo'#,
         # onInitialize = I('function() { this.setValue(""); }')
       ) # options
@@ -1357,7 +1388,9 @@ shinyServer(function(input, output, session) {
       "Selecione a coluna do volume com casca (m³):", # nome que sera mostrado na UI
       choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
       selected = VCC_names,
+      multiple = T,
       options = list(
+        maxItems = 1,
         placeholder = 'selecione uma coluna abaixo'#,
         #onInitialize = I('function() { this.setValue(""); }')
       ) # options
@@ -1384,9 +1417,12 @@ shinyServer(function(input, output, session) {
              "Lista de colunas" = selectizeInput("area_parcelanew",
                                                  label = "Selecione a coluna da área da parcela (m²):",
                                                  choices = names(data),
+                                                 selected = area_parcela_names,
+                                                 multiple = T,
                                                  options = list(
-                                                   placeholder = 'Selecione uma coluna abaixo:',
-                                                   onInitialize = I('function() { this.setValue(""); }')
+                                                   maxItems = 1,
+                                                   placeholder = 'Selecione uma coluna abaixo:'#,
+                                               #    onInitialize = I('function() { this.setValue(""); }')
                                                  ) # options    
              )# selectize
       ),
@@ -1399,9 +1435,12 @@ shinyServer(function(input, output, session) {
              "Lista de colunas" = selectizeInput("area_totalnew",
                                                  label = "Selecione a coluna da área total (ha)",
                                                  choices = names(data),
+                                                 selected = area_total_names,
+                                                 multiple = T,
                                                  options = list(
-                                                   placeholder = 'Selecione uma coluna abaixo:',
-                                                   onInitialize = I('function() { this.setValue(""); }')
+                                                   maxItems = 1,
+                                                   placeholder = 'Selecione uma coluna abaixo:'#,
+                                                 #  onInitialize = I('function() { this.setValue(""); }')
                                                  ) # options    
              )# selectize
       ),
@@ -1427,7 +1466,7 @@ shinyServer(function(input, output, session) {
         'idadenew', # Id
         "Selecione a coluna da idade:", # nome que sera mostrado na UI
         choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
-        #selected = idade_names,
+        selected = idade_names,
         options = list(
           placeholder = 'selecione uma coluna abaixo',
           onInitialize = I('function() { this.setValue(""); }')
@@ -1467,8 +1506,6 @@ shinyServer(function(input, output, session) {
     
     data <- newData() 
     
-    if(input$Loadnew)
-    {
       datatable(data,
                 options = list(initComplete = JS(
                                  "function(settings, json) {",
@@ -1476,8 +1513,7 @@ shinyServer(function(input, output, session) {
                                  "}")
                 )   
       ) # Criamos uma DT::datatable com base no objeto
-    }
-    
+
   })
 
   # ACS ####
@@ -1485,8 +1521,11 @@ shinyServer(function(input, output, session) {
   # funcao acs aplicada em invData
   tabacs <- reactive({
     
-    if(input$Loadacs){
-      
+    validate(need(input$VCCacs!= "","Por favor selecione a coluna referente a 'volume' "),
+             need(input$area_parcelaacs!= "","Por favor insira um valor ou selecione uma coluna referente a 'area da parcela' "),
+             need(input$area_totalacs!= "","Por favor insira um valor ou selecione uma coluna  referente a 'area total' ")
+             
+    )
       dados <- invData()
       
       x <-     acs(df             = dados,
@@ -1501,13 +1540,11 @@ shinyServer(function(input, output, session) {
                    pop            = input$popacs, 
                    tidy           = input$tidyacs)
       
-      x}
+      x
     
   })
   
   # UI: as opcoes (choices) sao os nomes de invData
-  
-  
   output$acs_ui1 <- renderUI({
     
     data <- invData()
@@ -1520,8 +1557,10 @@ shinyServer(function(input, output, session) {
         'VCCacs', # Id
         "Selecione a coluna do volume (m³):", # nome que sera mostrado na UI
         choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
-        selected = VCC_names,     
+        selected = VCC_names, 
+        multiple = T,
         options = list(
+          maxItems = 1,
           placeholder = 'selecione uma coluna abaixo'#,
           # onInitialize = I('function() { this.setValue(""); }')
         ) # options
@@ -1544,7 +1583,9 @@ shinyServer(function(input, output, session) {
                                                  label = "Selecione a coluna da área da parcela (m²):",
                                                  choices = names(data),
                                                  selected = area_parcela_names,     
+                                                 multiple = T,
                                                  options = list(
+                                                   maxItems = 1,
                                                    placeholder = 'Selecione uma coluna abaixo:'#,
                                                    #onInitialize = I('function() { this.setValue(""); }')
                                                  ) # options    
@@ -1560,7 +1601,9 @@ shinyServer(function(input, output, session) {
                                                  label = "Selecione a coluna da área total (ha):",
                                                  choices = names(data),
                                                  selected = area_total_names,     
+                                                 multiple = T,
                                                  options = list(
+                                                   maxItems = 1,
                                                    placeholder = 'Selecione uma coluna abaixo:'#,
                                                    #  onInitialize = I('function() { this.setValue(""); }')
                                                  ) # options    
@@ -1572,9 +1615,11 @@ shinyServer(function(input, output, session) {
       selectizeInput( # cria uma lista de opcoes em que o usuario pode clicar
         'idadeacs', # Id
         "Selecione a coluna da idade:", # nome que sera mostrado na UI
-        choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
-        #selected = idade_names,     
+        choices = names(data), 
+        selected = idade_names,     
+        multiple = T,
         options = list(
+          maxItems = 1,
           placeholder = 'selecione uma coluna abaixo',
           onInitialize = I('function() { this.setValue(""); }')
         ) # options
@@ -1633,9 +1678,6 @@ shinyServer(function(input, output, session) {
   output$acs <- renderDataTable({
     
     acsdt <- tabacs() 
-    
-    if(input$Loadacs)
-    {
       # converte em datatable        # cria formattable
       as.datatable( formattable(acsdt, 
                                 list(    # colore a linha 6 da coluna dois de verde ou vemelho, se ela for menor ou maior que o numero da linha 1 coluna 2
@@ -1663,8 +1705,7 @@ shinyServer(function(input, output, session) {
       ) #as.datatable
       
       
-    } 
-    
+
   })
   
   # ACE ####
@@ -1672,8 +1713,11 @@ shinyServer(function(input, output, session) {
   # resultado 1 da funcao ace aplicada em invData
   tabace1 <- reactive({
     
-    if(input$Loadace){
-      
+    validate(need(input$VCCace!= "","Por favor selecione a coluna referente a 'volume' "),
+             need(input$area_parcelaace!= "","Por favor insira um valor ou selecione uma coluna referente a 'area da parcela' "),
+             need(input$area_estratoace!= "","Por favor insira um valor ou selecione uma coluna  referente a 'area total' "),
+             need(input$gruposace!= "","Por favor insira um valor ou selecione uma coluna  referente a 'variáveis pivô' ")
+     )
       dados <- invData()
       
       x <- ace(df             = dados, 
@@ -1688,15 +1732,18 @@ shinyServer(function(input, output, session) {
                pop            = input$popace, 
                tidy           = input$tidyace)[[1]]
       x
-    }
-    
+
   })
   
   # resultado 2 da funcao ace aplicada em invData
   tabace2 <- reactive({
     
-    if(input$Loadace){ 
-      
+    validate(need(input$VCCace!= "","Por favor selecione a coluna referente a 'volume' "),
+             need(input$area_parcelaace!= "","Por favor insira um valor ou selecione uma coluna referente a 'area da parcela' "),
+             need(input$area_estratoace!= "","Por favor insira um valor ou selecione uma coluna  referente a 'area total' "),
+             need(input$gruposace!= "","Por favor insira um valor ou selecione uma coluna  referente a 'variáveis pivô' ")
+    )
+    
       dados <- invData()
       
       x <- ace(df = dados, 
@@ -1712,8 +1759,7 @@ shinyServer(function(input, output, session) {
                tidy           = input$tidyace)[[2]]
       
       x
-    }
-    
+
   })
   
   # UI: as opcoes (choices) sao os nomes de invData
@@ -1731,7 +1777,9 @@ shinyServer(function(input, output, session) {
         "Selecione a coluna do volume (m³):", # nome que sera mostrado na UI
         choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
         selected = VCC_names,     
+        multiple = T,
         options = list(
+        maxItems = 1,
           placeholder = 'selecione uma coluna abaixo'#,
           # onInitialize = I('function() { this.setValue(""); }')
         ) # options
@@ -1742,7 +1790,9 @@ shinyServer(function(input, output, session) {
         "Selecione a coluna da área da parcela (m²):", # nome que sera mostrado na UI
         choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
         selected = area_parcela_names,     
+        multiple = T,
         options = list(
+          maxItems = 1,
           placeholder = 'selecione uma coluna abaixo'#,
           # onInitialize = I('function() { this.setValue(""); }')
         ) # options
@@ -1753,7 +1803,9 @@ shinyServer(function(input, output, session) {
         "Selecione a coluna da área total (ha):", # nome que sera mostrado na UI
         choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
         selected = area_total_names,     
+        multiple = T,
         options = list(
+          maxItems = 1,
           placeholder = 'selecione uma coluna abaixo'#,
           # onInitialize = I('function() { this.setValue(""); }')
         ) # options
@@ -1766,6 +1818,7 @@ shinyServer(function(input, output, session) {
         multiple = TRUE,  # permite mais de uma opcao ser selecionada
         selected = estratos_names,     
         options = list(
+          maxItems = 1,
           placeholder = 'Selecione as variaveis abaixo'#,
           # onInitialize = I('function() { this.setValue(""); }')
         ) # options
@@ -1777,10 +1830,12 @@ shinyServer(function(input, output, session) {
         'idadeace', # Id
         "Selecione a coluna da idade:", # nome que sera mostrado na UI
         choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
-        # selected = idade_names,     
+        selected = idade_names,     
+        multiple = T,
         options = list(
-          placeholder = 'selecione uma coluna abaixo',
-          onInitialize = I('function() { this.setValue(""); }')
+          maxItems = 1,
+          placeholder = 'selecione uma coluna abaixo'#,
+          #onInitialize = I('function() { this.setValue(""); }')
         ) # options
       ),
       
@@ -1827,8 +1882,6 @@ shinyServer(function(input, output, session) {
     
     ace1dt <- tabace1() 
     
-    if(input$Loadace)
-    {
       datatable( ace1dt, # seleciona a linha 5 previamente
                  selection = list(mode = 'multiple', selected = c(13,17,18,19), target = 'row'),
                  options = list(searching = FALSE,
@@ -1840,8 +1893,7 @@ shinyServer(function(input, output, session) {
                  )   
                  
       )
-    } 
-    
+
   })
   
   # tabela ace2
@@ -1849,8 +1901,6 @@ shinyServer(function(input, output, session) {
     
     ace2dt <- tabace2() 
     
-    if(input$Loadace)
-    {
       # converte em datatable        # cria formattable
       as.datatable( formattable(ace2dt, 
                                 list(
@@ -1875,11 +1925,7 @@ shinyServer(function(input, output, session) {
       
       )
       
-      
-      
-      
-    } 
-    
+
   })
   
   # AS ####
@@ -1887,9 +1933,12 @@ shinyServer(function(input, output, session) {
   # funcao as aplicado em invData
   tabas <- reactive({
     
-    if(input$Loadas){ 
-      
-      dados <- invData()
+    validate(need(input$VCCas!= "","Por favor selecione a coluna referente a 'volume' "),
+             need(input$area_parcelaas!= "","Por favor insira um valor ou selecione uma coluna referente a 'area da parcela' "),
+             need(input$area_totalas!= "","Por favor insira um valor ou selecione uma coluna  referente a 'area total' ")
+    )
+    
+    dados <- invData()
       
       x <- as_diffs(df             = dados, 
                     VCC            = input$VCCas,
@@ -1903,8 +1952,7 @@ shinyServer(function(input, output, session) {
                     tidy           = input$tidyas)
       
       x
-    }
-    
+
   }) 
   
   # UI: as opcoes (choices) sao os nomes de invData
@@ -1923,8 +1971,10 @@ shinyServer(function(input, output, session) {
         'VCCas', # Id
         "Selecione a coluna do volume (m³):", # nome que sera mostrado na UI
         choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
-        selected = VCC_names,     
+        selected = VCC_names, 
+        multiple = T,
         options = list(
+          maxItems = 1,
           placeholder = 'selecione uma coluna abaixo'#,
           # onInitialize = I('function() { this.setValue(""); }')
         ) # options
@@ -1948,7 +1998,9 @@ shinyServer(function(input, output, session) {
                                                  label = "Selecione a coluna da área da parcela (m²):",
                                                  choices = names(data),
                                                  selected = area_parcela_names,     
+                                                 multiple = T,
                                                  options = list(
+                                                   maxItems = 1,
                                                    placeholder = 'Selecione uma coluna abaixo:'#,
                                                    #onInitialize = I('function() { this.setValue(""); }')
                                                  ) # options    
@@ -1964,7 +2016,9 @@ shinyServer(function(input, output, session) {
                                                  label = "Selecione a coluna da área total (ha):",
                                                  choices = names(data),
                                                  selected = area_total_names,     
+                                                 multiple = T,
                                                  options = list(
+                                                   maxItems = 1,
                                                    placeholder = 'Selecione uma coluna abaixo:'#,
                                                    #  onInitialize = I('function() { this.setValue(""); }')
                                                  ) # options    
@@ -1978,10 +2032,12 @@ shinyServer(function(input, output, session) {
         'idadeas', # Id
         "Selecione a coluna da idade:", # nome que sera mostrado na UI
         choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
-        #selected = idade_names,     
+        selected = idade_names,     
+        multiple = T,
         options = list(
-          placeholder = 'selecione uma coluna abaixo',
-          onInitialize = I('function() { this.setValue(""); }')
+          maxItems = 1,
+          placeholder = 'selecione uma coluna abaixo'#,
+          #onInitialize = I('function() { this.setValue(""); }')
         ) # options
       ),
       
@@ -1991,6 +2047,7 @@ shinyServer(function(input, output, session) {
         choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
         multiple = TRUE,  # permite mais de uma opcao ser selecionada
         options = list(
+          maxItems = 1,
           placeholder = 'Selecione as variaveis abaixo',
           onInitialize = I('function() { this.setValue(""); }')
         ) # options
@@ -2031,10 +2088,6 @@ shinyServer(function(input, output, session) {
     
     asdt <- tabas() 
     
-    if(input$Loadas)
-    {
-      
-      
       # converte em datatable        # cria formattable
       as.datatable( formattable(asdt, 
                                 list(    # colore a linha 6 da coluna dois de verde ou vemelho, se ela for menor ou maior que o numero da linha 1 coluna 2
@@ -2060,8 +2113,7 @@ shinyServer(function(input, output, session) {
       
       
       )
-    } 
-    
+
   })
   
   
