@@ -373,7 +373,7 @@ shinyServer(function(input, output, session) {
   
   output$selec_rotuloNIdiv <- renderUI({
     
-    if(is.null(input$col.especiesdiv) || input$col.especiesdiv == ""){return()}
+    validate(need(input$col.especiesdiv != "","") )
     
     data <- rawData()
     
@@ -506,8 +506,8 @@ shinyServer(function(input, output, session) {
   })
   output$selec_rotuloNImsim <- renderUI({
     
-    if(is.null(input$col.especiesmsim)){return()}
-
+    validate(need(input$col.especiesmsim != "","") )
+    
     data <- rawData()
 
     selectizeInput("rotutuloNImsim",
@@ -798,7 +798,7 @@ shinyServer(function(input, output, session) {
                    label = "Selecione o primeiro item que se deseja comparar:",
                    choices = parcelas,
                    options = list(
-                     placeholder = 'Selecione uma espécie abaixo',
+                     placeholder = 'Selecione um item abaixo',
                      onInitialize = I('function() { this.setValue(""); }')
                    ) # options    
     )
@@ -817,7 +817,7 @@ shinyServer(function(input, output, session) {
                    label = "Selecione o segundo item que se deseja comparar:",
                    choices = parcelas,
                    options = list(
-                     placeholder = 'Selecione uma espécie abaixo',
+                     placeholder = 'Selecione uma item abaixo',
                      onInitialize = I('function() { this.setValue(""); }')
                    ) # options    
     )
