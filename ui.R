@@ -174,11 +174,7 @@ shinyUI(
                                      
                                      uiOutput("selec_psimselec_parc2"),
                                      
-                                     uiOutput("selec_rotuloNIpsim"),
-                                     
-                                     actionButton( # botao que o usuario clica, e gera uma acao no server
-                                       "Loadpsim", # Id
-                                       "rodar")
+                                     uiOutput("selec_rotuloNIpsim")
                                      
                                    ), # sidebar Panel
                                    mainPanel(
@@ -201,11 +197,7 @@ shinyUI(
                                      
                                      uiOutput("selec_parcelasagreg"),
                                      
-                                     uiOutput("selec_rotuloNIagreg"),
-                                     
-                                     actionButton( # botao que o usuario clica, e gera uma acao no server
-                                       "Loadagreg", # Id
-                                       "rodar")
+                                     uiOutput("selec_rotuloNIagreg")
                                      
                                    ), #sidebarPanel
                                    mainPanel(
@@ -229,33 +221,21 @@ shinyUI(
                        h3("Estrutura"),
                        
                        uiOutput("selec_especiesestr"),
-                       
-                       uiOutput("selec_dapestr"),
-                       
                        uiOutput("selec_parcelasestr"),
-                       
+                       uiOutput("selec_dapestr"),
                        uiOutput("selec_area.parcelaestr"),
-                       
                        uiOutput("selec_rotuloNIestr"),
                        
                        h4("Variáveis opcionais:"),
                        
                        uiOutput("selec_est.verticalestr"),
-                       
                        uiOutput("selec_est.internoestr"),
-                       
                        sliderInput("cdestr", 
                                    label = "Selecione o nº de casas decimais:", 
                                    min = 0, 
                                    max = 10, 
                                    value = 2,
-                                   step = 1),
-                       
-                       
-                       
-                       actionButton( # botao que o usuario clica, e gera uma acao no server
-                         "Loadestr", # Id
-                         "rodar")
+                                   step = 1)
                        
                      ), # sidebar Panel
                      
@@ -306,11 +286,7 @@ shinyUI(
                                    min = 0, 
                                    max = 5, 
                                    value = 1.3,
-                                   step = .1),
-                       
-                       actionButton( # botao que o usuario clica, e gera uma acao no server
-                         "LoadBDq", # Id
-                         "rodar")
+                                   step = .1)
                        
                      ), # sidebar Panel
                      mainPanel(
