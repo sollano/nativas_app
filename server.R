@@ -1320,10 +1320,15 @@ shinyServer(function(input, output, session) {
   # dados / funcao inv_summary
   newData <- reactive({
     
-    validate(need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" )  )
+    validate(need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" ),
+             need(input$DAPnew!= "","Por favor selecione a coluna referente a 'dap' "),
+             need(input$HTnew!= "","Por favor selecione a coluna referente a 'altura' "),
+             need(input$VCCnew!= "","Por favor selecione a coluna referente a 'volume' "),
+             need(input$area_parcelanew!= "","Por favor insira um valor ou selecione uma coluna referente a 'area da parcela' "),
+             need(input$area_totalnew!= "","Por favor insira um valor ou selecione uma coluna  referente a 'area total' ")
+             
+    )
     
-    if(input$Loadnew){    
-      
       dados <- rawData()
       
       x <- inv_summary(df           = dados, 
@@ -1339,8 +1344,6 @@ shinyServer(function(input, output, session) {
       
       x
       
-    }
-    
   })
   
   # UI
@@ -1357,7 +1360,9 @@ shinyServer(function(input, output, session) {
       "Selecione a coluna do DAP (cm):", # nome que sera mostrado na UI
       choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
       selected = DAP_names,
+      multiple = T,
       options = list(
+        maxItems = 1,
         placeholder = 'selecione uma coluna abaixo'# ,
         # onInitialize = I('function() { this.setValue(""); }')
       ) # options
@@ -1368,7 +1373,9 @@ shinyServer(function(input, output, session) {
       "Selecione a coluna da altura (m):", # nome que sera mostrado na UI
       choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
       selected = HT_names,
+      multiple = T,
       options = list(
+        maxItems = 1,
         placeholder = 'selecione uma coluna abaixo'#,
         # onInitialize = I('function() { this.setValue(""); }')
       ) # options
@@ -1379,7 +1386,9 @@ shinyServer(function(input, output, session) {
       "Selecione a coluna do volume com casca (m³):", # nome que sera mostrado na UI
       choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
       selected = VCC_names,
+      multiple = T,
       options = list(
+        maxItems = 1,
         placeholder = 'selecione uma coluna abaixo'#,
         #onInitialize = I('function() { this.setValue(""); }')
       ) # options
@@ -1406,9 +1415,12 @@ shinyServer(function(input, output, session) {
              "Lista de colunas" = selectizeInput("area_parcelanew",
                                                  label = "Selecione a coluna da área da parcela (m²):",
                                                  choices = names(data),
+                                                 selected = area_parcela_names,
+                                                 multiple = T,
                                                  options = list(
-                                                   placeholder = 'Selecione uma coluna abaixo:',
-                                                   onInitialize = I('function() { this.setValue(""); }')
+                                                   maxItems = 1,
+                                                   placeholder = 'Selecione uma coluna abaixo:'#,
+                                               #    onInitialize = I('function() { this.setValue(""); }')
                                                  ) # options    
              )# selectize
       ),
@@ -1421,9 +1433,12 @@ shinyServer(function(input, output, session) {
              "Lista de colunas" = selectizeInput("area_totalnew",
                                                  label = "Selecione a coluna da área total (ha)",
                                                  choices = names(data),
+                                                 selected = area_total_names,
+                                                 multiple = T,
                                                  options = list(
-                                                   placeholder = 'Selecione uma coluna abaixo:',
-                                                   onInitialize = I('function() { this.setValue(""); }')
+                                                   maxItems = 1,
+                                                   placeholder = 'Selecione uma coluna abaixo:'#,
+                                                 #  onInitialize = I('function() { this.setValue(""); }')
                                                  ) # options    
              )# selectize
       ),
@@ -1489,8 +1504,6 @@ shinyServer(function(input, output, session) {
     
     data <- newData() 
     
-    if(input$Loadnew)
-    {
       datatable(data,
                 options = list(initComplete = JS(
                                  "function(settings, json) {",
@@ -1498,8 +1511,7 @@ shinyServer(function(input, output, session) {
                                  "}")
                 )   
       ) # Criamos uma DT::datatable com base no objeto
-    }
-    
+
   })
 
   # ACS ####
