@@ -30,7 +30,6 @@ source("funs/ace.R"                , encoding="UTF-8")
 source("funs/as_diffs.R"           , encoding="UTF-8")
 source("funs/inv_summary.R"        , encoding="UTF-8")
 source("funs/round_df.R"           , encoding="UTF-8")
-source("funs/inv.R")
 
 # vectors for names ####
 
