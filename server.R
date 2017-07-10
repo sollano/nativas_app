@@ -1306,26 +1306,18 @@ shinyServer(function(input, output, session) {
   })
   
   # Inventario ####
-      # Dado utilizado no inventario ####
-  
-  # switch que muda o dado a ser utilizado
-  invData <- reactive({
-    
-    if(is.null(input$df)){ return()}
-    
-    # Se o dado for em nivel de arvore, a totalização de parcelas deve ser feita para que
-    # NewData possa ser inserido em acs. Sem essa condição a ui gera mensagens de erro
-    switch(input$df, 
-           "Dados em nivel de arvore" = if(is.null(input$VCCnew) ){return()}else{ newData()},
-           "Dados em nivel de parcela" = rawData() )
-    
-  })
-  
+      # Dado utilizado na totalizacao de parcelas ####
   totData <- reactive({
     
-    # if(is.null(input$df)){ return()}
-      
-    if( is.null(input$b1_estvol) ){
+    # Se o usuario inserir um valor de b1 na aba estimacao de volume
+    # significa que ele foi calculado, portanto, o dado com volume estimado
+    # sera utilizado. Porem por algum motivo ela deixa de ser nulo a partir do momento 
+    # em que o usuario abre a aba de estimacao de volume.
+    # ela nao pode ser testada com condicoes logicas comuns, como "==", ou gera erros.
+    #
+    # A segunda condição e para evitar mensagens de erro sendo exibidas na ui de "totalizacao"
+    # Quando se clica na aba "estimacao de modelo" (e input$b1_estvol deixa de ser nulo)
+    if( is.null(input$b1_estvol) || ! "VOL" %in% names(est_vol) ){
       rawData()
     }else{ 
         est_vol()
@@ -1693,6 +1685,22 @@ shinyServer(function(input, output, session) {
 
   })
 
+  
+  # Dado utilizado no inventario ####
+  
+  # switch que muda o dado a ser utilizado
+  invData <- reactive({
+    
+    if(is.null(input$df)){ return()}
+    
+    # Se o dado for em nivel de arvore, a totalização de parcelas deve ser feita para que
+    # NewData possa ser inserido em acs. Sem essa condição a ui gera mensagens de erro
+    switch(input$df, 
+           "Dados em nivel de arvore" = if(is.null(input$VCCnew) ){return()}else{ newData()},
+           "Dados em nivel de parcela" = rawData() )
+    
+  })
+  
   # ACS ####
   
   # funcao acs aplicada em invData
