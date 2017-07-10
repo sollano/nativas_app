@@ -4,19 +4,19 @@ inv_summary <- function(df,DAP, HT, VCC, area_parcela, groups, area_total,idade,
   require(lazyeval)
   
   if( missing(df)||is.null(df)||df==F)
-  {stop("please insert data frame")}
+  {stop("please insert data frame", call.=F)}
   
-  if(missing(DAP)||is.null(DAP)||DAP==F||DAP=="")
-  {stop("please insert diameter variable")}
+  if(missing(DAP)||is.null(DAP)||DAP==F||DAP=="" || !is.numeric(df[[DAP]]))
+  {stop("please insert diameter variable", call.=F)}
   
-  if(missing(HT)||is.null(HT)||HT==F||HT=="")
-  {stop("please insert height variable")}
+  if(missing(HT)||is.null(HT)||HT==F||HT=="" || !is.numeric(df[[HT]]))
+  {stop("please insert height variable", call.=F)}
   
-  if(missing(VCC)||is.null(VCC)||VCC==F||VCC=="")
-  {stop("please insert volume variable")}
+  if(missing(VCC)||is.null(VCC)||VCC==F||VCC=="" || !is.numeric(df[[VCC]]))
+  {stop("please insert volume variable", call.=F)}
   
   if(missing(area_parcela)||is.null(area_parcela)||area_parcela==F||area_parcela=="")
-  {stop("please insert sample area variable")}
+  {stop("please insert sample area variable", call.=F)}
   
   if(missing(groups)||is.null(groups)||groups==F||groups==""){groups<-NULL}else{df <-df[  apply(!is.na(df[groups ]) , MARGIN = 1, function(x) all(x) ), ] }
   
