@@ -1309,18 +1309,22 @@ shinyServer(function(input, output, session) {
       # Dado utilizado na totalizacao de parcelas ####
   totData <- reactive({
     
-    # Se o usuario inserir um valor de b1 na aba estimacao de volume
-    # significa que ele foi calculado, portanto, o dado com volume estimado
-    # sera utilizado. Porem por algum motivo ela deixa de ser nulo a partir do momento 
-    # em que o usuario abre a aba de estimacao de volume.
-    # ela nao pode ser testada com condicoes logicas comuns, como "==", ou gera erros.
-    #
-    # A segunda condição e para evitar mensagens de erro sendo exibidas na ui de "totalizacao"
-    # Quando se clica na aba "estimacao de modelo" (e input$b1_estvol deixa de ser nulo)
-    if( is.null(input$b1_estvol) || ! "VOL" %in% names(est_vol) ){
+    # Primeiro testa-se se b1 nao e nulo, pois b1_estvol esta sendo criado no server,
+    # e so e criado quando o codigo do server e rodado.
+    # em seguida testa-se se b1_estvol e numerico, ou seja, se o usuario ja inseriu valores para ele.
+    # Se ele nao for, o dado utilizado continuara sendo rawData.
+    # Quando ele deixar de ser numerico, ou seja, quando tiver valor, ai sim este dado sera utilizado.
+    if( is.null(input$b1_estvol) ){
+      
       rawData()
+      
+    }else if(!is.numeric(input$b1_estvol)){
+      
+      rawData()
+      
     }else{ 
-        est_vol()
+
+     est_vol()
       }
 
     
@@ -1333,10 +1337,11 @@ shinyServer(function(input, output, session) {
     data <- rawData()
     
     validate(need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" ),
+             need(input$DAP_estvol != "","Por favor insira o valor de 'DAP' "),
              need(input$bo_estvol != "","Por favor insira o valor de 'b0' "),
              need(input$b1_estvol != "","Por favor insira o valor de 'b1' ")
     )
-    
+
     if(input$modelo_estvol == "LN(VFFC) = b0 + b1 * LN(DAP) + b2 * LN(HT) + e"){
     data$VOL <- exp( input$bo_estvol + log(data[[input$DAP_estvol]]) * input$b1_estvol + log(data[[input$HT_estvol]]) * input$b2_estvol )
     data <- data %>% select(VOL, everything())
@@ -1441,12 +1446,16 @@ shinyServer(function(input, output, session) {
       numericInput( # cria uma lista de opcoes em que o usuario pode clicar
         'bo_estvol', # Id
         "Insira o valor para o b0:", # nome que sera mostrado na UI
-        value = NULL),
+        value = NULL, 
+        step = 0.0001
+      ),
       
       numericInput( # cria uma lista de opcoes em que o usuario pode clicar
         'b1_estvol', # Id
         "Insira o valor para o b1:", # nome que sera mostrado na UI
-        value = NULL)
+        value = NULL, 
+        step = 0.0001
+      )
       
       
     )
@@ -1462,7 +1471,9 @@ shinyServer(function(input, output, session) {
       numericInput( # cria uma lista de opcoes em que o usuario pode clicar
         'b2_estvol', # Id
         "Insira o valor para o b2:", # nome que sera mostrado na UI
-        value = NULL)
+        value = NULL, 
+        step = 0.0001
+        )
       
     )
     
