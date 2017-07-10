@@ -1315,11 +1315,11 @@ shinyServer(function(input, output, session) {
     # Quando ele deixar de ser numerico, ou seja, quando tiver valor, ai sim este dado sera utilizado.
     if( is.null(input$b1_estvol) ){
       
-      rawData()
+     rawData()
       
     }else if(!is.numeric(input$b1_estvol)){
       
-      rawData()
+     rawData()
       
     }else{ 
 
@@ -2326,11 +2326,13 @@ shinyServer(function(input, output, session) {
            "Estrutura"                         = tabestrutura(),
            "BDq Meyer"                         = tabBDq1(),
            "BDq Meyer - Coeficientes"          = tabBDq3(),
+           "Estimacao de volume"               = totData(),
+           "Totalizacao de parcelas"           = newData(),
            "Amostragem Casual Simples"         = tabacs(),
            "Amostragem Casual Estratificada 1" = tabace2(),
            "Amostragem Casual Estratificada 2" = tabace1(),
-           "Amostragem Sistematica"            = tabas(),
-           "Nivel Parcela"                     = newData() )
+           "Amostragem Sistematica"            = tabas()
+           )
   })
   
   output$table <- renderDataTable({

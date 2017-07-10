@@ -478,11 +478,13 @@ shinyUI(
                                                 "Estrutura",
                                                 "BDq Meyer",
                                                 "BDq Meyer - Coeficientes",
+                                                "Estimacao de volume",
+                                                "Totalizacao de parcelas",
                                                 "Amostragem Casual Simples", 
                                                 "Amostragem Casual Estratificada 1", 
                                                 "Amostragem Casual Estratificada 2",
-                                                "Amostragem Sistematica",
-                                                "Nivel Parcela")),
+                                                "Amostragem Sistematica"
+                                                )),
                                   
                                   selectInput("datasetformat",
                                               "Escolha o formato da tabela:",
