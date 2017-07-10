@@ -311,19 +311,19 @@ shinyUI(
                                  sidebarLayout(
                                    sidebarPanel(
                                      
-                                     h4("Selecione o modelo para ser utilizado:"),
+                                     uiOutput("ui_estvol1"),
+                                     uiOutput("ui_estvol2"),
+                                     uiOutput("ui_estvol3"),
+                                     uiOutput("ui_estvol4")   
                                      
-                                     radioButtons("area_radio_new",
-                                                  "Escolher coluna da lista de colunas, ou inserir os valores manualmente?",
-                                                  c("Lista de colunas", "Manualmente"),
-                                                  "Manualmente")
-                                    
+                                     
+                                     
                                      
                                      
                                    ),
                                    mainPanel(
-                                     
-                                   )
+                                     DT::dataTableOutput("vol_est_table")
+                                     )
                                  )
                         ), # Fim de Estimação de Volume
                         

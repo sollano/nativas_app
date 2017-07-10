@@ -30,6 +30,7 @@ source("funs/ace.R"                , encoding="UTF-8")
 source("funs/as_diffs.R"           , encoding="UTF-8")
 source("funs/inv_summary.R"        , encoding="UTF-8")
 source("funs/round_df.R"           , encoding="UTF-8")
+source("funs/inv.R")
 
 # vectors for names ####
 
@@ -1195,7 +1196,6 @@ shinyServer(function(input, output, session) {
     )
     
   })
-  
   output$selec_dapBDq <- renderUI({
     
     data <- rawData()
@@ -1214,7 +1214,6 @@ shinyServer(function(input, output, session) {
     )
     
   })
-  
   output$selec_area.parcelaBDq <- renderUI({
     
     data <- rawData()
@@ -1322,6 +1321,175 @@ shinyServer(function(input, output, session) {
     
   })
   
+  totData <- reactive({
+    
+    # if(is.null(input$df)){ return()}
+      
+    if( is.null(input$b1_estvol) ){
+      rawData()
+    }else{ 
+        est_vol()
+      }
+
+    
+  })
+  
+      # Calculo de volume ####
+
+  est_vol <- reactive({
+    
+    data <- rawData()
+    
+    validate(need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" ),
+             need(input$bo_estvol != "","Por favor insira o valor de 'b0' "),
+             need(input$b1_estvol != "","Por favor insira o valor de 'b1' ")
+    )
+    
+    if(input$modelo_estvol == "LN(VFFC) = b0 + b1 * LN(DAP) + b2 * LN(HT) + e"){
+    data$VOL <- exp( input$bo_estvol + log(data[[input$DAP_estvol]]) * input$b1_estvol + log(data[[input$HT_estvol]]) * input$b2_estvol )
+    data <- data %>% select(VOL, everything())
+    }
+    
+    if(input$modelo_estvol == "VFFC = b0 + b1 * DAP + b2 * HT + e"){
+    data$VOL <- input$bo_estvol + data[[input$DAP_estvol]] * input$b1_estvol + data[[input$HT_estvol]] * input$b2_estvol
+    data <- data %>% select(VOL, everything())
+    }
+    
+    if(input$modelo_estvol == "LN(VFFC) = b0 + b1 * 1/DAP + e"){
+    data$VOL <- exp( input$bo_estvol + 1/data[[input$DAP_estvol]] * input$b1_estvol )
+    data <- data %>% select(VOL, everything())
+    }
+     
+    if(input$modelo_estvol == "VFFC = b0 + b1 * DAP + e"){
+    data$VOL <- input$bo_estvol + data[[input$DAP_estvol]] * input$b1_estvol
+    data <- data %>% select(VOL, everything())
+    }
+    
+    if(input$modelo_estvol == "VFFC = b0 + b1 * DAP + b2 * DAP² + e"){
+    data$VOL <- input$bo_estvol + data[[input$DAP_estvol]] * input$b1_estvol + data[[input$DAP_estvol]]^2 * input$b2_estvol
+    data <- data %>% select(VOL, everything())
+    }
+    
+    if(input$modelo_estvol == "VFFC = b0 + b1 * LN(DAP) + e"){
+    data$VOL <- input$bo_estvol + log(data[[input$DAP_estvol]]) * input$b1_estvol
+    data <- data %>% select(VOL, everything())
+    
+    }
+    data
+  })
+  
+  output$ui_estvol1 <- renderUI({
+
+    data <- rawData()
+    
+    list(
+      
+      h3("Estimaçao de Volume"),
+      
+      radioButtons("modelo_estvol",
+                   label = "Selecione o modelo para ser utilizado:",
+                   choices = c(
+                     "LN(VFFC) = b0 + b1 * LN(DAP) + b2 * LN(HT) + e",
+                     "VFFC = b0 + b1 * DAP + b2 * HT + e",
+                     "LN(VFFC) = b0 + b1 * 1/DAP + e",
+                     "VFFC = b0 + b1 * DAP + e", 
+                     "VFFC = b0 + b1 * DAP + b2 * DAP² + e",
+                     "VFFC = b0 + b1 * LN(DAP) + e"
+                   ) ),
+      
+      selectizeInput( # cria uma lista de opcoes em que o usuario pode clicar
+        'DAP_estvol', # Id
+        "Selecione a coluna do DAP (cm):", # nome que sera mostrado na UI
+        choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
+        selected = DAP_names,
+        multiple = T,
+        options = list(
+          maxItems = 1,
+          placeholder = 'selecione uma coluna abaixo'# ,
+          # onInitialize = I('function() { this.setValue(""); }')
+        ) # options
+      )
+      
+      
+      
+      
+    )
+    
+    
+  })
+  output$ui_estvol2 <- renderUI({
+    
+    # Precisa ter Altura no modelo
+    validate(need(grepl( "\\<HT\\>",input$modelo_estvol), "" ) )  
+    
+    data <- rawData()
+    
+ list(
+   
+   selectizeInput( # cria uma lista de opcoes em que o usuario pode clicar
+     'HT_estvol', # Id
+     "Selecione a coluna da altura (m):", # nome que sera mostrado na UI
+     choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
+     selected = HT_names,
+     multiple = T,
+     options = list(
+       maxItems = 1,
+       placeholder = 'selecione uma coluna abaixo'#,
+       # onInitialize = I('function() { this.setValue(""); }')
+     ) # options
+   )
+   
+ )    
+    
+  })
+  output$ui_estvol3 <- renderUI({
+    
+    list(
+      
+      numericInput( # cria uma lista de opcoes em que o usuario pode clicar
+        'bo_estvol', # Id
+        "Insira o valor para o b0:", # nome que sera mostrado na UI
+        value = NULL),
+      
+      numericInput( # cria uma lista de opcoes em que o usuario pode clicar
+        'b1_estvol', # Id
+        "Insira o valor para o b1:", # nome que sera mostrado na UI
+        value = NULL)
+      
+      
+    )
+    
+  })
+  output$ui_estvol4 <- renderUI({
+    
+    # Precisa ter b2 no modelo
+    validate(need(grepl( "\\<b2\\>",input$modelo_estvol), "" ) )  
+    
+    list(
+      
+      numericInput( # cria uma lista de opcoes em que o usuario pode clicar
+        'b2_estvol', # Id
+        "Insira o valor para o b2:", # nome que sera mostrado na UI
+        value = NULL)
+      
+    )
+    
+  })
+  
+  output$vol_est_table <- renderDataTable({
+    
+    est_voldt <- est_vol()
+    
+    datatable( as.data.frame(est_voldt),
+               options = list(searching = T,
+                              paging=T,
+                              initComplete = JS(
+                                "function(settings, json) {",
+                                "$(this.api().table().header()).css({'background-color': '#00a90a', 'color': '#fff'});",
+                                "}")
+               )  ) 
+    
+  }) 
   
       # Totalização de Parcelas ####
   
@@ -1337,7 +1505,8 @@ shinyServer(function(input, output, session) {
              
     )
     
-      dados <- rawData()
+      #dados <- rawData()
+      dados <- totData()
       
       x <- inv_summary(df           = dados, 
                        DAP          = input$DAPnew, 
@@ -1357,7 +1526,8 @@ shinyServer(function(input, output, session) {
   # UI
   output$tot_parc_ui1 <- renderUI({
     
-    data <- rawData()
+    #data <- rawData()
+    data <- totData()
     
     list(
     
@@ -1410,7 +1580,8 @@ shinyServer(function(input, output, session) {
  
   output$tot_parc_ui2 <- renderUI({
     
-    data <- rawData()
+   # data <- rawData()
+    data <- totData()
     
     list(
 
