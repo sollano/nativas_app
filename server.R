@@ -17,7 +17,8 @@ library(rmarkdown)
 
 # Data e functions
 
-ex <- read.csv("examples/Inventory_exemplo.csv")
+ex <- read.csv("examples/Inventory_exemplo.csv",fileEncoding="UTF-8")
+#ex <- read.csv("examples/Inventory_exemplo_2.csv",fileEncoding="UTF-8")
 
 source("funs/diversidade.R"        , encoding="UTF-8")
 source("funs/pareadoSimilaridade.R", encoding="UTF-8")
