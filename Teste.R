@@ -60,7 +60,7 @@ agregacao(inv, "nome.cient", "transecto")
 library(dplyr)
 library(lazyeval)
 
-inv <- read.csv("cauaxi 2012.csv") %>% 
+inv <- read.csv("examples/cauaxi 2012_.csv") %>% 
   mutate(
     VOL           = 0.000503 * DBH^2.187162,
     total.area    = 50,
