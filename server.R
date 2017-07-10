@@ -1936,7 +1936,7 @@ shinyServer(function(input, output, session) {
     validate(need(input$VCCace!= "","Por favor selecione a coluna referente a 'volume' "),
              need(input$area_parcelaace!= "","Por favor insira um valor ou selecione uma coluna referente a 'area da parcela' "),
              need(input$area_estratoace!= "","Por favor insira um valor ou selecione uma coluna  referente a 'area total' "),
-             need(input$gruposace!= "","Por favor insira um valor ou selecione uma coluna  referente a 'variáveis pivô' ")
+             need(input$gruposace!= "","Por favor insira um valor referente a 'variáveis pivô' ")
     )
     
       dados <- invData()
