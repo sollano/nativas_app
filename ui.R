@@ -316,11 +316,6 @@ shinyUI(
                                      uiOutput("ui_estvol2"),
                                      uiOutput("ui_estvol3"),
                                      uiOutput("ui_estvol4")   
-                                     
-                                     
-                                     
-                                     
-                                     
                                    ),
                                    mainPanel(
                                      DT::dataTableOutput("vol_est_table")
