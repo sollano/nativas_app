@@ -4,6 +4,7 @@ library(DT)
 library(formattable)
 library(readxl)
 library(plyr)
+library(tibble)
 library(tidyr)
 library(dplyr)
 library(lazyeval)
@@ -2320,8 +2321,8 @@ shinyServer(function(input, output, session) {
     switch(input$dataset,
            "Dado utilizado / filtrado"         = rawData(),
            "Indice diversidade"                = tabdiversidade(),
-           "Matriz similaridade - Jaccard"     = tabmsimilaridade1(),
-           "Matriz similaridade - Sorensen"    = tabmsimilaridade2(),
+           "Matriz similaridade - Jaccard"     = tibble::rownames_to_column(tabmsimilaridade1(), " "),
+           "Matriz similaridade - Sorensen"    = tibble::rownames_to_column(tabmsimilaridade2(), " "),
            "Pareado similaridade"              = tabpsimilaridade(),
            "Indice de agregacao"               = tabagregate(),
            "Estrutura"                         = tabestrutura(),
