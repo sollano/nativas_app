@@ -35,7 +35,7 @@ shinyUI(
                                     src="intro_picture.jpg",
                                     width = 770,
                          #           height = 750)
-                                    height = 835)
+                                    height = 856)
                          
                          )
                        ) # fluid row

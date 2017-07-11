@@ -1,5 +1,5 @@
 
-# App Inventário Nativas
+# App Inventário de Nativas
 
 <div style="text-align:justify">
 
@@ -17,7 +17,7 @@ Com este app, é possível realizar análises fitossociológicas, calcular índi
 
 (BRAGA; GORGENS; OLIVEIRA, 2017)
 
-BRAGA, S. R.; GORGENS, E. B; OLIVEIRA, M. L. R. DE. Nativas app: Aplicativo shiny para processamento de inventário de florestas nativas, 2017. Disponível em: <https://sollano.shinyapps.io/nativas_app/>.
+BRAGA, S. R.; GORGENS, E. B; OLIVEIRA, M. L. R. DE. Inventário de Nativas: Aplicativo shiny para processamento de inventário de florestas nativas, 2017. Disponível em: <https://sollano.shinyapps.io/nativas_app/>.
 
 #### Referências:
 
@@ -28,7 +28,7 @@ SOARES, C. P. B.; NETO, F. D. P.; SOUZA, A. L. D. Dendrometria e Inventário Flo
 SOUZA, A. L. D; SOARES, C. P. B. Florestas Nativas: estrutura, dinâmica e manejo. 1ª. ed. Viçosa: UFV, 2013. 322 p.
 
 <div style="text-align:right">
-<a href="http://www.ufvjm.edu.br/"><img src="www/UFVJM_logo2.png" width="50" height="45"/></a>
+<a href="http://www.ufvjm.edu.br/"><img src="www/UFVJM_logo2.png" width="50" height="50"/></a>
 <img src="www/EF_logo.png" width="50" height="50" />
 <a href="http://gorgens.wixsite.com/treelab"><img src="www/LAB_logo.png" width="50" height="50" /></a>
 <a href="http://marcioromarco.webnode.com/"><img src="www/GEMMF_logo2.png" width="50" height="50"/> </a>
