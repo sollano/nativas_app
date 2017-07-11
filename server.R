@@ -579,9 +579,10 @@ shinyServer(function(input, output, session) {
 
  
     {
-      msimdt1 <- tabmsimilaridade1() 
+      msimdt1 <- tibble::rownames_to_column(tabmsimilaridade1(), " ") 
       
       datatable( msimdt1,
+                 rownames = F,
                  options = list(searching = FALSE,
                                 paging=FALSE,
                                 ordering=FALSE,
@@ -590,16 +591,18 @@ shinyServer(function(input, output, session) {
                                   "$(this.api().table().header()).css({'background-color': '#00a90a', 'color': '#fff'});",
                                   "}")
                  )   
-      ) 
+           ) %>% 
+        formatStyle(1, backgroundColor = "#00a90a", color = '#fff' )
     }
     
   }) 
   output$msim2 <- renderDataTable({
     
     {
-      msimdt2 <- tabmsimilaridade2() 
+      msimdt2 <- tibble::rownames_to_column(tabmsimilaridade2(), " ") 
       
       datatable( msimdt2,
+                 rownames = F,
                  options = list(searching = FALSE,
                                 paging=FALSE,
                                 ordering=FALSE,
@@ -608,7 +611,8 @@ shinyServer(function(input, output, session) {
                                   "$(this.api().table().header()).css({'background-color': '#00a90a', 'color': '#fff'});",
                                   "}")
                  )   
-      ) 
+      ) %>% 
+        formatStyle(1, backgroundColor = "#00a90a", color = '#fff' )
     }
     
   }) 
