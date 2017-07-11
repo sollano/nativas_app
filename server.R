@@ -49,7 +49,7 @@ area_total_names <- c("sub.area","AREA_TOTAL", "AREATOTAL", "area_total", "areat
 idade_names <- c("IDADE", "Idade","idade")
 VSC_names <- c("VSC","Vsc", "vsc")
 HD_names <- c("HD", "Hd", "hd", "ALTURA_DOMINANTE", "ALT_DOM")
-grupos_names <- c(c("TALHAO", "PARCELA"), c("area.code", "transect"), c("codigo", "transecto"))
+grupos_names <- c(c("TALHAO", "PARCELA"), c("area.code", "transect"), c("codigo", "transecto"), "parcela", "PARCELA", "transect", "cod.parcela", "Cod.parcela", "COD.PARCELA")
 estratos_names <- c("TALHAO", "Talhao", "talhao","COD_TALHAO","Cod_Talhao","cod_talhao", "COD.TALHAO", "Cod.Talhao","cod.talhao", "area.code", "Area.Code","AREA.CODE", "area_code","Area_Code","AREA_CODE")
 
 # Server ####
@@ -125,15 +125,17 @@ shinyServer(function(input, output, session) {
     list(    
       # Selecionar numero da planilha
       numericInput(inputId = "sheet_n",
-                   label   = "Numero da planilha",
+                   label   = "Número da planilha",
                    value   = 1,
                    min     = 1,
                    max     = 30,
                    step    = 1
       ),
       
+      radioButtons(inputId = "mv_excel",label = "Valores ausentes", choices = c("Espaço vazio" = "", "NA" = "NA"), inline = T ),
       
-      fileInput( # input de arquivos
+      # input de arquivos
+      fileInput( 
       inputId = "file2", # Id
       
       label = "Selecione o arquivo: (.xlsx)", # nome que sera mostrado na UI
@@ -175,7 +177,7 @@ shinyServer(function(input, output, session) {
     } else {
       file.copy(inFile$datapath,
                       paste(inFile$datapath, "xlsx", sep="."))
-      raw_data <-  readxl::read_excel(paste(inFile$datapath, "xlsx", sep="."), input$sheet_n) 
+      raw_data <-  readxl::read_excel(paste(inFile$datapath, "xlsx", sep="."), input$sheet_n, na = input$mv_excel) 
       raw_data <- as.data.frame(raw_data)
       }
     
@@ -1367,6 +1369,11 @@ shinyServer(function(input, output, session) {
     data <- data %>% select(VOL, everything())
     }
     
+    if(input$modelo_estvol == "VFFC = b0 + b1 * DAP² + e"){
+      data$VOL <- input$bo_estvol + data[[input$DAP_estvol]]^2 * input$b1_estvol
+      data <- data %>% select(VOL, everything())
+    }
+    
     if(input$modelo_estvol == "VFFC = b0 + b1 * DAP + b2 * DAP² + e"){
     data$VOL <- input$bo_estvol + data[[input$DAP_estvol]] * input$b1_estvol + data[[input$DAP_estvol]]^2 * input$b2_estvol
     data <- data %>% select(VOL, everything())
@@ -1395,6 +1402,7 @@ shinyServer(function(input, output, session) {
                      "VFFC = b0 + b1 * DAP + b2 * HT + e",
                      "LN(VFFC) = b0 + b1 * 1/DAP + e",
                      "VFFC = b0 + b1 * DAP + e", 
+                     "VFFC = b0 + b1 * DAP² + e", 
                      "VFFC = b0 + b1 * DAP + b2 * DAP² + e",
                      "VFFC = b0 + b1 * LN(DAP) + e"
                    ) ),
