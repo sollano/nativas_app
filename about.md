@@ -8,12 +8,18 @@ Com este app, é possível realizar análises fitossociológicas, calcular índi
 
 </div>
 
-### Script criado por:
+#### Script criado por:
 
 [Sollano Rabelo Braga](http://lattes.cnpq.br/7271838547135276 "Curriculum Lattes"), [Eric Bastos Gorgens](http://lattes.cnpq.br/2266409430041146 "Curriculum Lattes") &
 [Marcio Leles R. de Oliveira](http://lattes.cnpq.br/1808132114787261 "Curriculum Lattes")
 
-### Referências:
+#### Para citar e referenciar este app, utilize:
+
+(BRAGA; GORGENS; OLIVEIRA, 2017)
+
+BRAGA, S. R.; GORGENS, E. B; OLIVEIRA, M. L. R. DE. Nativas app: Aplicativo shiny para processamento de inventário de florestas nativas, 2017. Disponível em: <https://sollano.shinyapps.io/nativas_app/>.
+
+#### Referências:
 
 CAMPOS, J. C. C.; LEITE, H. G. Mensuração florestal: perguntas e respostas. 3ª. ed. Viçosa: Editora UFV, 2013. 605 p.
 
@@ -22,7 +28,7 @@ SOARES, C. P. B.; NETO, F. D. P.; SOUZA, A. L. D. Dendrometria e Inventário Flo
 SOUZA, A. L. D; SOARES, C. P. B. Florestas Nativas: estrutura, dinâmica e manejo. 1ª. ed. Viçosa: UFV, 2013. 322 p.
 
 <div style="text-align:right">
-<a href="http://www.ufvjm.edu.br/"><img src="www/UFVJM_logo2.png" width="50" height="50"/></a>
+<a href="http://www.ufvjm.edu.br/"><img src="www/UFVJM_logo2.png" width="50" height="45"/></a>
 <img src="www/EF_logo.png" width="50" height="50" />
 <a href="http://gorgens.wixsite.com/treelab"><img src="www/LAB_logo.png" width="50" height="50" /></a>
 <a href="http://marcioromarco.webnode.com/"><img src="www/GEMMF_logo2.png" width="50" height="50"/> </a>

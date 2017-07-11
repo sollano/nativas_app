@@ -34,8 +34,9 @@ shinyUI(
                                 img(contentType = "image/jpg",
                                     src="intro_picture.jpg",
                                     width = 770,
-                                    height = 750)
-                               
+                         #           height = 750)
+                                    height = 835)
+                         
                          )
                        ) # fluid row
              ), # Painel Intro             
