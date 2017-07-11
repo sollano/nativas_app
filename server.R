@@ -1344,12 +1344,14 @@ shinyServer(function(input, output, session) {
     data <- rawData()
     
     validate(need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" ),
-             need(input$DAP_estvol != "","Por favor insira o valor de 'DAP' "),
+             need(input$DAP_estvol != "","Por favor insira o valor de 'dap' "),
              need(input$bo_estvol != "","Por favor insira o valor de 'b0' "),
              need(input$b1_estvol != "","Por favor insira o valor de 'b1' ")
     )
-
-    if(input$modelo_estvol == "LN(VFFC) = b0 + b1 * LN(DAP) + b2 * LN(HT) + e"){
+   # if(grepl( "\\<HT\\>",input$modelo_estvol) ){validate(need(input$HT_estvol!= "","Por favor selecione a coluna referente a 'HT' "))}
+    #if(grepl( "\\<HT\\>",input$modelo_estvol) & input$HT_estvol == "" ){cat("eee")}
+    
+    if(input$modelo_estvol == "LN(VFFC) = b0 + b1 * LN(DAP) + b2 * LN(HT) + e" && !is.null(input$HT_estvol) && input$HT_estvol != ""){
     data$VOL <- exp( input$bo_estvol + log(data[[input$DAP_estvol]]) * input$b1_estvol + log(data[[input$HT_estvol]]) * input$b2_estvol )
     data <- data %>% select(VOL, everything())
     }
