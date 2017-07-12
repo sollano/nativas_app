@@ -224,7 +224,7 @@ shinyUI(
                        h5("Estrutura vertical"),
                        
                        radioButtons("calc_est_vert", 
-                                    "Deseja definir a posição sociológica com base na variável HT, 
+                                    "Deseja definir a posição sociológica com base na variável altura, 
                    ou inseri-la diretamente?", 
                                     c("Definir", "Inserir"), 
                                     inline = T,
