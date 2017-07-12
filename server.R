@@ -1342,16 +1342,17 @@ shinyServer(function(input, output, session) {
   est_vol <- reactive({
     
     data <- rawData()
-    
+
     validate(need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" ),
-             need(input$DAP_estvol != "","Por favor insira o valor de 'dap' "),
+             need(input$DAP_estvol != "","Por favor selecione a variável referente a 'dap' "),
              need(input$bo_estvol != "","Por favor insira o valor de 'b0' "),
-             need(input$b1_estvol != "","Por favor insira o valor de 'b1' ")
+             need(input$b1_estvol != "","Por favor insira o valor de 'b1' "),
+             #need condicional: so acontece se o modelo nao for nulo (para evitar erros) e se o modelo tiver HT nele
+          if(is.null(input$modelo_estvol)){}  else if(grepl( "\\<HT\\>",input$modelo_estvol) ){ try(need( input$HT_estvol != "", "Por favor selecione a variável referente a 'HT'") )}
+
     )
-   # if(grepl( "\\<HT\\>",input$modelo_estvol) ){validate(need(input$HT_estvol!= "","Por favor selecione a coluna referente a 'HT' "))}
-    #if(grepl( "\\<HT\\>",input$modelo_estvol) & input$HT_estvol == "" ){cat("eee")}
-    
-    if(input$modelo_estvol == "LN(VFFC) = b0 + b1 * LN(DAP) + b2 * LN(HT) + e" && !is.null(input$HT_estvol) && input$HT_estvol != ""){
+
+    if(input$modelo_estvol == "LN(VFFC) = b0 + b1 * LN(DAP) + b2 * LN(HT) + e"){
     data$VOL <- exp( input$bo_estvol + log(data[[input$DAP_estvol]]) * input$b1_estvol + log(data[[input$HT_estvol]]) * input$b2_estvol )
     data <- data %>% select(VOL, everything())
     }
