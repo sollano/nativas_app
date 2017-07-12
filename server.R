@@ -382,7 +382,6 @@ shinyServer(function(input, output, session) {
       # obs: multiple = T & maxItems = 1, garantem que a celula fique vazia, caso o app falhe
       # em tentar adivinhar o nome da especie
   })
-  
   output$selec_rotuloNIdiv <- renderUI({
     
     validate(need(input$col.especiesdiv != "","") )
@@ -399,7 +398,6 @@ shinyServer(function(input, output, session) {
                    ) )
 
   })
-  
   output$selec_parcelasdiv <- renderUI({
     
     data <- rawData()
@@ -548,7 +546,7 @@ shinyServer(function(input, output, session) {
      
      sliderInput("slider_msim1_graph", 
                      label = "Selecione o número de clusters:", 
-                     min = 0, 
+                     min = 1, 
                      max = 10, 
                      value = 3,
                      step = 1) )
@@ -570,14 +568,13 @@ shinyServer(function(input, output, session) {
     
     sliderInput("slider_msim2_graph", 
                 label = "Selecione o número de clusters:", 
-                min = 0, 
+                min = 1, 
                 max = 10, 
                 value = 3,
                 step = 1) )
     
   }) 
-  
-  
+
   # tabela
   output$msim1 <- renderDataTable({
 
@@ -787,7 +784,6 @@ shinyServer(function(input, output, session) {
     )
     
   })
-  
   # cria lista com os nomes das parcelas
   lista_parcelas_psim <- reactive({
     
@@ -804,7 +800,6 @@ shinyServer(function(input, output, session) {
     parcelas
     
   })
-  
   output$selec_psimselec_parc1 <- renderUI({
     
     #if(is.null(input$col.parcelaspsim) || is.null(rawData()) ){return()}
@@ -826,7 +821,6 @@ shinyServer(function(input, output, session) {
     )
     
   })
-  
   output$selec_psimselec_parc2 <- renderUI({
     
     #if(is.null(input$col.parcelaspsim) || is.null(rawData()) ){return()}
@@ -847,7 +841,6 @@ shinyServer(function(input, output, session) {
     )
     
   })
-  
   output$selec_rotuloNIpsim <- renderUI({
     
     #if(is.null(input$col.especiespsim)){return(NULL)}
@@ -1009,11 +1002,11 @@ shinyServer(function(input, output, session) {
   })
   
   # UI
-  output$selec_especiesestr <- renderUI({
+  output$UI_1_estr <- renderUI({
     
     data <- rawData()
-
-    selectizeInput( # cria uma lista de opcoes em que o usuario pode clicar
+    
+    list(    selectizeInput( # cria uma lista de opcoes em que o usuario pode clicar
       "col.especiesestr", # Id
       "Selecione a coluna de espécies:", # nome que sera mostrado na UI
       choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
@@ -1024,12 +1017,7 @@ shinyServer(function(input, output, session) {
         placeholder = 'selecione uma coluna abaixo'#,
         #onInitialize = I('function() { this.setValue(""); }')
       ) # options    
-    )
-    
-  })
-  output$selec_parcelasestr <- renderUI({
-    
-    data <- rawData()
+    ),
     
     selectizeInput( # cria uma lista de opcoes em que o usuario pode clicar
       "col.parcelasestr", # Id
@@ -1042,12 +1030,7 @@ shinyServer(function(input, output, session) {
         placeholder = 'selecione uma coluna abaixo'#,
         #onInitialize = I('function() { this.setValue(""); }')
       ) # options    
-    )
-    
-  })
-  output$selec_dapestr <- renderUI({
-    
-    data <- rawData()
+    ),
     
     selectizeInput( # cria uma lista de opcoes em que o usuario pode clicar
       "col.dapestr", # Id
@@ -1060,12 +1043,7 @@ shinyServer(function(input, output, session) {
         placeholder = 'selecione uma coluna abaixo'#,
         #onInitialize = I('function() { this.setValue(""); }')
       ) # options    
-    )
-    
-  })
-  output$selec_area.parcelaestr <- renderUI({
-    
-    data <- rawData()
+    ),
     
     selectizeInput( # cria uma lista de opcoes em que o usuario pode clicar
       "area.parcelaestr", # Id
@@ -1080,10 +1058,14 @@ shinyServer(function(input, output, session) {
       ) # options    
     )
     
+    
+    
+    )
+
+    
   })
   output$selec_rotuloNIestr <- renderUI({
 
-   # if(is.null()){return(NULL)}
     req( input$col.especiesestr )
     
     data <- rawData()
@@ -1098,39 +1080,55 @@ shinyServer(function(input, output, session) {
                    ) )
     
   })
-  output$selec_est.verticalestr <- renderUI({
+  output$selec_estr <- renderUI({
     
     data <- rawData()
     
-    selectizeInput( # cria uma lista de opcoes em que o usuario pode clicar
-      "est.verticalestr", # Id
-      "Selecione a coluna estrutura vertical:", # nome que sera mostrado na UI
-      choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
-      #selected = est.vertical_names,     
-      options = list(
-        placeholder = 'selecione uma coluna abaixo',
-        onInitialize = I('function() { this.setValue(""); }')
-      ) # options    
-    )
-    
+
+    list(
+      
+      switch(input$calc_est_vert,
+             "Definir" =   selectizeInput( # cria uma lista de opcoes em que o usuario pode clicar
+                                 "est.verticalestr", # Id
+                                "Selecione a coluna da altura (m):", # nome que sera mostrado na UI
+                                 choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
+                                 selected = HT_names,     
+                                  options = list(
+                                  placeholder = 'selecione uma coluna abaixo',
+                                 onInitialize = I('function() { this.setValue(""); }')
+                                       ) # options    
+                                     ),
+             
+             "Inserir" =    selectizeInput( # cria uma lista de opcoes em que o usuario pode clicar
+                                "est.verticalestr", # Id
+                                "Selecione a coluna da estrutura vertical:", # nome que sera mostrado na UI
+                                 choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
+                                 #selected = est.vertical_names,     
+                                options = list(
+                                placeholder = 'selecione uma coluna abaixo',
+                                onInitialize = I('function() { this.setValue(""); }')
+                                                                               ) # options    
+                                                                             )
+               ), #switch
+      
+      h5("Estrutura interna"),
+      
+      
+      selectizeInput( # cria uma lista de opcoes em que o usuario pode clicar
+        "est.internoestr", # Id
+        "Selecione a coluna estrutura interna:", # nome que sera mostrado na UI
+        choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
+        #selected = est.interno_names,     
+        options = list(
+          placeholder = 'selecione uma coluna abaixo',
+          onInitialize = I('function() { this.setValue(""); }')
+        ) # options    
+      )
+      
+      
+    )    
   })
-  output$selec_est.internoestr <- renderUI({
-    
-    data <- rawData()
-    
-    selectizeInput( # cria uma lista de opcoes em que o usuario pode clicar
-      "est.internoestr", # Id
-      "Selecione a coluna estrutura interna:", # nome que sera mostrado na UI
-      choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
-      #selected = est.interno_names,     
-      options = list(
-        placeholder = 'selecione uma coluna abaixo',
-        onInitialize = I('function() { this.setValue(""); }')
-      ) # options    
-    )
-    
-  })
-  
+
   # tabela
   output$estr <- renderDataTable({
     

@@ -216,23 +216,30 @@ shinyUI(
                        
                        h3("Estrutura"),
                        
-                       uiOutput("selec_especiesestr"),
-                       uiOutput("selec_parcelasestr"),
-                       uiOutput("selec_dapestr"),
-                       uiOutput("selec_area.parcelaestr"),
+                       uiOutput("UI_1_estr"),
                        uiOutput("selec_rotuloNIestr"),
                        
                        h4("Variáveis opcionais:"),
                        
-                       uiOutput("selec_est.verticalestr"),
-                       uiOutput("selec_est.internoestr"),
+                       h5("Estrutura vertical"),
+                       
+                       radioButtons("calc_est_vert", 
+                                    "Deseja definir a posição sociológica com base na variável HT, 
+                   ou inseri-la diretamente?", 
+                                    c("Definir", "Inserir"), 
+                                    inline = T,
+                                    selected = "Inserir"
+                       ),
+
+                       uiOutput("selec_estr"),
+                       
                        sliderInput("cdestr", 
                                    label = "Selecione o nº de casas decimais:", 
                                    min = 0, 
                                    max = 10, 
                                    value = 2,
                                    step = 1)
-                       
+
                      ), # sidebar Panel
                      
                      mainPanel(
