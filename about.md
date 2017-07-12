@@ -1,5 +1,5 @@
 
-# App Inventário Nativas
+# App Inventário de Nativas
 
 <div style="text-align:justify">
 
@@ -8,12 +8,18 @@ Com este app, é possível realizar análises fitossociológicas, calcular índi
 
 </div>
 
-### Script criado por:
+#### Script criado por:
 
 [Sollano Rabelo Braga](http://lattes.cnpq.br/7271838547135276 "Curriculum Lattes"), [Eric Bastos Gorgens](http://lattes.cnpq.br/2266409430041146 "Curriculum Lattes") &
 [Marcio Leles R. de Oliveira](http://lattes.cnpq.br/1808132114787261 "Curriculum Lattes")
 
-### Referências:
+#### Para citar e referenciar este app, utilize:
+
+(BRAGA; GORGENS; OLIVEIRA, 2017)
+
+BRAGA, S. R.; GORGENS, E. B; OLIVEIRA, M. L. R. DE. Inventário de Nativas: Aplicativo shiny para processamento de inventário de florestas nativas, 2017. Disponível em: <https://sollano.shinyapps.io/nativas_app/>.
+
+#### Referências:
 
 CAMPOS, J. C. C.; LEITE, H. G. Mensuração florestal: perguntas e respostas. 3ª. ed. Viçosa: Editora UFV, 2013. 605 p.
 

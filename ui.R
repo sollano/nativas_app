@@ -34,8 +34,9 @@ shinyUI(
                                 img(contentType = "image/jpg",
                                     src="intro_picture.jpg",
                                     width = 770,
-                                    height = 750)
-                               
+                         #           height = 750)
+                                    height = 856)
+                         
                          )
                        ) # fluid row
              ), # Painel Intro             
@@ -304,6 +305,25 @@ shinyUI(
 
              navbarMenu("Inventario",
                         
+                        # Estimação de volume ####
+                        
+                        tabPanel("Estimaçao de Volume",
+                                 
+                                 sidebarLayout(
+                                   sidebarPanel(
+                                     
+                                     uiOutput("ui_estvol1"),
+                                     uiOutput("ui_estvol2"),
+                                     uiOutput("ui_estvol3"),
+                                     uiOutput("ui_estvol4")   
+                                   ),
+                                   mainPanel(
+                                     DT::dataTableOutput("vol_est_table")
+                                     )
+                                 )
+                        ), # Fim de Estimação de Volume
+                        
+                        
                         # Painel Totalização de Parcelas ####
                         tabPanel("Totalização de Parcelas",
                                  
@@ -454,11 +474,13 @@ shinyUI(
                                                 "Estrutura",
                                                 "BDq Meyer",
                                                 "BDq Meyer - Coeficientes",
+                                                "Estimacao de volume",
+                                                "Totalizacao de parcelas",
                                                 "Amostragem Casual Simples", 
                                                 "Amostragem Casual Estratificada 1", 
                                                 "Amostragem Casual Estratificada 2",
-                                                "Amostragem Sistematica",
-                                                "Nivel Parcela")),
+                                                "Amostragem Sistematica"
+                                                )),
                                   
                                   selectInput("datasetformat",
                                               "Escolha o formato da tabela:",

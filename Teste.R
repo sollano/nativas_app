@@ -21,7 +21,7 @@ m.similaridade(inv, "scientific.name", "transect")
 bdq.meyer(inv, "transect", "DBH", 1000)[[1]]
 agregacao(inv, "scientific.name", "transect")
 
-inv = read.csv("examples/ducke.csv")
+inv = read.csv("examples/ducke_.csv")
 estrutura(inv, "scientific_name", "DBH_11", "transect", 1000, "canopy_11", "light_11")
 diversidade(inv, "scientific_name", indice = "H")
 diversidade(inv, "scientific_name", indice = "S")
@@ -60,7 +60,7 @@ agregacao(inv, "nome.cient", "transecto")
 library(dplyr)
 library(lazyeval)
 
-inv <- read.csv("cauaxi 2012.csv") %>% 
+inv <- read.csv("examples/cauaxi 2012_.csv") %>% 
   mutate(
     VOL           = 0.000503 * DBH^2.187162,
     total.area    = 50,

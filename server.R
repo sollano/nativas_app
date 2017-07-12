@@ -4,6 +4,7 @@ library(DT)
 library(formattable)
 library(readxl)
 library(plyr)
+library(tibble)
 library(tidyr)
 library(dplyr)
 library(lazyeval)
@@ -17,7 +18,8 @@ library(rmarkdown)
 
 # Data e functions
 
-ex <- read.csv("examples/Inventory_exemplo.csv")
+ex <- read.csv("examples/Inventory_exemplo.csv",fileEncoding="UTF-8")
+#ex <- read.csv("examples/Inventory_exemplo_2.csv",fileEncoding="UTF-8")
 
 source("funs/diversidade.R"        , encoding="UTF-8")
 source("funs/pareadoSimilaridade.R", encoding="UTF-8")
@@ -47,7 +49,7 @@ area_total_names <- c("sub.area","AREA_TOTAL", "AREATOTAL", "area_total", "areat
 idade_names <- c("IDADE", "Idade","idade")
 VSC_names <- c("VSC","Vsc", "vsc")
 HD_names <- c("HD", "Hd", "hd", "ALTURA_DOMINANTE", "ALT_DOM")
-grupos_names <- c(c("TALHAO", "PARCELA"), c("area.code", "transect"), c("codigo", "transecto"))
+grupos_names <- c(c("TALHAO", "PARCELA"), c("area.code", "transect"), c("codigo", "transecto"), "parcela", "PARCELA", "transect", "cod.parcela", "Cod.parcela", "COD.PARCELA")
 estratos_names <- c("TALHAO", "Talhao", "talhao","COD_TALHAO","Cod_Talhao","cod_talhao", "COD.TALHAO", "Cod.Talhao","cod.talhao", "area.code", "Area.Code","AREA.CODE", "area_code","Area_Code","AREA_CODE")
 
 # Server ####
@@ -123,15 +125,17 @@ shinyServer(function(input, output, session) {
     list(    
       # Selecionar numero da planilha
       numericInput(inputId = "sheet_n",
-                   label   = "Numero da planilha",
+                   label   = "Número da planilha",
                    value   = 1,
                    min     = 1,
                    max     = 30,
                    step    = 1
       ),
       
+      radioButtons(inputId = "mv_excel",label = "Valores ausentes", choices = c("Espaço vazio" = "", "NA" = "NA"), inline = T ),
       
-      fileInput( # input de arquivos
+      # input de arquivos
+      fileInput( 
       inputId = "file2", # Id
       
       label = "Selecione o arquivo: (.xlsx)", # nome que sera mostrado na UI
@@ -173,7 +177,7 @@ shinyServer(function(input, output, session) {
     } else {
       file.copy(inFile$datapath,
                       paste(inFile$datapath, "xlsx", sep="."))
-      raw_data <-  readxl::read_excel(paste(inFile$datapath, "xlsx", sep="."), input$sheet_n) 
+      raw_data <-  readxl::read_excel(paste(inFile$datapath, "xlsx", sep="."), input$sheet_n, na = input$mv_excel) 
       raw_data <- as.data.frame(raw_data)
       }
     
@@ -577,9 +581,10 @@ shinyServer(function(input, output, session) {
 
  
     {
-      msimdt1 <- tabmsimilaridade1() 
+      msimdt1 <- tibble::rownames_to_column(tabmsimilaridade1(), " ") 
       
       datatable( msimdt1,
+                 rownames = F,
                  options = list(searching = FALSE,
                                 paging=FALSE,
                                 ordering=FALSE,
@@ -588,16 +593,18 @@ shinyServer(function(input, output, session) {
                                   "$(this.api().table().header()).css({'background-color': '#00a90a', 'color': '#fff'});",
                                   "}")
                  )   
-      ) 
+           ) %>% 
+        formatStyle(1, backgroundColor = "#00a90a", color = '#fff' )
     }
     
   }) 
   output$msim2 <- renderDataTable({
     
     {
-      msimdt2 <- tabmsimilaridade2() 
+      msimdt2 <- tibble::rownames_to_column(tabmsimilaridade2(), " ") 
       
       datatable( msimdt2,
+                 rownames = F,
                  options = list(searching = FALSE,
                                 paging=FALSE,
                                 ordering=FALSE,
@@ -606,7 +613,8 @@ shinyServer(function(input, output, session) {
                                   "$(this.api().table().header()).css({'background-color': '#00a90a', 'color': '#fff'});",
                                   "}")
                  )   
-      ) 
+      ) %>% 
+        formatStyle(1, backgroundColor = "#00a90a", color = '#fff' )
     }
     
   }) 
@@ -1195,7 +1203,6 @@ shinyServer(function(input, output, session) {
     )
     
   })
-  
   output$selec_dapBDq <- renderUI({
     
     data <- rawData()
@@ -1214,7 +1221,6 @@ shinyServer(function(input, output, session) {
     )
     
   })
-  
   output$selec_area.parcelaBDq <- renderUI({
     
     data <- rawData()
@@ -1307,21 +1313,202 @@ shinyServer(function(input, output, session) {
   })
   
   # Inventario ####
-      # Dado utilizado no inventario ####
-  
-  # switch que muda o dado a ser utilizado
-  invData <- reactive({
+      # Dado utilizado na totalizacao de parcelas ####
+  totData <- reactive({
     
-    if(is.null(input$df)){ return()}
-    
-    # Se o dado for em nivel de arvore, a totalização de parcelas deve ser feita para que
-    # NewData possa ser inserido em acs. Sem essa condição a ui gera mensagens de erro
-    switch(input$df, 
-           "Dados em nivel de arvore" = if(is.null(input$VCCnew) ){return()}else{ newData()},
-           "Dados em nivel de parcela" = rawData() )
+    # Primeiro testa-se se b1 nao e nulo, pois b1_estvol esta sendo criado no server,
+    # e so e criado quando o codigo do server e rodado.
+    # em seguida testa-se se b1_estvol e numerico, ou seja, se o usuario ja inseriu valores para ele.
+    # Se ele nao for, o dado utilizado continuara sendo rawData.
+    # Quando ele deixar de ser numerico, ou seja, quando tiver valor, ai sim este dado sera utilizado.
+    if( is.null(input$b1_estvol) ){
+      
+     rawData()
+      
+    }else if(!is.numeric(input$b1_estvol)){
+      
+     rawData()
+      
+    }else{ 
+
+     est_vol()
+      }
+
     
   })
   
+      # Calculo de volume ####
+
+  est_vol <- reactive({
+    
+    data <- rawData()
+
+    validate(need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" ),
+             need(input$DAP_estvol != "","Por favor selecione a variável referente a 'dap' "),
+             need(input$bo_estvol != "","Por favor insira o valor de 'b0' "),
+             need(input$b1_estvol != "","Por favor insira o valor de 'b1' "),
+             #need condicional: so acontece se o modelo nao for nulo (para evitar erros) e se o modelo tiver HT nele
+          if(is.null(input$modelo_estvol)){}  else if(grepl( "\\<HT\\>",input$modelo_estvol) ){ try(need( input$HT_estvol != "", "Por favor selecione a variável referente a 'HT'") )}
+
+    )
+
+    if(input$modelo_estvol == "LN(VFFC) = b0 + b1 * LN(DAP) + b2 * LN(HT) + e"){
+    data$VOL <- exp( input$bo_estvol + log(data[[input$DAP_estvol]]) * input$b1_estvol + log(data[[input$HT_estvol]]) * input$b2_estvol )
+    data <- data %>% select(VOL, everything())
+    }
+    
+    if(input$modelo_estvol == "VFFC = b0 + b1 * DAP + b2 * HT + e"){
+    data$VOL <- input$bo_estvol + data[[input$DAP_estvol]] * input$b1_estvol + data[[input$HT_estvol]] * input$b2_estvol
+    data <- data %>% select(VOL, everything())
+    }
+    
+    if(input$modelo_estvol == "LN(VFFC) = b0 + b1 * 1/DAP + e"){
+    data$VOL <- exp( input$bo_estvol + 1/data[[input$DAP_estvol]] * input$b1_estvol )
+    data <- data %>% select(VOL, everything())
+    }
+     
+    if(input$modelo_estvol == "VFFC = b0 + b1 * DAP + e"){
+    data$VOL <- input$bo_estvol + data[[input$DAP_estvol]] * input$b1_estvol
+    data <- data %>% select(VOL, everything())
+    }
+    
+    if(input$modelo_estvol == "VFFC = b0 + b1 * DAP² + e"){
+      data$VOL <- input$bo_estvol + data[[input$DAP_estvol]]^2 * input$b1_estvol
+      data <- data %>% select(VOL, everything())
+    }
+    
+    if(input$modelo_estvol == "VFFC = b0 + b1 * DAP + b2 * DAP² + e"){
+    data$VOL <- input$bo_estvol + data[[input$DAP_estvol]] * input$b1_estvol + data[[input$DAP_estvol]]^2 * input$b2_estvol
+    data <- data %>% select(VOL, everything())
+    }
+    
+    if(input$modelo_estvol == "VFFC = b0 + b1 * LN(DAP) + e"){
+    data$VOL <- input$bo_estvol + log(data[[input$DAP_estvol]]) * input$b1_estvol
+    data <- data %>% select(VOL, everything())
+    
+    }
+    data
+  })
+  
+  output$ui_estvol1 <- renderUI({
+
+    data <- rawData()
+    
+    list(
+      
+      h3("Estimaçao de Volume"),
+      
+      radioButtons("modelo_estvol",
+                   label = "Selecione o modelo para ser utilizado:",
+                   choices = c(
+                     "LN(VFFC) = b0 + b1 * LN(DAP) + b2 * LN(HT) + e",
+                     "VFFC = b0 + b1 * DAP + b2 * HT + e",
+                     "LN(VFFC) = b0 + b1 * 1/DAP + e",
+                     "VFFC = b0 + b1 * DAP + e", 
+                     "VFFC = b0 + b1 * DAP² + e", 
+                     "VFFC = b0 + b1 * DAP + b2 * DAP² + e",
+                     "VFFC = b0 + b1 * LN(DAP) + e"
+                   ) ),
+      
+      selectizeInput( # cria uma lista de opcoes em que o usuario pode clicar
+        'DAP_estvol', # Id
+        "Selecione a coluna do DAP (cm):", # nome que sera mostrado na UI
+        choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
+        selected = DAP_names,
+        multiple = T,
+        options = list(
+          maxItems = 1,
+          placeholder = 'selecione uma coluna abaixo'# ,
+          # onInitialize = I('function() { this.setValue(""); }')
+        ) # options
+      )
+      
+      
+      
+      
+    )
+    
+    
+  })
+  output$ui_estvol2 <- renderUI({
+    
+    # Precisa ter Altura no modelo
+    validate(need(grepl( "\\<HT\\>",input$modelo_estvol), "" ) )  
+    
+    data <- rawData()
+    
+ list(
+   
+   selectizeInput( # cria uma lista de opcoes em que o usuario pode clicar
+     'HT_estvol', # Id
+     "Selecione a coluna da altura (m):", # nome que sera mostrado na UI
+     choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
+     selected = HT_names,
+     multiple = T,
+     options = list(
+       maxItems = 1,
+       placeholder = 'selecione uma coluna abaixo'#,
+       # onInitialize = I('function() { this.setValue(""); }')
+     ) # options
+   )
+   
+ )    
+    
+  })
+  output$ui_estvol3 <- renderUI({
+    
+    list(
+      
+      numericInput( # cria uma lista de opcoes em que o usuario pode clicar
+        'bo_estvol', # Id
+        "Insira o valor para o b0:", # nome que sera mostrado na UI
+        value = NULL, 
+        step = 0.0001
+      ),
+      
+      numericInput( # cria uma lista de opcoes em que o usuario pode clicar
+        'b1_estvol', # Id
+        "Insira o valor para o b1:", # nome que sera mostrado na UI
+        value = NULL, 
+        step = 0.0001
+      )
+      
+      
+    )
+    
+  })
+  output$ui_estvol4 <- renderUI({
+    
+    # Precisa ter b2 no modelo
+    validate(need(grepl( "\\<b2\\>",input$modelo_estvol), "" ) )  
+    
+    list(
+      
+      numericInput( # cria uma lista de opcoes em que o usuario pode clicar
+        'b2_estvol', # Id
+        "Insira o valor para o b2:", # nome que sera mostrado na UI
+        value = NULL, 
+        step = 0.0001
+        )
+      
+    )
+    
+  })
+  
+  output$vol_est_table <- renderDataTable({
+    
+    est_voldt <- est_vol()
+    
+    datatable( as.data.frame(est_voldt),
+               options = list(searching = T,
+                              paging=T,
+                              initComplete = JS(
+                                "function(settings, json) {",
+                                "$(this.api().table().header()).css({'background-color': '#00a90a', 'color': '#fff'});",
+                                "}")
+               )  ) 
+    
+  }) 
   
       # Totalização de Parcelas ####
   
@@ -1337,7 +1524,8 @@ shinyServer(function(input, output, session) {
              
     )
     
-      dados <- rawData()
+      #dados <- rawData()
+      dados <- totData()
       
       x <- inv_summary(df           = dados, 
                        DAP          = input$DAPnew, 
@@ -1357,7 +1545,8 @@ shinyServer(function(input, output, session) {
   # UI
   output$tot_parc_ui1 <- renderUI({
     
-    data <- rawData()
+    #data <- rawData()
+    data <- totData()
     
     list(
     
@@ -1410,7 +1599,8 @@ shinyServer(function(input, output, session) {
  
   output$tot_parc_ui2 <- renderUI({
     
-    data <- rawData()
+   # data <- rawData()
+    data <- totData()
     
     list(
 
@@ -1522,6 +1712,22 @@ shinyServer(function(input, output, session) {
 
   })
 
+  
+  # Dado utilizado no inventario ####
+  
+  # switch que muda o dado a ser utilizado
+  invData <- reactive({
+    
+    if(is.null(input$df)){ return()}
+    
+    # Se o dado for em nivel de arvore, a totalização de parcelas deve ser feita para que
+    # NewData possa ser inserido em acs. Sem essa condição a ui gera mensagens de erro
+    switch(input$df, 
+           "Dados em nivel de arvore" = if(is.null(input$VCCnew) ){return()}else{ newData()},
+           "Dados em nivel de parcela" = rawData() )
+    
+  })
+  
   # ACS ####
   
   # funcao acs aplicada em invData
@@ -1747,7 +1953,7 @@ shinyServer(function(input, output, session) {
     validate(need(input$VCCace!= "","Por favor selecione a coluna referente a 'volume' "),
              need(input$area_parcelaace!= "","Por favor insira um valor ou selecione uma coluna referente a 'area da parcela' "),
              need(input$area_estratoace!= "","Por favor insira um valor ou selecione uma coluna  referente a 'area total' "),
-             need(input$gruposace!= "","Por favor insira um valor ou selecione uma coluna  referente a 'variáveis pivô' ")
+             need(input$gruposace!= "","Por favor insira um valor referente a 'variáveis pivô' ")
     )
     
       dados <- invData()
@@ -2130,18 +2336,20 @@ shinyServer(function(input, output, session) {
     switch(input$dataset,
            "Dado utilizado / filtrado"         = rawData(),
            "Indice diversidade"                = tabdiversidade(),
-           "Matriz similaridade - Jaccard"     = tabmsimilaridade1(),
-           "Matriz similaridade - Sorensen"    = tabmsimilaridade2(),
+           "Matriz similaridade - Jaccard"     = tibble::rownames_to_column(tabmsimilaridade1(), " "),
+           "Matriz similaridade - Sorensen"    = tibble::rownames_to_column(tabmsimilaridade2(), " "),
            "Pareado similaridade"              = tabpsimilaridade(),
            "Indice de agregacao"               = tabagregate(),
            "Estrutura"                         = tabestrutura(),
            "BDq Meyer"                         = tabBDq1(),
            "BDq Meyer - Coeficientes"          = tabBDq3(),
+           "Estimacao de volume"               = totData(),
+           "Totalizacao de parcelas"           = newData(),
            "Amostragem Casual Simples"         = tabacs(),
            "Amostragem Casual Estratificada 1" = tabace2(),
            "Amostragem Casual Estratificada 2" = tabace1(),
-           "Amostragem Sistematica"            = tabas(),
-           "Nivel Parcela"                     = newData() )
+           "Amostragem Sistematica"            = tabas()
+           )
   })
   
   output$table <- renderDataTable({
