@@ -155,8 +155,8 @@ shinyServer(function(input, output, session) {
   
   upData <- reactive({ # Criamos uma nova funcao reactive. este sera o objeto filtrado, utilizado nos calculos
   
-    # sera nulo caso nao sejam selecionados "fazer o upload"
-    validate(need(input$df_select == "Fazer o upload" , NULL )  )
+    # sera vazio caso nao seja selecionado "fazer o upload"
+    validate(need(input$df_select == "Fazer o upload" , "" )  )
     
     # Salva o caminho do arquivo uploadado em um arquivo, dependendo do que o usuario selecionar
     if(input$df_extension == ".csv (Valor separado por virgulas) ou .txt (arquivo de texto)"){
@@ -170,8 +170,10 @@ shinyServer(function(input, output, session) {
     # 'size', 'type', e 'datapath' . A coluna 'datapath' 
     # ira conter os nomes dos arquivos locais onde o dado pode ser encontrado
     
-    if (is.null(inFile) ){return(NULL)} # se o arquivo nao for carregado, retornar null
-    else if(input$df_extension != ".xlsx (Excel)")
+    # precisa do caminho do dado pra rodar os codigos a seguir
+    req(inFile)
+    
+    if(input$df_extension != ".xlsx (Excel)")
     {
       raw_data <- read.csv(inFile$datapath, header=TRUE, sep=input$sep, dec=input$dec,quote='"')
     } else {
@@ -623,7 +625,8 @@ shinyServer(function(input, output, session) {
   msim1_graph <- reactive({
     
     #retornar vazio enquando input$rb_msim1_graph carrega (ele fica nulo quando carrega)
-    if(is.null(input$rb_msim1_graph)){return("")} 
+    #if(is.null(input$rb_msim1_graph)){return("")} 
+    req(input$rb_msim1_graph)
     
     validate(need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" ),
              need(input$col.especiesmsim!= "","Por favor selecione a coluna referente a 'especies' "),
@@ -666,7 +669,8 @@ shinyServer(function(input, output, session) {
   msim2_graph <- reactive({
     
     #retornar vazio enquando input$rb_msim1_graph carrega (ele fica nulo quando carrega)
-    if(is.null(input$rb_msim2_graph)){return("")} 
+    #if(is.null(input$rb_msim2_graph)){return("")} 
+    req(input$rb_msim2_graph)
     
     validate(need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" ),
              need(input$col.especiesmsim!= "","Por favor selecione a coluna referente a 'especies' "),
@@ -787,7 +791,9 @@ shinyServer(function(input, output, session) {
   # cria lista com os nomes das parcelas
   lista_parcelas_psim <- reactive({
     
-    if(is.null(input$col.parcelaspsim) || is.null(rawData()) ){return()}
+    #if(is.null(input$col.parcelaspsim) || is.null(rawData()) ){return()}
+    req(input$col.parcelaspsim)
+    req(rawData())
 
     data <- rawData()
     
@@ -801,7 +807,9 @@ shinyServer(function(input, output, session) {
   
   output$selec_psimselec_parc1 <- renderUI({
     
-    if(is.null(input$col.parcelaspsim) || is.null(rawData()) ){return()}
+    #if(is.null(input$col.parcelaspsim) || is.null(rawData()) ){return()}
+    req(input$col.parcelaspsim)
+    req(rawData())
     
     data <- rawData()
     
@@ -821,7 +829,9 @@ shinyServer(function(input, output, session) {
   
   output$selec_psimselec_parc2 <- renderUI({
     
-    if(is.null(input$col.parcelaspsim) || is.null(rawData()) ){return()}
+    #if(is.null(input$col.parcelaspsim) || is.null(rawData()) ){return()}
+    req(input$col.parcelaspsim)
+    req(rawData())
     
     data <- rawData()
     
@@ -840,7 +850,8 @@ shinyServer(function(input, output, session) {
   
   output$selec_rotuloNIpsim <- renderUI({
     
-    if(is.null(input$col.especiespsim)){return(NULL)}
+    #if(is.null(input$col.especiespsim)){return(NULL)}
+    req(input$col.especiespsim)
     
     data <- rawData()
     
@@ -1072,7 +1083,8 @@ shinyServer(function(input, output, session) {
   })
   output$selec_rotuloNIestr <- renderUI({
 
-    if(is.null(input$col.especiesestr)){return(NULL)}
+   # if(is.null()){return(NULL)}
+    req( input$col.especiesestr )
     
     data <- rawData()
     
@@ -1303,7 +1315,8 @@ shinyServer(function(input, output, session) {
   
   output$BDq_graph_ <- renderPlot({
     #plotly::renderPlotly
-    if(is.null(BDq_graph() ) ) return(NULL)
+    #if(is.null(BDq_graph() ) ) return(NULL)
+    req(BDq_graph())
     
     g <- BDq_graph()
     
@@ -1718,7 +1731,8 @@ shinyServer(function(input, output, session) {
   # switch que muda o dado a ser utilizado
   invData <- reactive({
     
-    if(is.null(input$df)){ return()}
+    #if(is.null(input$df)){ return()}
+    req(input$df)
     
     # Se o dado for em nivel de arvore, a totalização de parcelas deve ser feita para que
     # NewData possa ser inserido em acs. Sem essa condição a ui gera mensagens de erro
@@ -2327,9 +2341,7 @@ shinyServer(function(input, output, session) {
       )
 
   })
-  
-  
-  
+
   # Download tabelas ####
   
   datasetInput <- reactive({
