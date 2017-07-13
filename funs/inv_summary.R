@@ -9,8 +9,8 @@ inv_summary <- function(df,DAP, HT, VCC, area_parcela, groups, area_total,idade,
   if(missing(DAP)||is.null(DAP)||DAP==F||DAP=="" || !is.numeric(df[[DAP]]))
   {stop("please insert diameter variable", call.=F)}
   
-  if(missing(HT)||is.null(HT)||HT==F||HT=="" || !is.numeric(df[[HT]]))
-  {stop("please insert height variable", call.=F)}
+ # if(missing(HT)||is.null(HT)||HT==F||HT=="" || !is.numeric(df[[HT]]))
+ # {stop("please insert height variable", call.=F)}
   
   if(missing(VCC)||is.null(VCC)||VCC==F||VCC=="" || !is.numeric(df[[VCC]]))
   {stop("please insert volume variable", call.=F)}
@@ -25,13 +25,13 @@ inv_summary <- function(df,DAP, HT, VCC, area_parcela, groups, area_total,idade,
   if(missing(area_total) || is.null(area_total) || area_total==F || area_total==""   ){df$area_total<-NA; area_total <- "area_total"}
   if(missing(idade)      || is.null(idade)      || idade==F      || idade==""        ){df$idade<-NA;      idade <- "idade"}
   if(missing(VSC)        || is.null(VSC)        || VSC==F        || VSC==""          ){df$VSC<-NA;        VSC <- "VSC"}
+  if(missing(HT)         || is.null(HT)         || HT==F         || HT==""           ){df$HT<-NA; df$Hd<-NA; HT <- "HT";   Hd <- "Hd"}
   
   # argumentos de area podem ser numericos
   if(is.numeric(area_parcela)){df$area_parcela <- area_parcela; area_parcela <- "area_parcela"}
   if(is.numeric(area_total  )){df$area_total   <- area_total; area_total     <- "area_total"}
-  
-  
-  if(missing(Hd)||is.null(Hd)||Hd==F||Hd=="") { # calculo da altura dominante
+
+  if((missing(Hd)||is.null(Hd)||Hd==F||Hd=="")  &&  !all(is.na(df[[HT]]) )) { # calculo da altura dominante
     
     if(  "HD" %in% names(df) ){ df$HD <- NULL }
     
@@ -70,7 +70,7 @@ inv_summary <- function(df,DAP, HT, VCC, area_parcela, groups, area_total,idade,
           interp(~ round(mean(DAP, na.rm=T), 2), DAP = as.name(DAP) ) ,
           ~ round(sqrt(mean(AS, na.rm=T) * 40000 / pi), 2)  ,
           interp(~round(mean(HT, na.rm=T), 2), HT = as.name(HT) ),
-          ~ round(mean(HD), 2),
+          ~ round(mean(HD, na.rm=T), 2),
           ~ round(sum(AS, na.rm=T) * 10000/AREA_PARCELA, 4),
           interp(~round(sum(VCC, na.rm=T) * 10000/ AREA_PARCELA, 4 ), VCC = as.name(VCC), AREA_PARCELA = as.name("AREA_PARCELA") ),
           interp(~round(sum(VSC, na.rm=T) * 10000/ AREA_PARCELA, 4 ), VSC = as.name(VSC), AREA_PARCELA = as.name("AREA_PARCELA") )

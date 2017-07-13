@@ -1547,7 +1547,6 @@ shinyServer(function(input, output, session) {
              need(!is.null(rawData()), "Por favor faça o upload da base de dados"),
              need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" ),
              need(input$DAPnew!= "","Por favor selecione a coluna referente a 'dap' "),
-             need(input$HTnew!= "","Por favor selecione a coluna referente a 'altura' "),
              need(input$VCCnew!= "","Por favor selecione a coluna referente a 'volume' "),
              need(input$area_parcelanew!= "","Por favor insira um valor ou selecione uma coluna referente a 'area da parcela' "),
              need(input$area_totalnew!= "","Por favor insira um valor ou selecione uma coluna  referente a 'area total' ")
