@@ -14,6 +14,17 @@ estrutura = function(data, col.especies, col.dap, col.parcelas, area.parcela, es
     if(missing(est.interno)||is.null(est.interno)||est.interno==F||est.interno==""){
       est.interno = NA }
     
+    # Se pos.vertical for a variavel HT (numerica)
+    if(is.numeric(data[[est.vertical]])){
+      data$canopy <- ifelse(data[[est.vertical]] < (mean(data[[est.vertical]], na.rm=T) - sd(data[[est.vertical]], na.rm=T) ), "Inferior", 
+                            ifelse(data[[est.vertical]] >= (mean(data[[est.vertical]], na.rm=T) - sd(data[[est.vertical]], na.rm=T) ) & data[[est.vertical]] < (mean(data[[est.vertical]], na.rm=T) + sd(data[[est.vertical]], na.rm=T) ), "Médio", 
+                                   ifelse(data[[est.vertical]] >= (mean(data[[est.vertical]], na.rm=T) + sd(data[[est.vertical]], na.rm=T) ), "Superior", NA
+                                   )
+                            ) 
+      )
+      est.vertical <- "canopy"
+      
+    }
     
     VERTICAL = est.vertical
     INTERNA = est.interno
