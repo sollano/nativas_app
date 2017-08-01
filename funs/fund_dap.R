@@ -1,6 +1,8 @@
-fund_dap <- function(df, .sep){
+fund_dap <- function(df, dap, .sep){
   
-  list_split <- strsplit(df[,2],  .sep, fixed=T)
+  dap_old <- df[,dap]
+  
+  list_split <- strsplit(dap_old,  .sep, fixed=T)
   list_split <- sapply(list_split, gsub, pattern=",",replacement= ".")
   list_split <- sapply(list_split, as.numeric)
   
