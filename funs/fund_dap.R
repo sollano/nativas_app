@@ -1,6 +1,8 @@
 fund_dap <- function(df, dap, .sep){
   
-  dap_old <- df[,dap]
+  dap_sym <- rlang::sym(gsub('"', "", deparse(substitute( dap ))))
+  
+  dap_old <- df %>% pull(!!dap_sym)
   
   list_split <- strsplit(dap_old,  .sep, fixed=T)
   list_split <- sapply(list_split, gsub, pattern=",",replacement= ".")
