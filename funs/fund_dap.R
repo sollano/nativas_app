@@ -10,9 +10,9 @@ fund_dap <- function(df, dap, .sep){
   list_split <- strsplit(dap_old,  .sep, fixed=T)
   
   # Substitui "," por ".", caso ocorra. Isso ia ocorrer caso o
-  # computador de onde o arquivo originou seja brasileiro,
-  # os valores separados por "+" nao serao importados como numero.
-  # Com isso, os numeros serao salvos com o decimal ",". Para converte-los
+  # computador de onde o arquivo originou seja brasileiro.
+  # Os valores separados por "+" nao serao importados como numero,
+  # com isso, os numeros serao salvos com o decimal ",". Para converte-los
   # novamente a numero, deve-se primeiro substituir a virgula por ponto.
   list_split <- sapply(list_split, gsub, pattern=",",replacement= ".")
   
