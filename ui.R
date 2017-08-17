@@ -220,14 +220,19 @@ shinyUI(
                                 h3("Diâmetro mínimo"),
                                 numericInput("diam.min", "Insira o diâmetro mínimo:", 10, 1, 100, 1),
                                 
-                                h3("Espécie não-identificada"),
                                 uiOutput("selec_rotuloNI"),
                                 
                                 h3("Remover dados"),
                                 
                                 uiOutput("rm_data_var"),
                                 uiOutput("rm_data_level"),
-                                uiOutput("rm_vars")
+                                uiOutput("rm_vars"),
+                                uiOutput("selec_area_parcela_num"),
+                                uiOutput("selec_area_total_num"),
+                                uiOutput("ui_estvol1"),
+                                uiOutput("ui_estvol3"),
+                                uiOutput("ui_estvol4")   
+                                
                                 
                               ),# sidebarPanel
                               

@@ -59,7 +59,8 @@ shinyServer(function(input, output, session) {
   
   # Importação ####
   
-  output$upload <- renderUI({
+  #ui
+  output$upload      <- renderUI({
     
     validate(need(input$df_select == "Fazer o upload", "" )  )
     
@@ -79,7 +80,7 @@ shinyServer(function(input, output, session) {
                    selected = ".csv (Valor separado por virgulas) ou .txt (arquivo de texto)")
     )
   })
-  output$upload_csv <- renderUI({
+  output$upload_csv  <- renderUI({
     
     validate(need(input$df_select == "Fazer o upload" & input$df_extension == ".csv (Valor separado por virgulas) ou .txt (arquivo de texto)", "" )  )
     
@@ -141,6 +142,8 @@ shinyServer(function(input, output, session) {
     
     
   })
+  
+  #tabela
   upData <- reactive({ # Criamos uma nova funcao reactive. este sera o objeto filtrado, utilizado nos calculos
     
     # sera vazio caso nao seja selecionado "fazer o upload"
@@ -190,7 +193,10 @@ shinyServer(function(input, output, session) {
     
   })
   
+  # render table
   output$rawdata <- renderDataTable({ # renderizamos uma DT::DataTable
+    
+    validate(need(!is.null(rawData_()), "Please import a dataset"))
     
     # salvamos a funcao newData, que contem o arquivo carregado pelo usuario em um objeto
     data <- rawData_() 
@@ -213,7 +219,6 @@ shinyServer(function(input, output, session) {
   # Mapeamento ####
   
   # ui
-  
   output$selec_especies     <- renderUI({
     
     data <- rawData_()
@@ -417,64 +422,32 @@ shinyServer(function(input, output, session) {
     )# selectize
     
   })
-  
 
   # Preparação ####
-  
-  
+  # ui
   output$selec_rotuloNI     <- renderUI({
     
     validate(need(input$col.especies != "","") )
     
     data <- rawData_()
     
-    selectizeInput("rotutuloNI",
-                   "Selecione o(s) indice(s) referente(s) às espécies não identificadas:", # nome que sera mostrado na UI
-                   choices = levels(as.factor(data[,input$col.especies])),
-                   multiple = TRUE,
-                   options = list(
-                     placeholder = 'Selecione um ou mais rótulos abaixo',
-                     onInitialize = I('function() { this.setValue(""); }')
-                   ) )
+    list(
+      
+      h3("Espécie não-identificada"),
+      
+      selectizeInput("rotutuloNI",
+                     "Selecione o(s) indice(s) referente(s) às espécies não identificadas:", # nome que sera mostrado na UI
+                     choices = levels(as.factor(data[,input$col.especies])),
+                     multiple = TRUE,
+                     options = list(
+                       placeholder = 'Selecione um ou mais rótulos abaixo',
+                       onInitialize = I('function() { this.setValue(""); }')
+                     ) )
+      
+    )
     
   })
-  
-  # Filtrar dados
-  
-  # rawData (sem traco) sera o dado bruto com filtro, caso o usuario
-  # rode algum filtro, caso contrario sera o dado bruto inalterado
-  rawData <- reactive({
-    
-    data <- rawData_()
-    
-    # se o usuario nao selecionar nada, retorna o dado normal 
-    # (isso faz com o que o dado original seja exibido logo que se entra na aba de filtrar),
-    # caso contrario ele filtra o dado conforme o usuario seleciona as variaveis
-    
-    if( is.null(input$col.rm_data_var) || input$col.rm_data_var ==""){
-      
-      data
-      
-    }else{
-      
-      data <- data[!data[[input$col.rm_data_var]] %in% input$level.rm_data_level,]
-      # data <- data %>% 
-      #filter( ! .data[[input$col.rm_data_var]] %in% input$level.rm_data_level )
-      data
-      
-    }
-    
-    # se o usuario nao selecionar nada, uma coluna vazia e definida como nula,
-    # ou seja, nao muda nada no dado.
-    # por isso nao e necessario utilizar condicionais nesse caso
-    
-    data[, input$col.rm_vars] <- NULL
-    
-    data
-    
-  })
-  
-  output$rm_data_var <- renderUI({
+    output$rm_data_var <- renderUI({
     
     data <- rawData_()
     
@@ -490,7 +463,6 @@ shinyServer(function(input, output, session) {
     
     
   })
-  
   output$rm_data_level <- renderUI({
     
     if( is.null(input$col.rm_data_var) || input$col.rm_data_var =="" ){
@@ -519,7 +491,6 @@ shinyServer(function(input, output, session) {
     
     
   })
-  
   output$rm_vars <- renderUI({
     
     data <- rawData_()
@@ -537,8 +508,232 @@ shinyServer(function(input, output, session) {
     
     
   })
+      # area numerico
+  output$selec_area_parcela_num <- renderUI({
+    
+    # precisa que o usuario nao tenha selecionado o volume
+    req(is.null(input$col.area.parcela) || input$col.area.parcela=="" )
+    
+    list(
+      
+      h3("Área da parcela (numérico)"),
+      
+      
+      numericInput( # cria uma lista de opcoes em que o usuario pode clicar
+        'num.area.parcela', # Id
+        "Insira o valor para a Área da parcela:", # nome que sera mostrado na UI
+        value = "", 
+        step = 1
+      )
+      
+    )
+    
+  })
+  output$selec_area_total_num <- renderUI({
+    
+    # precisa que o usuario nao tenha selecionado o volume
+    req(is.null(input$col.area.total) || input$col.area.total=="" )
+    
+    list(
+      h3("Área total (numérico)"),
+      
+      numericInput( # cria uma lista de opcoes em que o usuario pode clicar
+        'num.area.total', # Id
+        "Insira o valor para a Área total:", # nome que sera mostrado na UI
+        value = "", 
+        step = 1
+      )
+      
+    )
+    
+  })
+     # Calculo de volume ####
+    output$ui_estvol1 <- renderUI({
+    
+    # precisa que o usuario nao tenha selecionado o volume
+    req(is.null(input$col.vcc) || input$col.vcc =="" )
+
+    data <- rawData_()
+    
+    list(
+      
+      h3("Estimaçao de Volume"),
+      
+      radioButtons("modelo_estvol",
+                   label = "Selecione o modelo para ser utilizado:",
+                   choices = c(
+                     "LN(VFFC) = b0 + b1 * LN(DAP) + b2 * LN(HT) + e",
+                     "VFFC = b0 + b1 * DAP + b2 * HT + e",
+                     "LN(VFFC) = b0 + b1 * 1/DAP + e",
+                     "VFFC = b0 + b1 * DAP + e", 
+                     "VFFC = b0 + b1 * DAP² + e", 
+                     "VFFC = b0 + b1 * DAP + b2 * DAP² + e",
+                     "VFFC = b0 + b1 * LN(DAP) + e"
+                   ) )      )
+      
+
+    
+  })
+  output$ui_estvol3 <- renderUI({
+    
+    # precisa que o usuario nao tenha selecionado o volume
+    req(is.null(input$col.vcc) || input$col.vcc =="" )
+    
+    list(
+      
+      numericInput( # cria uma lista de opcoes em que o usuario pode clicar
+        'bo_estvol', # Id
+        "Insira o valor para o b0:", # nome que sera mostrado na UI
+        value = "", 
+        step = 0.0001
+      ),
+      
+      numericInput( # cria uma lista de opcoes em que o usuario pode clicar
+        'b1_estvol', # Id
+        "Insira o valor para o b1:", # nome que sera mostrado na UI
+        value = "", 
+        step = 0.0001
+      )
+      
+      
+    )
+    
+  })
+  output$ui_estvol4 <- renderUI({
+    
+    # precisa que o usuario nao tenha selecionado o volume
+    req(is.null(input$col.vcc) || input$col.vcc =="" )
+    # Precisa ter b2 no modelo
+    req( grepl( "\\<b2\\>",input$modelo_estvol) ) 
+    
+    list(
+      
+      numericInput( # cria uma lista de opcoes em que o usuario pode clicar
+        'b2_estvol', # Id
+        "Insira o valor para o b2:", # nome que sera mostrado na UI
+        value = "", 
+        step = 0.0001
+      )
+      
+    )
+    
+  })
+
+  # tabela
+  # rawData sera o dado utilizado durante o resto do app
+  # as alteracoes feitas em 'preparacao' serao salvas aqui
+  # caso nao seja feito nada, rawData sera identico a rawData_
+  rawData <- reactive({
+    
+    data <- rawData_()
+    
+    # o primeiro if sera para remover as linhas
+    
+    # se o usuario nao selecionar nada, retorna o dado normal 
+    # (isso faz com o que o dado original seja exibido logo que se entra na aba de filtrar),
+    # caso contrario ele filtra o dado conforme o usuario seleciona as variaveis
+    
+    if( is.null(input$col.rm_data_var) || input$col.rm_data_var ==""){
+      
+      # esse if acima so foi feito dessa forma pois tentar adicionar ! nas condicoes acima
+      # nao funcionou, por algum motivo.
+      # portanto foi utilizado um if vazio com a condicao oposta a desejada,
+      # e o resultado esperado dentro do else.
+      
+    }else{
+      
+      # remove linhas caso um nivel seja selecionado
+      data <- data[!data[[input$col.rm_data_var]] %in% input$level.rm_data_level,]
+      
+      # data <- data %>% filter( ! .data[[input$col.rm_data_var]] %in% input$level.rm_data_level )
+      
+    }
+    
+    # A linha a seguir sera para remover uma ou mais colunas
+    
+    # se o usuario nao selecionar nada, uma coluna vazia e definida como nula,
+    # ou seja, nao muda nada no dado.
+    # por isso nao e necessario utilizar condicionais nesse caso
+    
+    data[, input$col.rm_vars] <- NULL
+    
+    data
+    
+
+    # Estimar volume
+    
+   # req(!is.null(rawData()) )
+   # req(input$df == "Dados em nivel de arvore" )
+   # req(input$col.dap != "")
+   # req(input$bo_estvol != "")
+   # req(input$b1_estvol != "")
+    
+    
+  #  validate(
+      #need condicional: so acontece se o modelo nao for nulo (para evitar erros) e se o modelo tiver HT nele
+  #    if(is.null(input$modelo_estvol)){}  else if(grepl( "\\<HT\\>",input$modelo_estvol) ){ try(need( input$col.ht != "", "Por favor selecione a variável referente a altura") )}
+      
+  #  )
+    
+    
+    if( is.null(input$modelo_estvol) ||  is.null(input$col.dap)  || is.null(input$bo_estvol) || is.null(input$b1_estvol) || is.na(input$modelo_estvol) ||  is.na(input$col.dap)  || is.na(input$bo_estvol) || is.na(input$b1_estvol) || input$modelo_estvol =="" || input$col.dap ==""  || input$bo_estvol == "" || input$b1_estvol == ""  ){
+      
+      # esse if acima so foi feito dessa forma pois tentar adicionar ! nas condicoes acima
+      # nao funcionou, por algum motivo.
+      # portanto foi utilizado um if vazio com a condicao oposta a desejada,
+      # e o resultado esperado dentro do else.
+    }else{
+      
+      if(input$modelo_estvol == "LN(VFFC) = b0 + b1 * 1/DAP + e"){
+        data$VOL <- exp( input$bo_estvol + 1/data[[input$col.dap]] * input$b1_estvol )
+        data <- data %>% select(VOL, everything())
+      }
+      
+      if(input$modelo_estvol == "VFFC = b0 + b1 * DAP + e"){
+        data$VOL <- input$bo_estvol + data[[input$col.dap]] * input$b1_estvol
+        data <- data %>% select(VOL, everything())
+      }
+      
+      if(input$modelo_estvol == "VFFC = b0 + b1 * DAP² + e"){
+        data$VOL <- input$bo_estvol + data[[input$col.dap]]^2 * input$b1_estvol
+        data <- data %>% select(VOL, everything())
+      }
+      
+      if(input$modelo_estvol == "VFFC = b0 + b1 * DAP + b2 * DAP² + e"){
+        data$VOL <- input$bo_estvol + data[[input$col.dap]] * input$b1_estvol + data[[input$col.dap]]^2 * input$b2_estvol
+        data <- data %>% select(VOL, everything())
+      }
+      
+      if(input$modelo_estvol == "VFFC = b0 + b1 * LN(DAP) + e"){
+        data$VOL <- input$bo_estvol + log(data[[input$col.dap]]) * input$b1_estvol
+        data <- data %>% select(VOL, everything())
+        
+      }
+          
+      
+      # modelos com b2 e ht precisam de mais uma condicao
+      if( is.null(input$modelo_estvol) ||  is.null(input$col.ht)  |  is.na(input$col.ht) || is.na(input$b2_estvol) || input$col.ht ==""  || input$b2_estvol == "" ){
+
+         }else if(input$modelo_estvol == "LN(VFFC) = b0 + b1 * LN(DAP) + b2 * LN(HT) + e"){
+          data$VOL <- exp( input$bo_estvol + log(data[[input$col.dap]]) * input$b1_estvol + log(data[[input$col.ht]]) * input$b2_estvol )
+          data <- data %>% select(VOL, everything())
+      
+          }else  if(input$modelo_estvol == "VFFC = b0 + b1 * DAP + b2 * HT + e"){
+          data$VOL <- input$bo_estvol + data[[input$col.dap]] * input$b1_estvol + data[[input$col.ht]] * input$b2_estvol
+          data <- data %>% select(VOL, everything())
+         }
+    
+      
+    }
+    
+    data
+    
+  })
   
+  # render
   output$prep_table <- renderDataTable({
+    
+    validate(need(!is.null(rawData()), "Please import a dataset"))
     
     data <- rawData()
     
