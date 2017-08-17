@@ -214,7 +214,7 @@ shinyServer(function(input, output, session) {
   
   # ui
   
-  output$selec_especies       <- renderUI({
+  output$selec_especies     <- renderUI({
     
     data <- rawData_()
     
@@ -234,7 +234,7 @@ shinyServer(function(input, output, session) {
     # obs: multiple = T & maxItems = 1, garantem que a celula fique vazia, caso o app falhe
     # em tentar adivinhar o nome da especie
   })
-  output$selec_parcelas       <- renderUI({
+  output$selec_parcelas     <- renderUI({
     
     data <- rawData_()
     
@@ -253,7 +253,7 @@ shinyServer(function(input, output, session) {
     
     
   })
-  output$selec_dap            <- renderUI({
+  output$selec_dap          <- renderUI({
     
     data <- rawData_()
     
@@ -273,7 +273,7 @@ shinyServer(function(input, output, session) {
     
   })
   
-  output$selec_ht             <- renderUI({
+  output$selec_ht           <- renderUI({
     
     data <- rawData_()
     
@@ -292,7 +292,7 @@ shinyServer(function(input, output, session) {
     
     
   })
-  output$selec_vcc            <- renderUI({
+  output$selec_vcc          <- renderUI({
     
     data <- rawData_()
     
@@ -311,7 +311,7 @@ shinyServer(function(input, output, session) {
     
     
   })
-  output$selec_vsc            <- renderUI({
+  output$selec_vsc          <- renderUI({
     
     data <- rawData_()
     
@@ -331,7 +331,7 @@ shinyServer(function(input, output, session) {
     
   })
   
-  output$selec_area.parcela   <- renderUI({
+  output$selec_area.parcela <- renderUI({
     
     data <- rawData_()
     
@@ -348,7 +348,7 @@ shinyServer(function(input, output, session) {
     )# selectize
     
   })
-  output$selec_area.total     <- renderUI({
+  output$selec_area.total   <- renderUI({
     
     data <- rawData_()
     
@@ -365,7 +365,7 @@ shinyServer(function(input, output, session) {
     )# selectize
     
   })
-  output$selec_agrup          <- renderUI({
+  output$selec_agrup        <- renderUI({
     
     data <- rawData_()
     
@@ -383,7 +383,7 @@ shinyServer(function(input, output, session) {
     
   })
   
-  output$selec_est.vertical   <- renderUI({
+  output$selec_est.vertical <- renderUI({
     
     data <- rawData_()
     
@@ -400,7 +400,7 @@ shinyServer(function(input, output, session) {
     )# selectize
     
   })
-  output$selec_est.interna    <- renderUI({
+  output$selec_est.interna  <- renderUI({
     
     data <- rawData_()
     
@@ -420,6 +420,8 @@ shinyServer(function(input, output, session) {
   
 
   # Preparação ####
+  
+  
   output$selec_rotuloNI     <- renderUI({
     
     validate(need(input$col.especies != "","") )
@@ -427,13 +429,129 @@ shinyServer(function(input, output, session) {
     data <- rawData_()
     
     selectizeInput("rotutuloNI",
-                   NULL, # nome que sera mostrado na UI
+                   "Selecione o(s) indice(s) referente(s) às espécies não identificadas:", # nome que sera mostrado na UI
                    choices = levels(as.factor(data[,input$col.especies])),
                    multiple = TRUE,
                    options = list(
                      placeholder = 'Selecione um ou mais rótulos abaixo',
                      onInitialize = I('function() { this.setValue(""); }')
                    ) )
+    
+  })
+  
+  # Filtrar dados
+  
+  # rawData (sem traco) sera o dado bruto com filtro, caso o usuario
+  # rode algum filtro, caso contrario sera o dado bruto inalterado
+  rawData <- reactive({
+    
+    data <- rawData_()
+    
+    # se o usuario nao selecionar nada, retorna o dado normal 
+    # (isso faz com o que o dado original seja exibido logo que se entra na aba de filtrar),
+    # caso contrario ele filtra o dado conforme o usuario seleciona as variaveis
+    
+    if( is.null(input$col.rm_data_var) || input$col.rm_data_var ==""){
+      
+      data
+      
+    }else{
+      
+      data <- data[!data[[input$col.rm_data_var]] %in% input$level.rm_data_level,]
+      # data <- data %>% 
+      #filter( ! .data[[input$col.rm_data_var]] %in% input$level.rm_data_level )
+      data
+      
+    }
+    
+    # se o usuario nao selecionar nada, uma coluna vazia e definida como nula,
+    # ou seja, nao muda nada no dado.
+    # por isso nao e necessario utilizar condicionais nesse caso
+    
+    data[, input$col.rm_vars] <- NULL
+    
+    data
+    
+  })
+  
+  output$rm_data_var <- renderUI({
+    
+    data <- rawData_()
+    
+    selectizeInput( # cria uma lista de opcoes em que o usuario pode clicar
+      "col.rm_data_var", # Id
+      "Selecione a coluna que se deseja filtrar:", # nome que sera mostrado na UI
+      choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
+      options = list(
+        placeholder = 'selecione uma coluna abaixo',
+        onInitialize = I('function() { this.setValue(""); }')
+      ) # options    
+    ) # selctize
+    
+    
+  })
+  
+  output$rm_data_level <- renderUI({
+    
+    if( is.null(input$col.rm_data_var) || input$col.rm_data_var =="" ){
+      
+      opcoes <- NULL
+      
+    }else{
+      
+      data <- rawData_()
+      
+      opcoes <- levels(
+        as.factor(
+          data[,input$col.rm_data_var]))
+    }
+    
+    selectizeInput("level.rm_data_level",
+                   label = "Selecione o(s) nivel(s) que se deseja remover:",
+                   choices = opcoes,
+                   multiple = TRUE,
+                   options = list(
+                     placeholder = 'Selecione o(s) nivel(s) abaixo',
+                     onInitialize = I('function() { this.setValue(""); }')
+                   ) # options    
+    )
+    
+    
+    
+  })
+  
+  output$rm_vars <- renderUI({
+    
+    data <- rawData_()
+    
+    selectizeInput( # cria uma lista de opcoes em que o usuario pode clicar
+      "col.rm_vars", # Id
+      "Selecione a(s) coluna(s) que se deseja remover:", # nome que sera mostrado na UI
+      choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
+      multiple = TRUE,
+      options = list(
+        placeholder = 'selecione uma coluna abaixo',
+        onInitialize = I('function() { this.setValue(" "); }')
+      ) # options    
+    ) # selctize
+    
+    
+  })
+  
+  output$prep_table <- renderDataTable({
+    
+    data <- rawData()
+    
+    datatable(data,
+              
+              options = list(
+                initComplete = JS(
+                  "function(settings, json) {",
+                  "$(this.api().table().header()).css({'background-color': '#00a90a', 'color': '#fff'});",
+                  "}")
+              )
+    ) # Criamos uma DT::datatable com base no objeto
+    
     
   })
   

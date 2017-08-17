@@ -207,8 +207,37 @@ shinyUI(
                      ) # fluidPage 
                      
                      
-                     )# tabPanel Mapeamento
-
+                     ),# tabPanel Mapeamento
+                     
+                     # tabPanel Preparação ####
+                     tabPanel("Preparação", 
+                              
+                              sidebarPanel(
+                                
+                                h3("Intervalo de classe"),
+                                numericInput("int.classe", "Insira o intervalo de classe:", 10, 1, 50, 0.5),
+                              
+                                h3("Diâmetro mínimo"),
+                                numericInput("diam.min", "Insira o diâmetro mínimo:", 10, 1, 100, 1),
+                                
+                                h3("Espécie não-identificada"),
+                                uiOutput("selec_rotuloNI"),
+                                
+                                h3("Remover dados"),
+                                
+                                uiOutput("rm_data_var"),
+                                uiOutput("rm_data_level"),
+                                uiOutput("rm_vars")
+                                
+                              ),# sidebarPanel
+                              
+                              mainPanel(p("colocar aviso sobre remover colunas importantes"),
+                                        DT::dataTableOutput("prep_table"))# mainPanel
+                              
+                              
+                              
+                     ) # tabPanel filtrar dados
+                     
                      # final da UI  ####    
                      ) # navbarPage
   )#tagList
