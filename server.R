@@ -57,7 +57,7 @@ estratos_names <- c("TALHAO", "Talhao", "talhao","COD_TALHAO","Cod_Talhao","cod_
 shinyServer(function(input, output, session) {
 
   
-  # Importar os dados ####
+  # Importação ####
   
   output$upload <- renderUI({
     
@@ -209,6 +209,176 @@ shinyServer(function(input, output, session) {
     # aperte o botao input$columns
     
   })
+  
+  # Mapeamento ####
+  
+  # ui
+  
+  output$selec_especies     <- renderUI({
+    
+    data <- rawData_()
+    
+    selectizeInput( # cria uma lista de opcoes em que o usuario pode clicar
+      "col.especies", # Id
+      NULL, # nome que sera mostrado na UI
+      choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
+      selected = especies_names,
+      multiple=T,
+      options = list(
+        maxItems = 1,
+        placeholder = 'selecione uma coluna abaixo'#,
+        #onInitialize = I('function() { this.setValue(""); }')
+      ) # options    
+    ) # selctize
+    
+    # obs: multiple = T & maxItems = 1, garantem que a celula fique vazia, caso o app falhe
+    # em tentar adivinhar o nome da especie
+  })
+  output$selec_parcelas     <- renderUI({
+    
+    data <- rawData_()
+    
+    selectizeInput( # cria uma lista de opcoes em que o usuario pode clicar
+      "col.parcelas", # Id
+      NULL, # nome que sera mostrado na UI
+      choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
+      selected = parcelas_names,     
+      multiple=T,
+      options = list(
+        maxItems = 1,
+        placeholder = 'selecione uma coluna abaixo'#,
+        #onInitialize = I('function() { this.setValue(""); }')
+      ) # options    
+    ) # selctize
+    
+    
+  })
+  output$selec_rotuloNI     <- renderUI({
+    
+    validate(need(input$col.especies != "","") )
+    
+    data <- rawData_()
+    
+    selectizeInput("rotutuloNI",
+                   NULL, # nome que sera mostrado na UI
+                   choices = levels(as.factor(data[,input$col.especies])),
+                   multiple = TRUE,
+                   options = list(
+                     placeholder = 'Selecione um ou mais rótulos abaixo',
+                     onInitialize = I('function() { this.setValue(""); }')
+                   ) )
+    
+  })
+  output$selec_dap          <- renderUI({
+    
+    data <- rawData_()
+    
+    selectizeInput( # cria uma lista de opcoes em que o usuario pode clicar
+      "col.dap", # Id
+      NULL, # nome que sera mostrado na UI
+      choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
+      selected = DAP_names,     
+      multiple=T,
+      options = list(
+        maxItems = 1,
+        placeholder = 'selecione uma coluna abaixo'#,
+        #onInitialize = I('function() { this.setValue(""); }')
+      ) # options    
+    ) # selctize
+    
+    
+  })
+  output$selec_ht           <- renderUI({
+    
+    data <- rawData_()
+    
+    selectizeInput( # cria uma lista de opcoes em que o usuario pode clicar
+      "col.ht", # Id
+      NULL, # nome que sera mostrado na UI
+      choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
+      selected = HT_names,     
+      multiple=T,
+      options = list(
+        maxItems = 1,
+        placeholder = 'selecione uma coluna abaixo'#,
+        #onInitialize = I('function() { this.setValue(""); }')
+      ) # options    
+    ) # selctize
+    
+    
+  })
+  output$selec_vol          <- renderUI({
+    
+    data <- rawData_()
+    
+    selectizeInput( # cria uma lista de opcoes em que o usuario pode clicar
+      "col.vol", # Id
+      "Caso o dado não possua uma coluna de volume, este pode ser calculado na aba 'Preparação' ", # nome que sera mostrado na UI
+      choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
+      selected = VCC_names,     
+      multiple=T,
+      options = list(
+        maxItems = 1,
+        placeholder = 'selecione uma coluna abaixo'#,
+        #onInitialize = I('function() { this.setValue(""); }')
+      ) # options    
+    ) # selctize
+    
+    
+  })
+  output$selec_area.parcela <- renderUI({
+    
+    data <- rawData_()
+    
+    selectizeInput("col.area_parcela",
+                   NULL, # nome que sera mostrado na UI
+                   choices = names(data),
+                   selected = area_parcela_names,
+                   multiple = T,
+                   options = list(
+                     maxItems = 1,
+                     placeholder = 'Selecione uma coluna abaixo:'#,
+                     #    onInitialize = I('function() { this.setValue(""); }')
+                   ) # options    
+    )# selectize
+    
+  })
+  output$selec_area.total   <- renderUI({
+    
+    data <- rawData_()
+    
+    selectizeInput("col.area_total",
+                   NULL, # nome que sera mostrado na UI
+                   choices = names(data),
+                   selected = area_total_names,
+                   multiple = T,
+                   options = list(
+                     maxItems = 1,
+                     placeholder = 'Selecione uma coluna abaixo:'#,
+                     #    onInitialize = I('function() { this.setValue(""); }')
+                   ) # options    
+    )# selectize
+    
+  })
+  output$selec_agrup        <- renderUI({
+    
+    data <- rawData_()
+    
+    selectizeInput("col.agrup",
+                   NULL, # nome que sera mostrado na UI
+                   choices = names(data),
+                   selected = estratos_names,
+                   multiple = T,
+                   options = list(
+                     maxItems = 1,
+                     placeholder = 'Selecione uma coluna abaixo:'#,
+                     #    onInitialize = I('function() { this.setValue(""); }')
+                   ) # options    
+    )# selectize
+    
+  })
+  
+  
 
 })
 

@@ -67,9 +67,123 @@ shinyUI(
                                   DT::dataTableOutput("rawdata")
                                 ) # mainPanel
                               ) # sidebarLayout
-                     )
-
+                     ),
                      
+                     # Mapeamento ####
+                     tabPanel("Mapeamento",
+                     fluidPage(
+                       
+                       #h1("Shiny", span("Widgets Gallery", style = "font-weight: 300"), 
+                       h1("Definição dos nomes das variáveis", 
+                             
+                          style = "text-align: center;"),
+                       br(),
+                       
+                       fluidRow(
+                         
+                         column(4,
+                                wellPanel(
+                                  h3("Espécie"),
+                                  p("Selecione o nome da variável referente à Espécie:"#, 
+                                    #style = "font-family: 'Source Sans Pro';"
+                                    ),
+                                  uiOutput("selec_especies")
+                                )), # Coluna Espécie
+                       
+                       column(4,
+                              wellPanel(
+                                h3("Parcela"),
+                                p("Selecione o nome da variável referente à Parcela:"#, 
+                                  #style = "font-family: 'Source Sans Pro';"
+                                ),
+                                uiOutput("selec_parcelas")
+                              )),
+                       
+                       column(4,
+                              wellPanel(
+                                h3("Espécie não-identificada"),
+                                p("Selecione o(s) indice(s) referente(s) às espécies não identificadas:"#, 
+                                  #style = "font-family: 'Source Sans Pro';"
+                                ),
+                                uiOutput("selec_rotuloNI")
+                              ))
+                       
+                       
+                       ), # fluidRow 1
+                       
+                       fluidRow(
+                        
+                         column(4,
+                                wellPanel(
+                                  h3("Diâmetro (DAP)"),
+                                  p("Selecione o nome da variável referente à DAP:"#, 
+                                    #style = "font-family: 'Source Sans Pro';"
+                                  ),
+                                  uiOutput("selec_dap")
+                                )), # Coluna dap
+                         
+                         column(4,
+                                wellPanel(
+                                  h3("Altura total"),
+                                  p("Selecione o nome da variável referente à Altura total:"#, 
+                                    #style = "font-family: 'Source Sans Pro';"
+                                  ),
+                                  uiOutput("selec_ht")
+                                )), # Coluna ht
+                         
+                         column(4,
+                                wellPanel(
+                                  h3("Volume"),
+                                  p("Selecione o nome da variável referente à Volume:"#, 
+                                    #style = "font-family: 'Source Sans Pro';"
+                                  ),
+                                  uiOutput("selec_vol")
+                                )) # Coluna vol
+                         
+                         
+                         
+                       ),# fluidRow 2
+                       
+                     fluidRow(
+                       
+                       column(4,
+                              wellPanel(
+                                h3("Área da parcela"),
+                                p("Selecione o nome da variável referente à Área da parcela:"#, 
+                                  #style = "font-family: 'Source Sans Pro';"
+                                ),
+                                uiOutput("selec_area.parcela")
+                              )), # Coluna area.parcela
+                       
+                       
+                       column(4,
+                              wellPanel(
+                                h3("Área total"),
+                                p("Selecione o nome da variável referente à Área total"#, 
+                                  #style = "font-family: 'Source Sans Pro';"
+                                ),
+                                uiOutput("selec_area.total")
+                              )), # Coluna area.total
+                       
+                       
+                       column(4,
+                              wellPanel(
+                                h3("Nível de agrupamento"),
+                                p("Selecione o nome da variável referente ao nível de agrupamento"#, 
+                                  #style = "font-family: 'Source Sans Pro';"
+                                ),
+                                uiOutput("selec_agrup")
+                              )) # Coluna area.total
+                       
+                       
+                     ) # fluidRow 3  
+                       
+                       
+                     ) # fluidPage 
+                     
+                     
+                     )# tabPanel Mapeamento
+
                      # final da UI  ####    
                      ) # navbarPage
   )#tagList
