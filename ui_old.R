@@ -68,7 +68,9 @@ shinyUI(
                         ) # mainPanel
                       ) # sidebarLayout
              ), # tabPanel Upload  de dados
-             tabPanel("Filtrar dados",
+            
+            # tabPanel Filtrar dados ####
+             tabPanel("Filtrar dados", 
                       
                       sidebarPanel(
                         
