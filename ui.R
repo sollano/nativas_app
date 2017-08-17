@@ -101,26 +101,17 @@ shinyUI(
                        
                        column(4,
                               wellPanel(
-                                h3("Espécie não-identificada"),
-                                p("Selecione o(s) indice(s) referente(s) às espécies não identificadas:"#, 
+                                h3("Diâmetro (DAP)"),
+                                p("Selecione o nome da variável referente à DAP:"#, 
                                   #style = "font-family: 'Source Sans Pro';"
                                 ),
-                                uiOutput("selec_rotuloNI")
-                              ))
-                       
+                                uiOutput("selec_dap")
+                              )) # Coluna dap
                        
                        ), # fluidRow 1
                        
                        fluidRow(
                         
-                         column(4,
-                                wellPanel(
-                                  h3("Diâmetro (DAP)"),
-                                  p("Selecione o nome da variável referente à DAP:"#, 
-                                    #style = "font-family: 'Source Sans Pro';"
-                                  ),
-                                  uiOutput("selec_dap")
-                                )), # Coluna dap
                          
                          column(4,
                                 wellPanel(
@@ -133,12 +124,21 @@ shinyUI(
                          
                          column(4,
                                 wellPanel(
-                                  h3("Volume"),
-                                  p("Selecione o nome da variável referente à Volume:"#, 
+                                  h3("Volume com casca"),
+                                  p("Selecione o nome da variável referente à Volume com casca:"#, 
                                     #style = "font-family: 'Source Sans Pro';"
                                   ),
-                                  uiOutput("selec_vol")
-                                )) # Coluna vol
+                                  uiOutput("selec_vcc")
+                                )), # Coluna vcc
+                         
+                         column(4,
+                                wellPanel(
+                                  h3("Volume sem casca"),
+                                  p("Selecione o nome da variável referente à Volume sem casca:"#, 
+                                    #style = "font-family: 'Source Sans Pro';"
+                                  ),
+                                  uiOutput("selec_vsc")
+                                )) # Coluna vsc
                          
                          
                          
@@ -176,8 +176,33 @@ shinyUI(
                               )) # Coluna area.total
                        
                        
-                     ) # fluidRow 3  
+                     ), # fluidRow 3  
                        
+                     
+                     fluidRow(
+                       
+                       
+                       column(4,
+                              wellPanel(
+                                h3("Estrutura vertical"),
+                                p("Selecione o nome da variável referente à Estrutura vertical"#, 
+                                  #style = "font-family: 'Source Sans Pro';"
+                                ),
+                                uiOutput("selec_est.vertical")
+                              )), # Coluna area.total
+                       
+                       
+                       column(4,
+                              wellPanel(
+                                h3("Estrutura interna"),
+                                p("Selecione o nome da variável referente à Estrutura interna"#, 
+                                  #style = "font-family: 'Source Sans Pro';"
+                                ),
+                                uiOutput("selec_est.interna")
+                              )) # Coluna area.total
+                       
+                       
+                     ) # fluidRow 4
                        
                      ) # fluidPage 
                      

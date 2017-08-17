@@ -214,7 +214,7 @@ shinyServer(function(input, output, session) {
   
   # ui
   
-  output$selec_especies     <- renderUI({
+  output$selec_especies       <- renderUI({
     
     data <- rawData_()
     
@@ -234,7 +234,7 @@ shinyServer(function(input, output, session) {
     # obs: multiple = T & maxItems = 1, garantem que a celula fique vazia, caso o app falhe
     # em tentar adivinhar o nome da especie
   })
-  output$selec_parcelas     <- renderUI({
+  output$selec_parcelas       <- renderUI({
     
     data <- rawData_()
     
@@ -253,23 +253,7 @@ shinyServer(function(input, output, session) {
     
     
   })
-  output$selec_rotuloNI     <- renderUI({
-    
-    validate(need(input$col.especies != "","") )
-    
-    data <- rawData_()
-    
-    selectizeInput("rotutuloNI",
-                   NULL, # nome que sera mostrado na UI
-                   choices = levels(as.factor(data[,input$col.especies])),
-                   multiple = TRUE,
-                   options = list(
-                     placeholder = 'Selecione um ou mais rótulos abaixo',
-                     onInitialize = I('function() { this.setValue(""); }')
-                   ) )
-    
-  })
-  output$selec_dap          <- renderUI({
+  output$selec_dap            <- renderUI({
     
     data <- rawData_()
     
@@ -288,7 +272,8 @@ shinyServer(function(input, output, session) {
     
     
   })
-  output$selec_ht           <- renderUI({
+  
+  output$selec_ht             <- renderUI({
     
     data <- rawData_()
     
@@ -307,12 +292,12 @@ shinyServer(function(input, output, session) {
     
     
   })
-  output$selec_vol          <- renderUI({
+  output$selec_vcc            <- renderUI({
     
     data <- rawData_()
     
     selectizeInput( # cria uma lista de opcoes em que o usuario pode clicar
-      "col.vol", # Id
+      "col.vcc", # Id
       "Caso o dado não possua uma coluna de volume, este pode ser calculado na aba 'Preparação' ", # nome que sera mostrado na UI
       choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
       selected = VCC_names,     
@@ -326,11 +311,31 @@ shinyServer(function(input, output, session) {
     
     
   })
-  output$selec_area.parcela <- renderUI({
+  output$selec_vsc            <- renderUI({
     
     data <- rawData_()
     
-    selectizeInput("col.area_parcela",
+    selectizeInput( # cria uma lista de opcoes em que o usuario pode clicar
+      "col.vsc", # Id
+      "Caso o dado não possua uma coluna de volume, este pode ser calculado na aba 'Preparação' ", # nome que sera mostrado na UI
+      choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
+      selected = VSC_names,     
+      multiple=T,
+      options = list(
+        maxItems = 1,
+        placeholder = 'selecione uma coluna abaixo'#,
+        #onInitialize = I('function() { this.setValue(""); }')
+      ) # options    
+    ) # selctize
+    
+    
+  })
+  
+  output$selec_area.parcela   <- renderUI({
+    
+    data <- rawData_()
+    
+    selectizeInput("col.area.parcela",
                    NULL, # nome que sera mostrado na UI
                    choices = names(data),
                    selected = area_parcela_names,
@@ -343,11 +348,11 @@ shinyServer(function(input, output, session) {
     )# selectize
     
   })
-  output$selec_area.total   <- renderUI({
+  output$selec_area.total     <- renderUI({
     
     data <- rawData_()
     
-    selectizeInput("col.area_total",
+    selectizeInput("col.area.total",
                    NULL, # nome que sera mostrado na UI
                    choices = names(data),
                    selected = area_total_names,
@@ -360,7 +365,7 @@ shinyServer(function(input, output, session) {
     )# selectize
     
   })
-  output$selec_agrup        <- renderUI({
+  output$selec_agrup          <- renderUI({
     
     data <- rawData_()
     
@@ -378,7 +383,61 @@ shinyServer(function(input, output, session) {
     
   })
   
+  output$selec_est.vertical   <- renderUI({
+    
+    data <- rawData_()
+    
+    selectizeInput("col.est.vertical",
+                   NULL, # nome que sera mostrado na UI
+                   choices = names(data),
+                  # selected =  ,
+                   multiple = T,
+                   options = list(
+                     maxItems = 1,
+                     placeholder = 'Selecione uma coluna abaixo:'#,
+                     #    onInitialize = I('function() { this.setValue(""); }')
+                   ) # options    
+    )# selectize
+    
+  })
+  output$selec_est.interna    <- renderUI({
+    
+    data <- rawData_()
+    
+    selectizeInput("col.est.interna",
+                   NULL, # nome que sera mostrado na UI
+                   choices = names(data),
+                   # selected = ,
+                   multiple = T,
+                   options = list(
+                     maxItems = 1,
+                     placeholder = 'Selecione uma coluna abaixo:'#,
+                     #    onInitialize = I('function() { this.setValue(""); }')
+                   ) # options    
+    )# selectize
+    
+  })
   
 
+  # Preparação ####
+  output$selec_rotuloNI     <- renderUI({
+    
+    validate(need(input$col.especies != "","") )
+    
+    data <- rawData_()
+    
+    selectizeInput("rotutuloNI",
+                   NULL, # nome que sera mostrado na UI
+                   choices = levels(as.factor(data[,input$col.especies])),
+                   multiple = TRUE,
+                   options = list(
+                     placeholder = 'Selecione um ou mais rótulos abaixo',
+                     onInitialize = I('function() { this.setValue(""); }')
+                   ) )
+    
+  })
+  
+  
+  
 })
 
