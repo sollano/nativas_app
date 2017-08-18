@@ -14,6 +14,9 @@ estrutura = function(data, col.especies, col.dap, col.parcelas, area.parcela, es
     if(missing(est.interno)||is.null(est.interno)||est.interno==F||est.interno==""){
       est.interno = NA }
     
+    if(missing(nao.identificada)||is.null(nao.identificada)||nao.identificada==F||nao.identificada==""){
+      nao.identificada = "NI" }
+    
     # Se pos.vertical for a variavel HT (numerica)
     if(is.numeric(data[[est.vertical]])){
       data$canopy <- ifelse(data[[est.vertical]] < (mean(data[[est.vertical]], na.rm=T) - sd(data[[est.vertical]], na.rm=T) ), "Inferior", 

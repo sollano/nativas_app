@@ -4,7 +4,7 @@ diversidade = function(data, col.especies, col.parcelas, rotulo.NI = "NI", indic
   data <- data[!is.na(data[col.especies]),]
   
   # converter rotulos NI (aplicativo)
-  if(is.null(rotulo.NI)){rotulo.NI <- "NI"}
+  if(is.null(rotulo.NI)||rotulo.NI==""){rotulo.NI <- "NI"}
   
   # Remover NI (modifiquei para aceitar multiplas)
   #semNI = data[ ! data[,col.especies] %in% rotulo.NI, col.especies]
