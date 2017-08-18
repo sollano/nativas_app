@@ -231,13 +231,16 @@ shinyUI(
                                 uiOutput("selec_area_total_num"),
                                 uiOutput("ui_estvol1"),
                                 uiOutput("ui_estvol3"),
-                                uiOutput("ui_estvol4")   
+                                uiOutput("ui_estvol4"),
+                                uiOutput("checkbox_calc.est.vert")
                                 
                                 
                               ),# sidebarPanel
                               
                               mainPanel(p("colocar aviso sobre remover colunas importantes"),
-                                        DT::dataTableOutput("prep_table"))# mainPanel
+                                        tableOutput("teste"),
+                                        DT::dataTableOutput("prep_table")
+                                        )# mainPanel
                               
                               
                               

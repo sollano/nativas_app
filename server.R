@@ -32,6 +32,7 @@ source("funs/ace.R"                , encoding="UTF-8")
 source("funs/as_diffs.R"           , encoding="UTF-8")
 source("funs/inv_summary.R"        , encoding="UTF-8")
 source("funs/round_df.R"           , encoding="UTF-8")
+source("funs/estrat_vert_souza.R"  , encoding="UTF-8")
 
 # vectors for names ####
 
@@ -547,7 +548,7 @@ shinyServer(function(input, output, session) {
     )
     
   })
-     # Calculo de volume ####
+     # Calculo de volume 
     output$ui_estvol1 <- renderUI({
     
     # precisa que o usuario nao tenha selecionado o volume
@@ -582,16 +583,16 @@ shinyServer(function(input, output, session) {
     list(
       
       numericInput( # cria uma lista de opcoes em que o usuario pode clicar
-        'bo_estvol', # Id
+        'b0_estvol', # Id
         "Insira o valor para o b0:", # nome que sera mostrado na UI
-        value = "", 
+        value = NULL, 
         step = 0.0001
       ),
       
       numericInput( # cria uma lista de opcoes em que o usuario pode clicar
         'b1_estvol', # Id
         "Insira o valor para o b1:", # nome que sera mostrado na UI
-        value = "", 
+        value = NULL, 
         step = 0.0001
       )
       
@@ -619,6 +620,25 @@ shinyServer(function(input, output, session) {
     
   })
 
+    # calcular estrutura vertical
+  output$checkbox_calc.est.vert <- renderUI({
+    
+    # precisa que o usuario nao tenha selecionado estrutura vertical E tenha selecionado altura
+    req((is.null(input$col.est.vertical) || input$col.est.vertical=="") &&  (!is.null(input$col.ht) || input$col.ht!="")   )
+    
+    list(
+    
+    h3("Calcular Estrutura interna"),
+    
+    h5("A estrutura interna será calculada utilizando a variável altura, segundo o método de Souza (2002)"),
+      
+    radioButtons("est.vert.calc",
+                  "Deseja classificar a estrutura interna utilizando a variável altura?",
+                 c("Sim", "Nao"), "Nao" )
+    )
+    
+  })
+  
   # tabela
   # rawData sera o dado utilizado durante o resto do app
   # as alteracoes feitas em 'preparacao' serao salvas aqui
@@ -656,27 +676,9 @@ shinyServer(function(input, output, session) {
     # por isso nao e necessario utilizar condicionais nesse caso
     
     data[, input$col.rm_vars] <- NULL
-    
-    data
-    
 
-    # Estimar volume
-    
-   # req(!is.null(rawData()) )
-   # req(input$df == "Dados em nivel de arvore" )
-   # req(input$col.dap != "")
-   # req(input$bo_estvol != "")
-   # req(input$b1_estvol != "")
-    
-    
-  #  validate(
-      #need condicional: so acontece se o modelo nao for nulo (para evitar erros) e se o modelo tiver HT nele
-  #    if(is.null(input$modelo_estvol)){}  else if(grepl( "\\<HT\\>",input$modelo_estvol) ){ try(need( input$col.ht != "", "Por favor selecione a variável referente a altura") )}
-      
-  #  )
-    
-    
-    if( is.null(input$modelo_estvol) ||  is.null(input$col.dap)  || is.null(input$bo_estvol) || is.null(input$b1_estvol) || is.na(input$modelo_estvol) ||  is.na(input$col.dap)  || is.na(input$bo_estvol) || is.na(input$b1_estvol) || input$modelo_estvol =="" || input$col.dap ==""  || input$bo_estvol == "" || input$b1_estvol == ""  ){
+    # A seguir e feito o calculo do volume, caso o usuario nao insira uma variavel de volume e as variaveis necessarias para o calculo
+    if( is.null(input$modelo_estvol) ||  is.null(input$col.dap)  || is.null(input$b0_estvol) || is.null(input$b1_estvol) || is.na(input$modelo_estvol) ||  is.na(input$col.dap)  || is.na(input$b0_estvol) || is.na(input$b1_estvol) || input$modelo_estvol =="" || input$col.dap ==""  || input$b0_estvol == "" || input$b1_estvol == ""  ){
       
       # esse if acima so foi feito dessa forma pois tentar adicionar ! nas condicoes acima
       # nao funcionou, por algum motivo.
@@ -685,44 +687,51 @@ shinyServer(function(input, output, session) {
     }else{
       
       if(input$modelo_estvol == "LN(VFFC) = b0 + b1 * 1/DAP + e"){
-        data$VOL <- exp( input$bo_estvol + 1/data[[input$col.dap]] * input$b1_estvol )
+        data$VOL <- exp( input$b0_estvol + 1/data[[input$col.dap]] * input$b1_estvol )
         data <- data %>% select(VOL, everything())
       }
       
       if(input$modelo_estvol == "VFFC = b0 + b1 * DAP + e"){
-        data$VOL <- input$bo_estvol + data[[input$col.dap]] * input$b1_estvol
+        data$VOL <- input$b0_estvol + data[[input$col.dap]] * input$b1_estvol
         data <- data %>% select(VOL, everything())
       }
       
       if(input$modelo_estvol == "VFFC = b0 + b1 * DAP² + e"){
-        data$VOL <- input$bo_estvol + data[[input$col.dap]]^2 * input$b1_estvol
+        data$VOL <- input$b0_estvol + data[[input$col.dap]]^2 * input$b1_estvol
         data <- data %>% select(VOL, everything())
       }
       
       if(input$modelo_estvol == "VFFC = b0 + b1 * DAP + b2 * DAP² + e"){
-        data$VOL <- input$bo_estvol + data[[input$col.dap]] * input$b1_estvol + data[[input$col.dap]]^2 * input$b2_estvol
+        data$VOL <- input$b0_estvol + data[[input$col.dap]] * input$b1_estvol + data[[input$col.dap]]^2 * input$b2_estvol
         data <- data %>% select(VOL, everything())
       }
       
       if(input$modelo_estvol == "VFFC = b0 + b1 * LN(DAP) + e"){
-        data$VOL <- input$bo_estvol + log(data[[input$col.dap]]) * input$b1_estvol
+        data$VOL <- input$b0_estvol + log(data[[input$col.dap]]) * input$b1_estvol
         data <- data %>% select(VOL, everything())
         
       }
-          
+      
       
       # modelos com b2 e ht precisam de mais uma condicao
       if( is.null(input$modelo_estvol) ||  is.null(input$col.ht)  |  is.na(input$col.ht) || is.na(input$b2_estvol) || input$col.ht ==""  || input$b2_estvol == "" ){
-
-         }else if(input$modelo_estvol == "LN(VFFC) = b0 + b1 * LN(DAP) + b2 * LN(HT) + e"){
-          data$VOL <- exp( input$bo_estvol + log(data[[input$col.dap]]) * input$b1_estvol + log(data[[input$col.ht]]) * input$b2_estvol )
-          data <- data %>% select(VOL, everything())
+        
+      }else if(input$modelo_estvol == "LN(VFFC) = b0 + b1 * LN(DAP) + b2 * LN(HT) + e"){
+        data$VOL <- exp( input$b0_estvol + log(data[[input$col.dap]]) * input$b1_estvol + log(data[[input$col.ht]]) * input$b2_estvol )
+        data <- data %>% select(VOL, everything())
+        
+      }else  if(input$modelo_estvol == "VFFC = b0 + b1 * DAP + b2 * HT + e"){
+        data$VOL <- input$b0_estvol + data[[input$col.dap]] * input$b1_estvol + data[[input$col.ht]] * input$b2_estvol
+        data <- data %>% select(VOL, everything())
+      }
       
-          }else  if(input$modelo_estvol == "VFFC = b0 + b1 * DAP + b2 * HT + e"){
-          data$VOL <- input$bo_estvol + data[[input$col.dap]] * input$b1_estvol + data[[input$col.ht]] * input$b2_estvol
-          data <- data %>% select(VOL, everything())
-         }
+      
+    }
     
+    # A seguir e feito o calculo da estrutura vertical, caso o usuario nao tenha inserido uma variavel referente a mesma, e selecione que desja calcular
+    if(!is.null(input$est.vert.calc) && !is.na(input$est.vert.calc) && input$est.vert.calc=="Sim"){
+      
+      data <- estrat_vert_souza(data, input$col.ht)
       
     }
     
@@ -750,7 +759,51 @@ shinyServer(function(input, output, session) {
     
   })
   
+  # Set names
   
+  varnames <- reactive({
+    
+    #req(input$col.especies,input$col.parcelas, input$col.dap,input$col.ht,input$col.vcc, input$col.vsc,input$col.area.parcela,input$col.area.total, input$col.col.agrup,  input$col.est.vertical,input$col.est.interna)
+    
+    varnameslist <- list(
+      especies=input$col.especies,
+      parcelas=input$col.parcelas,
+      dap=input$col.dap,
+      ht=input$col.ht,
+      vcc=input$col.vcc,
+      vsc=input$col.vsc,
+      area.parcela=input$col.area.parcela,
+      area.total=input$col.area.total,
+      agrup=input$col.col.agrup,
+      est.vertical=input$col.est.vertical,
+      est.interna=input$col.est.interna
+      )
+    
+    if(is.null(input$num.area.parcela)|| is.na(input$num.area.parcela) ||input$num.area.parcela==""){}else{varnameslist$area.parcela <- input$num.area.parcela  }
+    if(is.null(input$num.area.total) || is.na(input$num.area.total) ||input$num.area.total==""){}else{varnameslist$area.total <- input$num.area.total  }
+    
+    if( !is.null(input$b0_estvol) && !is.na(input$b0_estvol) && !is.null(input$b1_estvol) && !is.na(input$b1_estvol)  ){
+      varnameslist$vcc <- "VOL"
+      }
+    
+    if(!is.null(input$est.vert.calc) && !is.na(input$est.vert.calc) && input$est.vert.calc=="Sim"){
+      varnameslist$est.vertical <- "est.vert"
+      }
+    
+    
+    # Os nomes nao selecionados serao salvos como NULL na lista,
+    # estes sao entao convertidos para "", por conveniencia 
+    #x <- data.frame(do.call(cbind, lapply(varnameslist, function(x){if(is.null(x)){x<-""}else{x} } )  ))    
+
+    x <- lapply(varnameslist, function(x){if(is.null(x)){x<-""}else{x} } )   
+    x
+  })
+  
+  output$teste <- renderTable({
+    #print(varnames())
+    varnames()
+    
+  })
   
 })
 
