@@ -244,7 +244,45 @@ shinyUI(
                               
                               
                               
-                     ) # tabPanel filtrar dados
+                     ), # tabPanel filtrar dados
+                     # navbarMenu fitossociologica ####
+                     navbarMenu("Análise fitossociológica",
+                                
+                                #Diversidade ####
+                                tabPanel("Índices de diversidade",
+                                         
+                                         fluidPage(
+                                           h1("Índices de diversidade", style = "text-align: center;"),
+                                           br(),
+                                           DT::dataTableOutput("div")
+                                         )
+                                         
+                                ), #Diversidade tab
+                                
+                                # Similaridade ####
+                                tabPanel("Índices de similaridade",
+                                         
+                                         fluidPage(
+                                           
+                                           h1("Índices de diversidade", style = "text-align: center;"),
+                                           br(),
+                                           
+                                           fluidRow( 
+                                             tabsetPanel(id = "mainPanel_Indices",
+                                                         tabPanel("Matriz de Similaridadede de Jaccard", DT::dataTableOutput("msim1") ),
+                                                         tabPanel("Dendrograma Jaccard", plotOutput("msim1_graph_",height = "600px"), value="id_msim1_graph" ),
+                                                         tabPanel("Matriz de Similaridadede de Sorensen", DT::dataTableOutput("msim2") ),
+                                                         tabPanel("Dendrograma Sorensen", plotOutput("msim2_graph_",height = "600px"), value="id_msim2_graph" ) 
+                                                         
+                                             ) ),
+                                          fluidRow( column(width=4,uiOutput("rb_graphmsim"),offset = 3 ), 
+                                                    column(width=3,uiOutput("slider_graphmsim")) )
+                                             
+                                           )
+                                         
+                                ) # Similaridade tab
+                                
+                     )# navbarMenu fitossociologica ####
                      
                      # final da UI  ####    
                      ) # navbarPage

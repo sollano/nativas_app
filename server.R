@@ -448,7 +448,7 @@ shinyServer(function(input, output, session) {
     )
     
   })
-    output$rm_data_var <- renderUI({
+  output$rm_data_var <- renderUI({
     
     data <- rawData_()
     
@@ -549,7 +549,7 @@ shinyServer(function(input, output, session) {
     
   })
      # Calculo de volume 
-    output$ui_estvol1 <- renderUI({
+  output$ui_estvol1 <- renderUI({
     
     # precisa que o usuario nao tenha selecionado o volume
     req(is.null(input$col.vcc) || input$col.vcc =="" )
@@ -760,7 +760,6 @@ shinyServer(function(input, output, session) {
   })
   
   # Set names
-  
   varnames <- reactive({
     
     #req(input$col.especies,input$col.parcelas, input$col.dap,input$col.ht,input$col.vcc, input$col.vsc,input$col.area.parcela,input$col.area.total, input$col.col.agrup,  input$col.est.vertical,input$col.est.interna)
@@ -776,7 +775,10 @@ shinyServer(function(input, output, session) {
       area.total=input$col.area.total,
       agrup=input$col.col.agrup,
       est.vertical=input$col.est.vertical,
-      est.interna=input$col.est.interna
+      est.interna=input$col.est.interna,
+      NI=input$rotutuloNI,
+      IC=input$int.classe,
+      diam.min=input$diam.min
       )
     
     if(is.null(input$num.area.parcela)|| is.na(input$num.area.parcela) ||input$num.area.parcela==""){}else{varnameslist$area.parcela <- input$num.area.parcela  }
@@ -800,10 +802,240 @@ shinyServer(function(input, output, session) {
   })
   
   output$teste <- renderTable({
-    #print(varnames())
     varnames()
     
   })
   
+  # Índices de diversidade ####
+  
+  # funcao diversidade
+  tabdiversidade <- reactive({
+    
+    nm <- varnames()
+    dados <- rawData()
+    
+    validate(
+      need(dados, "Por favor faça o upload da base de dados"),
+      need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" ),
+      need(nm$especies,"Por favor mapeie a coluna referente a 'especies'  "),
+      need(nm$parcelas,"Por favor mapeie a coluna referente a 'parcelas'  ") )
+    
+      x <- diversidade(data             = dados, 
+                       col.especies     = nm$especies, 
+                       col.parcelas     = nm$parcelas, 
+                       rotulo.NI        = nm$NI  ) # %>% 
+      #gather("Índice", "Resultado") # transpor tabela
+      x 
+    
+  })
+  
+  # tabela
+  output$div <- renderDataTable({
+    
+    divdt <- tabdiversidade() 
+    
+    datatable( divdt,
+               options = list(searching = FALSE,
+                              paging=FALSE,
+                              initComplete = JS(
+                                "function(settings, json) {",
+                                "$(this.api().table().header()).css({'background-color': '#00a90a', 'color': '#fff'});",
+                                "}")
+               )   
+    ) 
+    
+  }) 
+  
+  
+  # Índices de similaridade ####
+  
+  tabmsimilaridade <- reactive({
+    
+    nm <- varnames()
+    dados <- rawData()
+    
+    validate(
+      need(dados, "Por favor faça o upload da base de dados"),
+      need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" ),
+      need(nm$especies,"Por favor mapeie a coluna referente a 'especies'  "),
+      need(nm$parcelas,"Por favor mapeie a coluna referente a 'parcelas'  ") )
+    
+    x <- m.similaridade(data             = dados, 
+                        col.especies     = nm$especies,
+                        col.comparison   = nm$parcelas,
+                        rotulo.NI        = nm$NI  )
+    
+    x 
+    
+    
+  })
+
+  # Tabelas
+  output$msim1 <- DT::renderDataTable({
+    
+    
+      x <- tabmsimilaridade()
+      x <- as.data.frame(x[[1]])
+      names(x) <- 1:length(x)
+      
+      
+      msimdt1 <- tibble::rownames_to_column(x, " ") 
+      
+      datatable( msimdt1,
+                 rownames = F,
+                 options = list(searching = FALSE,
+                                paging=FALSE,
+                                ordering=FALSE,
+                                initComplete = JS(
+                                  "function(settings, json) {",
+                                  "$(this.api().table().header()).css({'background-color': '#00a90a', 'color': '#fff'});",
+                                  "}")
+                 )   
+      ) %>% 
+        formatStyle(1, backgroundColor = "#00a90a", color = '#fff' )
+      
+  }) 
+  output$msim2 <- DT::renderDataTable({
+    
+      x <- tabmsimilaridade()
+      x <- as.data.frame(x[[2]])
+      names(x) <- 1:length(x)
+      
+      msimdt2 <- tibble::rownames_to_column(x, " ") 
+      
+      datatable( msimdt2,
+                 rownames = F,
+                 options = list(searching = FALSE,
+                                paging=FALSE,
+                                ordering=FALSE,
+                                initComplete = JS(
+                                  "function(settings, json) {",
+                                  "$(this.api().table().header()).css({'background-color': '#00a90a', 'color': '#fff'});",
+                                  "}")
+                 )   
+      ) %>% 
+        formatStyle(1, backgroundColor = "#00a90a", color = '#fff' )
+
+  }) 
+  
+  # Graficos
+  output$rb_graphmsim <- renderUI({
+    
+    # precisa que o grafico seja selecionado na ui, caso contrario nao mostra nada
+    req(input$mainPanel_Indices %in% c("id_msim1_graph", "id_msim2_graph"))
+      radioButtons("rb_msim_graph", 
+                   "Selecione o método de classificação:", 
+                   c("Vizinho mais próximo"  = "single", 
+                     "Vizinho mais distante" = "complete", 
+                     "Distância euclidiana"  = "average"), 
+                   selected = "complete", inline = T) 
+      })
+  output$slider_graphmsim <- renderUI({
+    
+    # precisa que o grafico seja selecionado na ui, caso contrario nao mostra nada
+    req(input$mainPanel_Indices %in% c("id_msim1_graph", "id_msim2_graph"))
+    
+       sliderInput("slider_msim_graph", 
+                  label = "Selecione o número de clusters:", 
+                  min = 1, 
+                  max = 10, 
+                  value = 3,
+                  step = 1) 
+    
+  })
+  
+  
+  msim1_graph <- reactive({
+    
+    #retornar vazio enquando input$rb_msim1_graph carrega (ele fica nulo quando carrega)
+    #if(is.null(input$rb_msim1_graph)){return("")} 
+    
+    req(input$rb_msim_graph,input$slider_msim_graph )
+    
+    nm <- varnames()
+    dados <- rawData()
+    
+    validate(
+      need(dados, "Por favor faça o upload da base de dados"),
+      need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" ),
+      need(nm$especies,"Por favor mapeie a coluna referente a 'especies'  "),
+      need(nm$parcelas,"Por favor mapeie a coluna referente a 'parcelas'  ") )
+    
+      df <- as.data.frame(tabmsimilaridade()[[1]] ) 
+      
+      rownames(df) <- levels( as.factor( dados[,nm$parcelas] ) )
+      
+      hc    <- hclust(dist(df), input$rb_msim_graph) # heirarchal clustering
+      dendr <- ggdendro::dendro_data(hc) # convert for ggplot
+      clust    <- cutree(hc,k=input$slider_msim_graph)                    # find 2 clusters
+      clust.df <- data.frame(label=names(clust), cluster=factor(clust))
+      
+      # dendr[["labels"]] has the labels, merge with clust.df based on label column
+      dendr[["labels"]] <- merge(dendr[["labels"]],clust.df, by="label")
+      # plot the dendrogram; note use of color=cluster in geom_text(...)
+      
+      x <- ggdendro::ggdendrogram(dendr) +
+        geom_text(data=ggdendro::label(dendr), aes(x, y, label=label, hjust=.5,color=cluster), size=4) +
+        ggdendro::theme_dendro()
+      
+      x
+      
+  })
+  output$msim1_graph_ <- renderPlot({
+    
+    gmsim1 <- msim1_graph()
+    
+    gmsim1
+    
+  })
+  
+  msim2_graph <- reactive({
+    
+    #retornar vazio enquando input$rb_msim1_graph carrega (ele fica nulo quando carrega)
+    #if(is.null(input$rb_msim2_graph)){return("")} 
+    
+    req(input$rb_msim_graph,input$slider_msim_graph )
+    
+    nm <- varnames()
+    dados <- rawData()
+    
+    validate(
+      need(dados, "Por favor faça o upload da base de dados"),
+      need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" ),
+      need(nm$especies,"Por favor mapeie a coluna referente a 'especies'  "),
+      need(nm$parcelas,"Por favor mapeie a coluna referente a 'parcelas'  ") )
+    
+    df <- as.data.frame(tabmsimilaridade()[[2]] ) 
+    
+    rownames(df) <- levels( as.factor( dados[,nm$parcelas] ) )
+    
+      hc    <- hclust(dist(df), input$rb_msim_graph) # heirarchal clustering
+      dendr <- ggdendro::dendro_data(hc) # convert for ggplot
+      clust    <- cutree(hc,k=input$slider_msim_graph) 
+      clust.df <- data.frame(label=names(clust), cluster=factor(clust))
+      
+      # dendr[["labels"]] has the labels, merge with clust.df based on label column
+      dendr[["labels"]] <- merge(dendr[["labels"]],clust.df, by="label")
+      # plot the dendrogram; note use of color=cluster in geom_text(...)
+      
+      x <- ggdendro::ggdendrogram(dendr) +
+        geom_text(data=ggdendro::label(dendr), aes(x, y, label=label, hjust=.5,color=cluster), size=4) +
+        ggdendro::theme_dendro()
+      
+      x   
+      
+
+  })
+  output$msim2_graph_ <- renderPlot({
+    
+    gmsim2 <- msim2_graph()
+    
+    gmsim2
+    
+    
+  })
+  
+  
+  # ####
 })
 
