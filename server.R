@@ -817,8 +817,11 @@ shinyServer(function(input, output, session) {
     validate(
       need(dados, "Por favor faça o upload da base de dados"),
       need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" ),
-      need(nm$especies,"Por favor mapeie a coluna referente a 'especies'  "),
-      need(nm$parcelas,"Por favor mapeie a coluna referente a 'parcelas'  ") )
+      need(nm$especies,"Por favor mapeie a coluna referente a 'especies'  ") )
+    
+    # Se o usuario nao quiser realizar a anlise por parcela, o elemento parcelas da lista sera nulo,
+    # mesmo que o usuario tenha mapeado a variavel parcela na aba de mapeamento.
+     if(input$rb_div=="Nao"){nm$parcelas=NULL}
     
       x <- diversidade(data             = dados, 
                        col.especies     = nm$especies, 

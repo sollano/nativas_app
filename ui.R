@@ -70,15 +70,14 @@ shinyUI(
                      ),
                      
                      # Mapeamento ####
-                     tabPanel("Mapeamento",
+                     tabPanel("Mapeamento de variáveis",
                      fluidPage(
                        
                        #h1("Shiny", span("Widgets Gallery", style = "font-weight: 300"), 
                        h1("Definição dos nomes das variáveis", 
-                             
                           style = "text-align: center;"),
                        br(),
-                       
+                     #  h4("Nesta aba serão indicados os nomes das colunas que serão utilizadas nas análises em todo o app"),
                        fluidRow(
                          
                          column(4,
@@ -210,37 +209,55 @@ shinyUI(
                      ),# tabPanel Mapeamento
                      
                      # tabPanel Preparação ####
-                     tabPanel("Preparação", 
+                     tabPanel("Preparação dos dados", 
                               
-                              sidebarPanel(
-                                
-                                h3("Intervalo de classe"),
-                                numericInput("int.classe", "Insira o intervalo de classe:", 10, 1, 50, 0.5),
                               
-                                h3("Diâmetro mínimo"),
-                                numericInput("diam.min", "Insira o diâmetro mínimo:", 10, 1, 100, 1),
+                              fluidPage(
                                 
-                                uiOutput("selec_rotuloNI"),
-                                
-                                h3("Remover dados"),
-                                
-                                uiOutput("rm_data_var"),
-                                uiOutput("rm_data_level"),
-                                uiOutput("rm_vars"),
-                                uiOutput("selec_area_parcela_num"),
-                                uiOutput("selec_area_total_num"),
-                                uiOutput("ui_estvol1"),
-                                uiOutput("ui_estvol3"),
-                                uiOutput("ui_estvol4"),
-                                uiOutput("checkbox_calc.est.vert")
+                                fluidRow(
+                                  
+                                  h1("Preparação dos dados",style = "text-align: center;"),
+                                  br()
+                                ),
                                 
                                 
-                              ),# sidebarPanel
+                                fluidRow(
+                                  
+                                  sidebarPanel(
+                                    
+                                    h3("Intervalo de classe"),
+                                    numericInput("int.classe", "Insira o intervalo de classe:", 10, 1, 50, 0.5),
+                                    
+                                    h3("Diâmetro mínimo"),
+                                    numericInput("diam.min", "Insira o diâmetro mínimo:", 10, 1, 100, 1),
+                                    
+                                    uiOutput("selec_rotuloNI"),
+                                    
+                                    h3("Remover dados"),
+                                    
+                                    uiOutput("rm_data_var"),
+                                    uiOutput("rm_data_level"),
+                                    uiOutput("rm_vars"),
+                                    uiOutput("selec_area_parcela_num"),
+                                    uiOutput("selec_area_total_num"),
+                                    uiOutput("ui_estvol1"),
+                                    uiOutput("ui_estvol3"),
+                                    uiOutput("ui_estvol4"),
+                                    uiOutput("checkbox_calc.est.vert")
+                                    
+                                    
+                                  ),# sidebarPanel
+                                  
+                                  mainPanel(p("colocar aviso sobre remover colunas importantes"),
+                                            tableOutput("teste"),
+                                            DT::dataTableOutput("prep_table")
+                                  )# mainPanel
+                                  
+                                  
+                                )
+                                
+                              )
                               
-                              mainPanel(p("colocar aviso sobre remover colunas importantes"),
-                                        tableOutput("teste"),
-                                        DT::dataTableOutput("prep_table")
-                                        )# mainPanel
                               
                               
                               
@@ -254,6 +271,15 @@ shinyUI(
                                          fluidPage(
                                            h1("Índices de diversidade", style = "text-align: center;"),
                                            br(),
+                                           fluidRow(
+                                             column(5,
+                                                    radioButtons("rb_div",
+                                                                 h3("Calcular diversidade por parcela?"),
+                                                                 c("Sim","Nao"),
+                                                                 "Nao",
+                                                                 TRUE),
+                                                    offset = 7
+                                           )),
                                            DT::dataTableOutput("div")
                                          )
                                          
@@ -288,3 +314,6 @@ shinyUI(
                      ) # navbarPage
   )#tagList
 ) # ShinyUI
+
+
+
