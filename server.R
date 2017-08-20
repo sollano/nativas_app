@@ -832,7 +832,7 @@ shinyServer(function(input, output, session) {
     
   })
   
-  # tabela
+  # tabela diversidade
   output$div <- renderDataTable({
     
     divdt <- tabdiversidade() 
@@ -848,7 +848,6 @@ shinyServer(function(input, output, session) {
     ) 
     
   }) 
-  
   
   # Índices de similaridade ####
   
@@ -1039,7 +1038,6 @@ shinyServer(function(input, output, session) {
   })
   
   
-  
   # Índices de agregação ####
   
   # funcao agregate
@@ -1125,6 +1123,43 @@ shinyServer(function(input, output, session) {
                )  ) 
     
   }) 
+  
+  
+  # grafico estrutura (IVI)
+  ivi_graph <- reactive({
+    
+    
+    validate(
+      need(tabestrutura(), "Por favor faça a análise estrutural")  )
+
+    tabestr <- tabestrutura()
+    
+    x <- ggplot(tabestr, aes(DA, IVI)) + 
+        geom_point(size=5,alpha=.8) +   
+      ggthemes::theme_igray(base_family = "serif") +
+      labs(x="Densidade Absoluta (DA)",y="Indice de Valor de Importância (IVI)") +
+      theme(
+        plot.title = element_text(size = 22,face="bold",hjust = 0.5),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        axis.title   = element_text(size = 26,face="bold"), 
+        axis.text    = element_text(size = 22),
+        axis.line.x = element_line(color="black"),
+        axis.line.y = element_line(color="black"),
+        strip.text.x = element_text(size = 22)   )  
+    
+    
+
+    x
+    
+  })
+  
+  output$estrg <- renderPlot({
+    
+    ivi_graph()
+    
+  })
   
   # ####
 })

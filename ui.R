@@ -328,7 +328,8 @@ shinyUI(
                                            br(),
                                            fluidRow( 
                                              tabsetPanel(id = "mainPanel_Estrutural",
-                                                         tabPanel("Análise estrutural", DT::dataTableOutput("estr") ) )
+                                                         tabPanel("Análise estrutural", DT::dataTableOutput("estr") ),
+                                                         tabPanel("Gráfico IVI", plotOutput("estrg",height = "500px" ) ) )
                                              ) #,
                                          #  fluidRow( column(width=4,uiOutput("rb_graphmsim"),offset = 3 ), 
                                         #             column(width=3,uiOutput("slider_graphmsim")) )
