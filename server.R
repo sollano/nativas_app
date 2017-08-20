@@ -759,7 +759,7 @@ shinyServer(function(input, output, session) {
     
   })
   
-  # Set names
+  # Set names ####
   varnames <- reactive({
     
     #req(input$col.especies,input$col.parcelas, input$col.dap,input$col.ht,input$col.vcc, input$col.vsc,input$col.area.parcela,input$col.area.total, input$col.col.agrup,  input$col.est.vertical,input$col.est.interna)
@@ -1038,6 +1038,93 @@ shinyServer(function(input, output, session) {
     
   })
   
+  
+  
+  # Índices de agregação ####
+  
+  # funcao agregate
+  tabagregate <- reactive({
+    
+    nm <- varnames()
+    dados <- rawData()
+    
+    validate(
+      need(dados, "Por favor faça o upload da base de dados"),
+      need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" ),
+      need(nm$especies,"Por favor mapeie a coluna referente a 'especies'  "),
+      need(nm$parcelas,"Por favor mapeie a coluna referente a 'parcela'  ") )
+    
+    x <- agregacao(data         = dados, 
+                   col.especies = nm$especies, 
+                   col.parcelas = nm$parcelas, 
+                   rotulo.NI    = nm$NI  )
+    
+    x
+    
+  })
+  output$agreg <- renderDataTable({
+    
+    agregdt <- tabagregate() 
+    
+    datatable( agregdt,
+               options = list(searching = T,
+                              paging=T,
+                              initComplete = JS(
+                                "function(settings, json) {",
+                                "$(this.api().table().header()).css({'background-color': '#00a90a', 'color': '#fff'});",
+                                "}")
+               )  ) 
+    
+    
+  })
+  
+  # Analise estrutural ####
+  
+  # funcao estrutura
+  tabestrutura <- reactive({
+    
+    dados <- rawData()
+    nm <- varnames()
+    
+    validate(
+      need(rawData(), "Por favor faça o upload da base de dados"),
+      need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" ),
+      need(nm$especies,"Por favor selecione a coluna referente a 'especies'  "),
+      need(nm$parcelas,"Por favor selecione a coluna referente a 'parcelas'  "),
+      need(nm$dap,"Por favor selecione a coluna referente a 'especies'  "),
+      need(nm$area.parcela,"Por favor selecione a coluna referente a 'especies'  ")
+      
+      )
+    
+    x <- estrutura(data             = dados, 
+                   col.especies     = nm$especies,
+                   col.parcelas     = nm$parcelas,
+                   col.dap          = nm$dap,
+                   area.parcela     = nm$area.parcela,
+                   est.vertical     = nm$est.vertical,
+                   est.interno      = nm$est.interna,
+                   nao.identificada = nm$NI  )
+    
+    as.tbl(x)
+    
+  })
+  
+  # tabela estrutura
+  output$estr <- renderDataTable({
+    
+    estrdt <- round_df( tabestrutura(), 4 )
+   # estrdt <- tabestrutura()
+    
+    datatable( as.tbl(estrdt),
+               options = list(searching = T,
+                              paging=T,
+                              initComplete = JS(
+                                "function(settings, json) {",
+                                "$(this.api().table().header()).css({'background-color': '#00a90a', 'color': '#fff'});",
+                                "}")
+               )  ) 
+    
+  }) 
   
   # ####
 })

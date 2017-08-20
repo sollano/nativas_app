@@ -265,7 +265,7 @@ shinyUI(
                      # navbarMenu fitossociologica ####
                      navbarMenu("Análise fitossociológica",
                                 
-                                #Diversidade ####
+                                # Diversidade ####
                                 tabPanel("Índices de diversidade",
                                          
                                          fluidPage(
@@ -306,7 +306,38 @@ shinyUI(
                                              
                                            )
                                          
-                                ) # Similaridade tab
+                                ), # Similaridade tab
+                                
+                                
+                                # Agregação ####
+                                tabPanel("Índices de agregação",
+                                         
+                                         fluidPage(
+                                           h1("Índices de agregação", style = "text-align: center;"),
+                                           br(),
+                                           DT::dataTableOutput("agreg")
+                                         )
+                                         
+                                ), # Agregação tab
+                                
+                                # Estrutura ####
+                                tabPanel("Análise Estrutural",
+                                         
+                                         fluidPage(
+                                           h1("Análise estrutural", style = "text-align: center;"),
+                                           br(),
+                                           fluidRow( 
+                                             tabsetPanel(id = "mainPanel_Estrutural",
+                                                         tabPanel("Análise estrutural", DT::dataTableOutput("estr") ) )
+                                             ) #,
+                                         #  fluidRow( column(width=4,uiOutput("rb_graphmsim"),offset = 3 ), 
+                                        #             column(width=3,uiOutput("slider_graphmsim")) )
+                                           
+                                         )
+                                
+                                         
+                                ) # Estrutura tab
+                                
                                 
                      )# navbarMenu fitossociologica ####
                      
