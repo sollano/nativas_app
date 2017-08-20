@@ -340,7 +340,25 @@ shinyUI(
                                 ) # Estrutura tab
                                 
                                 
-                     )# navbarMenu fitossociologica ####
+                     ),# navbarMenu fitossociologica end ####
+                     
+                     # navbarMenu Quantificacao ####
+                     navbarMenu( "Quantificação",
+                                 
+                       tabPanel("Distribuição diamétrica"),
+                       tabPanel("BDq"),
+                       tabPanel("Estrutura volumétrica"),
+                       tabPanel("Inventário")
+                       
+                     ),  # navbarMenu Quantificacao end ####
+                     
+                     # navbarMenu  Download ####
+                     navbarMenu( "Download",
+                       
+                       tabPanel("Download de tabelas"),
+                       tabPanel("Download de Gráficos")
+                       
+                     ) # navbarMenu  Download end ####
                      
                      # final da UI  ####    
                      ) # navbarPage
