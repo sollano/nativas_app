@@ -1,6 +1,6 @@
 #' @export
 
-classe_diametro <- function(df, dap, parcela, area_parcela, ic = 5, dapmin = 5){
+classe_diametro <- function(df, dap, parcela, area_parcela, ic = 5, dapmin = 5, especies=NA, volume=NA){
   
   # se df nao for fornecido, for igual "", nulo, ou  nao for dataframe, parar
   if(  missing(df) || df == "" || is.null(df) || !is.data.frame(df) ){  
@@ -32,9 +32,12 @@ classe_diametro <- function(df, dap, parcela, area_parcela, ic = 5, dapmin = 5){
     stop("dapmin must be a single number", call. = F)
   }
 
-  dap <- rlang::sym(gsub('"', "", deparse(substitute( dap ))))
+  # Permitir se e nse como entrada de nomes de variaveis
+  DAP <- rlang::sym(gsub('"', "", deparse(substitute( dap ))))
   PARCELA <- rlang::sym(gsub('"', "", deparse(substitute( parcela ))))
   AREA_PARCELA <- rlang::sym(gsub('"', "", deparse(substitute( area_parcela ))))
+  ESPECIES <- gsub('"', "", deparse(substitute( especies )))
+  VOLUME <- rlang::sym(gsub('"', "", deparse(substitute( volume ))))
   
   # Testar se PARCELA e um nome de variavel
   test <- try(df %>% pull(!!PARCELA), silent = T)
@@ -59,14 +62,60 @@ classe_diametro <- function(df, dap, parcela, area_parcela, ic = 5, dapmin = 5){
     AREA_PARCELA <- df %>% group_by(!!PARCELA) %>% summarise(AREA = mean(!!AREA_PARCELA)) %>% summarise(A = mean(AREA)) %>% pull(A) 
   }
   
+  # Testar se ESPECIES e um nome de variavel
+  test <- try(df %>% pull(!!ESPECIES), silent = T)
   
+  # Se especie for fornecida, ela deve ser um nome de variavel
+  if(is(test, "try-error") && !is.na(especies) ){
+    
+    stop("especies must be a variable name",call. = F)
   
-  df %>% 
-    filter(!is.na(!!dap)) %>% # remover NA
-    mutate(CC = ceiling((!!dap)/ic) * ic - ic/2  ) %>% # Calcular Centro de classe
+  # Se nao for, sera criada uma variavel descartavel no dataframe, para que o group_by possa rodar
+  }else if(is.na(especies) || is.null(especies) || especies==""){
+    
+    df$ESPECIES <- "yay"
+    
+    
+  }
+  
+  # Se volume for fornecida, ela deve ser um nome de variavel
+  if(is(test, "try-error") && !is.na(volume) ){
+    
+    stop("volume must be a variable name",call. = F)
+    
+    # Se nao for, sera criada uma variavel descartavel no dataframe, para que o summarise possa rodar
+  }else if(is.na(volume) || is.null(volume) || volume==""){
+    
+    df$vol <- 23
+    
+    VOLUME <- rlang::sym("vol")
+    
+  }
+  
+  df_final <- df %>% 
+    filter(!is.na(!!DAP)) %>% # remover NA
+    mutate(CC = ceiling((!!DAP)/ic) * ic - ic/2  ) %>% # Calcular Centro de classe
     filter(CC > dapmin) %>% # Remover classes menores que o dap minimo
-    group_by(CC) %>% # Agrupar e calcular o numero de individuos, e n de individuos por ha
-    summarise(NumIndv=n(),IndvHA = round( NumIndv / (AREA_PARCELA/10000 * npar ),  1 )   ) %>% 
-    mutate(DR =  round(NumIndv/sum(NumIndv) * 100, 4) ) # Calcular densidade relativa
+    group_by_at(vars(ESPECIES, CC )) %>% # Agrupar e calcular o numero de individuos, e n de individuos por ha
+    summarise(
+      NumIndv=n(),
+      IndvHA = round( NumIndv / (AREA_PARCELA/10000 * npar ),  1 ),
+      volume = sum( !!VOLUME  ) ) %>% 
+    mutate(DR =  round(NumIndv/sum(NumIndv) * 100, 4) ) %>% # Calcular densidade relativa
+    arrange( CC ) %>% 
+    ungroup
+
+  # Remover a variavel descartavel, caso tenha sido criada
+  df_final$ESPECIES <- NULL
   
+  # Remover VOLUME caso nao tenha fornecido pelo usuario
+  if(is.na(volume) || is.null(volume) || volume==""){
+    
+    df_final$volume <- NULL
+    
+  }
+  
+  
+  return(df_final)
+
 }
