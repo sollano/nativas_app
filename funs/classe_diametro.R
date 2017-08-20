@@ -1,6 +1,6 @@
 #' @export
 
-classe_diametro <- function(df, dap, parcela, area_parcela, ic = 5, dapmin = 5, especies=NA, volume=NA){
+classe_diametro <- function(df, dap, parcela, area_parcela, ic = 5, dapmin = 5, especies=NA, volume=NA, cc_to_column=F){
   
   # se df nao for fornecido, for igual "", nulo, ou  nao for dataframe, parar
   if(  missing(df) || df == "" || is.null(df) || !is.data.frame(df) ){  
@@ -52,9 +52,9 @@ classe_diametro <- function(df, dap, parcela, area_parcela, ic = 5, dapmin = 5, 
   
   
   # Testar se AREA_PARCELA e um nome de variavel
-  test <- try(df %>% pull(!!AREA_PARCELA), silent = T)
+  testap <- try(df %>% pull(!!AREA_PARCELA), silent = T)
   
-  if(is(test, "try-error")){
+  if(is(testap, "try-error")){
     # Se nao for, salvar em npar (provavelmente e o numero de parcelas)
     AREA_PARCELA <- area_parcela
   }else{
@@ -63,10 +63,10 @@ classe_diametro <- function(df, dap, parcela, area_parcela, ic = 5, dapmin = 5, 
   }
   
   # Testar se ESPECIES e um nome de variavel
-  test <- try(df %>% pull(!!ESPECIES), silent = T)
+  testesp <- try(df %>% pull(!!ESPECIES), silent = T)
   
   # Se especie for fornecida, ela deve ser um nome de variavel
-  if(is(test, "try-error") && !is.na(especies) ){
+  if(is(testesp, "try-error") && !is.na(especies) ){
     
     stop("especies must be a variable name",call. = F)
   
@@ -78,8 +78,10 @@ classe_diametro <- function(df, dap, parcela, area_parcela, ic = 5, dapmin = 5, 
     
   }
   
+  testvol<- try(df %>% pull(!!VOLUME), silent = T)
+  
   # Se volume for fornecida, ela deve ser um nome de variavel
-  if(is(test, "try-error") && !is.na(volume) ){
+  if(is(testvol, "try-error") && !is.na(volume) ){
     
     stop("volume must be a variable name",call. = F)
     
@@ -115,6 +117,27 @@ classe_diametro <- function(df, dap, parcela, area_parcela, ic = 5, dapmin = 5, 
     
   }
   
+  # Se o usuario quiser o centro de classe na coluna e nao tiver fornecido volume,
+  # popular o centro de classe com o numero de individuos
+  if(cc_to_column==T && !is(testesp, "try-error") && is(testvol, "try-error") ){
+    
+    df_final <- df_final %>% 
+      select(!!ESPECIES,CC,NumIndv) %>% 
+      spread(CC,NumIndv, fill = 0) 
+   
+    # Se o usuario quiser o centro de classe na coluna e tiver fornecido volume,
+    # popular o centro de classe com o volume
+  }else if(cc_to_column==T && !is(testesp, "try-error") && !is(testvol, "try-error") ){
+    
+    df_final <- df_final %>% 
+      select(!!ESPECIES,CC,volume) %>% 
+      tidyr::spread(CC,volume, fill = 0) 
+    
+  }else if(cc_to_column==T && is(testesp, "try-error") ){
+    
+    stop("Especies column must be provided if cc_to_column is true ", call. = F)
+    
+  }
   
   return(df_final)
 
