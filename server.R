@@ -424,7 +424,7 @@ shinyServer(function(input, output, session) {
     )# selectize
     
   })
-
+  
   # Preparação ####
   # ui
   output$selec_rotuloNI     <- renderUI({

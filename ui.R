@@ -77,7 +77,8 @@ shinyUI(
                        h1("Definição dos nomes das variáveis", 
                           style = "text-align: center;"),
                        br(),
-                     #  h4("Nesta aba serão indicados os nomes das colunas que serão utilizadas nas análises em todo o app"),
+                       
+                      #  h4("Nesta aba serão indicados os nomes das colunas que serão utilizadas nas análises em todo o app"),
                        fluidRow(
                          
                          column(4,
