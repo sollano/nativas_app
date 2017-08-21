@@ -22,16 +22,16 @@ inv_summary <- function(df,DAP, HT, VCC, area_parcela, groups, area_total,idade,
   
   
   # argumentos opcionais
-  if(missing(area_total) || is.null(area_total) || area_total==F || area_total==""   ){df$area_total<-NA; area_total <- "area_total"}
-  if(missing(idade)      || is.null(idade)      || idade==F      || idade==""        ){df$idade<-NA;      idade <- "idade"}
-  if(missing(VSC)        || is.null(VSC)        || VSC==F        || VSC==""          ){df$VSC<-NA;        VSC <- "VSC"}
-  if(missing(HT)         || is.null(HT)         || HT==F         || HT==""           ){df$HT<-NA; df$Hd<-NA; HT <- "HT";   Hd <- "Hd"}
+  if(missing(area_total) || is.null(area_total) || is.na(area_total) || area_total==F || area_total==""   ){df$area_total<-NA; area_total <- "area_total"}
+  if(missing(idade)      || is.null(idade)      || is.na(idade)      || idade==F      || idade==""        ){df$idade<-NA;      idade <- "idade"}
+  if(missing(VSC)        || is.null(VSC)        || is.na(VSC)        || VSC==F        || VSC==""          ){df$VSC<-NA;        VSC <- "VSC"}
+  if(missing(HT)         || is.null(HT)         || is.na(HT)         || HT==F         || HT==""           ){df$HT<-NA; df$Hd<-NA; HT <- "HT";   Hd <- "Hd"}
   
   # argumentos de area podem ser numericos
   if(is.numeric(area_parcela)){df$area_parcela <- area_parcela; area_parcela <- "area_parcela"}
   if(is.numeric(area_total  )){df$area_total   <- area_total; area_total     <- "area_total"}
 
-  if((missing(Hd)||is.null(Hd)||Hd==F||Hd=="")  &&  !all(is.na(df[[HT]]) )) { # calculo da altura dominante
+  if((missing(Hd)||is.null(Hd)|| is.na(Hd)||Hd==F||Hd=="")  &&  !all(is.na(df[[HT]]) )) { # calculo da altura dominante
     
     if(  "HD" %in% names(df) ){ df$HD <- NULL }
     

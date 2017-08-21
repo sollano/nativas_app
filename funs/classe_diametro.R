@@ -1,6 +1,6 @@
 #' @export
 
-classe_diametro <- function(df, dap, parcela, area_parcela, ic = 5, dapmin = 5, especies=NA, volume=NA, cc_to_column=F){
+classe_diametro <- function(df, dap, parcela, area_parcela, ic = 5, dapmin = 5, especies=NA, volume=NA, rotulo.NI="NI",cc_to_column=F, cctc_ha=T){
   
   # se df nao for fornecido, for igual "", nulo, ou  nao for dataframe, parar
   if(  missing(df) || df == "" || is.null(df) || !is.data.frame(df) ){  
@@ -31,39 +31,49 @@ classe_diametro <- function(df, dap, parcela, area_parcela, ic = 5, dapmin = 5, 
   if(!is.numeric(dapmin) || length(dapmin)>1){
     stop("dapmin must be a single number", call. = F)
   }
-
-  # Permitir se e nse como entrada de nomes de variaveis
-  DAP <- rlang::sym(gsub('"', "", deparse(substitute( dap ))))
-  PARCELA <- rlang::sym(gsub('"', "", deparse(substitute( parcela ))))
-  AREA_PARCELA <- rlang::sym(gsub('"', "", deparse(substitute( area_parcela ))))
-  ESPECIES <- gsub('"', "", deparse(substitute( especies )))
-  VOLUME <- rlang::sym(gsub('"', "", deparse(substitute( volume ))))
   
+  # app: Se especies for "" ou NULL, transformar em NA
+  if(is.null(especies) || is.na(especies) ||  especies==""){
+    especies <- NA
+  }
+
+  # app: Se volume for "" ou NULL, transformar em NA
+  if(is.null(volume)|| is.na(volume) || volume==""){
+    volume <- NA
+  }
+  
+  # Permitir se e nse como entrada de nomes de variaveis
+  DAPAA <- dap
+  PARCELAAA <- parcela
+  AREA_PARCELAAA <- area_parcela
+  ESPECIESAA <- especies
+  VOLUMEAA <- volume
+
   # Testar se PARCELA e um nome de variavel
-  test <- try(df %>% pull(!!PARCELA), silent = T)
+  test <- try(df %>% pull(PARCELAAA), silent = T)
   
   if(is(test, "try-error")){
     # Se nao for, salvar em npar (provavelmente e o numero de parcelas)
     npar <- parcela
   }else{
-    # Se PARCELA for um nome de variavel, obter o numero de parcelas e salvar em uma var    
-    npar <- df %>% pull(!!PARCELA) %>% as.factor %>% nlevels
+    # Se PARCELAAA for um nome de variavel, obter o numero de parcelas e salvar em uma var    
+    npar <- df %>% pull(PARCELAAA) %>% as.factor %>% nlevels
   }
   
   
-  # Testar se AREA_PARCELA e um nome de variavel
-  testap <- try(df %>% pull(!!AREA_PARCELA), silent = T)
+  # Testar se AREA_PARCELAAA e um nome de variavel
+  testap <- try(df %>% pull(AREA_PARCELAAA), silent = T)
   
   if(is(testap, "try-error")){
     # Se nao for, salvar em npar (provavelmente e o numero de parcelas)
-    AREA_PARCELA <- area_parcela
+    AREA_PARCELAAA <- area_parcela
   }else{
     # Se PARCELA for um nome de variavel, obter o numero de parcelas e salvar em uma var    
-    AREA_PARCELA <- df %>% group_by(!!PARCELA) %>% summarise(AREA = mean(!!AREA_PARCELA)) %>% summarise(A = mean(AREA)) %>% pull(A) 
+    AREA_PARCELAAA <- df %>% group_by_at( vars(PARCELAAA) ) %>% summarise(AREA = mean(.data[[AREA_PARCELAAA]]), na.rm=T) %>% summarise(A = mean(AREA, na.rm=T)) %>% pull(A) 
   }
   
-  # Testar se ESPECIES e um nome de variavel
-  testesp <- try(df %>% pull(!!ESPECIES), silent = T)
+  # Testar se ESPECIESAA e um nome de variavel
+  testesp <- try(df %>% pull(ESPECIESAA), silent = T)
   
   # Se especie for fornecida, ela deve ser um nome de variavel
   if(is(testesp, "try-error") && !is.na(especies) ){
@@ -73,12 +83,21 @@ classe_diametro <- function(df, dap, parcela, area_parcela, ic = 5, dapmin = 5, 
   # Se nao for, sera criada uma variavel descartavel no dataframe, para que o group_by possa rodar
   }else if(is.na(especies) || is.null(especies) || especies==""){
     
-    df$ESPECIES <- "yay"
+    df$ESPECIESAA <- "yay"
+
+    # Se a especie for fornecida e for um nome de variavel,
+    # remover as especies nao identificadas do dado
+  }else if( !is(testesp, "try-error") && !is.na(especies) ){
     
+    # converter rotulos NI (aplicativo)
+    if(is.null(rotulo.NI)||rotulo.NI==""){rotulo.NI <- "NI"}
     
+    # Remover especies nao identificadas
+    df <- df[! df[[ESPECIESAA]] %in% rotulo.NI, ] 
+
   }
   
-  testvol<- try(df %>% pull(!!VOLUME), silent = T)
+  testvol<- try(df %>% pull(VOLUMEAA), silent = T)
   
   # Se volume for fornecida, ela deve ser um nome de variavel
   if(is(testvol, "try-error") && !is.na(volume) ){
@@ -90,48 +109,64 @@ classe_diametro <- function(df, dap, parcela, area_parcela, ic = 5, dapmin = 5, 
     
     df$vol <- 23
     
-    VOLUME <- rlang::sym("vol")
+    VOLUMEAA <- "vol"
     
   }
   
+ # VOLUMEAA <- rlang::sym(VOLUMEAA)
+  
   df_final <- df %>% 
-    filter(!is.na(!!DAP)) %>% # remover NA
-    mutate(CC = ceiling((!!DAP)/ic) * ic - ic/2  ) %>% # Calcular Centro de classe
+    filter(!is.na( .data[[DAPAA]] ) ) %>% # remover NA
+    mutate(CC = ceiling(( .data[[DAPAA]] )/ic) * ic - ic/2  ) %>% # Calcular Centro de classe
     filter(CC > dapmin) %>% # Remover classes menores que o dap minimo
-    group_by_at(vars(ESPECIES, CC )) %>% # Agrupar e calcular o numero de individuos, e n de individuos por ha
+    group_by_at(vars(ESPECIESAA, CC )) %>% # Agrupar e calcular o numero de individuos, e n de individuos por ha
     summarise(
       NumIndv=n(),
-      IndvHA = round( NumIndv / (AREA_PARCELA/10000 * npar ),  1 ),
-      volume = sum( !!VOLUME  ) ) %>% 
+      IndvHA = round( NumIndv / (AREA_PARCELAAA/10000 * npar ),  1 ),
+      volume = sum( .data[[VOLUMEAA]], na.rm = T  ),
+      volume_ha = sum( .data[[VOLUMEAA]], na.rm = T) / (AREA_PARCELAAA/10000 * npar )     ) %>% 
     mutate(DR =  round(NumIndv/sum(NumIndv) * 100, 4) ) %>% # Calcular densidade relativa
     arrange( CC ) %>% 
-    ungroup
+    ungroup %>% 
+    as.data.frame
 
   # Remover a variavel descartavel, caso tenha sido criada
-  df_final$ESPECIES <- NULL
+  df_final$ESPECIESAA <- NULL
   
-  # Remover VOLUME caso nao tenha fornecido pelo usuario
+  # Remover VOLUMEAA caso nao tenha fornecido pelo usuario
   if(is.na(volume) || is.null(volume) || volume==""){
     
     df_final$volume <- NULL
-    
+    df_final$volume_ha <- NULL
   }
   
   # Se o usuario quiser o centro de classe na coluna e nao tiver fornecido volume,
   # popular o centro de classe com o numero de individuos
   if(cc_to_column==T && !is(testesp, "try-error") && is(testvol, "try-error") ){
     
+    if(cctc_ha==T){df_final$NI<- df_final$IndvHA}else if(cctc_ha==F){df_final$NI<- df_final$NumIndv}else(stop("cctc_ha must be TRUE or FALSE",call. = F))
+    
     df_final <- df_final %>% 
-      select(!!ESPECIES,CC,NumIndv) %>% 
-      spread(CC,NumIndv, fill = 0) 
-   
+      select(ESPECIESAA,CC,NI) %>% 
+      tidyr::spread(CC,NI, fill = 0 ) %>% 
+      mutate(Total = rowSums(.[  ,  sapply(., is.numeric)  ]  ) ) %>% 
+      as.data.frame %>% 
+      round_df(4)
+
+    df_final[df_final==0] <- ""
     # Se o usuario quiser o centro de classe na coluna e tiver fornecido volume,
     # popular o centro de classe com o volume
   }else if(cc_to_column==T && !is(testesp, "try-error") && !is(testvol, "try-error") ){
+   
+    if(cctc_ha==T){df_final$VOL<- df_final$volume_ha}else if(cctc_ha==F){df_final$VOL<- df_final$volume}else(stop("cctc_ha must be TRUE or FALSE",call. = F))
     
     df_final <- df_final %>% 
-      select(!!ESPECIES,CC,volume) %>% 
-      tidyr::spread(CC,volume, fill = 0) 
+      select(ESPECIESAA,CC,VOL) %>% 
+      tidyr::spread(CC,VOL, fill = 0) %>% 
+      mutate(Total=rowSums(.[, sapply(., is.numeric)]) ) %>% 
+      as.data.frame %>% 
+      round_df(4)
+    df_final[df_final==0] <- ""
     
   }else if(cc_to_column==T && is(testesp, "try-error") ){
     
