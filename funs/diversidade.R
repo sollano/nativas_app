@@ -1,5 +1,15 @@
 diversidade = function(data, col.especies, col.parcelas, rotulo.NI = "NI", indice){
   
+  # se data nao for fornecido, nulo, ou  nao for dataframe, parar
+  if(  missing(data) || is.null(data) || is.na(data) || !is.data.frame(data) ){  
+    stop("data not set", call. = F) 
+  }
+  
+  # se col.especies nao for fornecido, for igual "", nulo, ou  nao existir no dataframe, parar
+  if(  missing(col.especies) || is.null(col.especies) || is.na(col.especies) || col.especies == "" || is.null(data[[col.especies]] ) ){  
+    stop("col.especies not set", call. = F) 
+  }
+  
   # Remover NA
   data <- data[!is.na(data[col.especies]),]
   
