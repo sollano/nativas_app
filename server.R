@@ -33,6 +33,7 @@ source("funs/as_diffs.R"           , encoding="UTF-8")
 source("funs/inv_summary.R"        , encoding="UTF-8")
 source("funs/round_df.R"           , encoding="UTF-8")
 source("funs/estrat_vert_souza.R"  , encoding="UTF-8")
+source("funs/classe_diametro.R"    , encoding="UTF-8")
 
 # vectors for names ####
 
