@@ -46,7 +46,7 @@ DAP_names <- c("DAP","Dap","dap", "dbh", "Dbh","DBH","DBH_11")
 HT_names <- c("HT_EST", "HT", "Ht", "ht","Htot","ALTURA","Altura","Altura_Total", "ALTURA_TOTAL")
 VCC_names <- c("VCC","Vcc", "vcc", "VOL", "Vol", "vol" ,"VOLUME")
 area_parcela_names <- c("trans.area","AREA_PARCELA","Area_Parcela","area_parcela","parc.area" ,"AREAPARCELA", "areaparcela", "transect.area", "Transect.Area", "TRANSECT.AREA","transect_area","Transect_Area","TRANSECT_AREA")
-area_total_names <- c("sub.area","AREA_TOTAL", "AREATOTAL", "area_total", "areatotal","AREA_TALHAO", "AREATALHAO", "area_talhao", "areatalhao","total.area","Total.Area","TOTAL.AREA","total_area","Total_Area","TOTAL_AREA")
+area_total_names <- c("sub.area","AREA_TOTAL", "AREATOTAL", "area_total", "areatotal","AREA_TALHAO", "AREATALHAO", "area_talhao", "areatalhao","total.area","Total.Area","TOTAL.AREA","total_area","Total_Area","TOTAL_AREA", "area.total", "Area.total", "Area.Total", "AREA.TOTAL")
 idade_names <- c("IDADE", "Idade","idade")
 VSC_names <- c("VSC","Vsc", "vsc")
 HD_names <- c("HD", "Hd", "hd", "ALTURA_DOMINANTE", "ALT_DOM")
@@ -773,7 +773,7 @@ shinyServer(function(input, output, session) {
       vsc=input$col.vsc,
       area.parcela=input$col.area.parcela,
       area.total=input$col.area.total,
-      agrup=input$col.col.agrup,
+      agrup=input$col.agrup,
       est.vertical=input$col.est.vertical,
       est.interna=input$col.est.interna,
       NI=input$rotutuloNI,
@@ -920,11 +920,11 @@ shinyServer(function(input, output, session) {
 
   }) 
   
-  # Graficos
+  # esses renderUI nao sao utilizadas, estao sendo mantidas apenas para caso sejam utilizadas
   output$rb_graphmsim <- renderUI({
     
     # precisa que o grafico seja selecionado na ui, caso contrario nao mostra nada
-    req(input$mainPanel_Indices %in% c("id_msim1_graph", "id_msim2_graph"))
+    req(input$mainPanel_Indices %in% c("id_msim1_graph", "id_msim2_graph") ||  input$graph_d %in% c("Dendrograma - Jaccard","Dendrograma - Sorensen") )
       radioButtons("rb_msim_graph", 
                    "Selecione o método de classificação:", 
                    c("Vizinho mais próximo"  = "single", 
@@ -935,7 +935,7 @@ shinyServer(function(input, output, session) {
   output$slider_graphmsim <- renderUI({
     
     # precisa que o grafico seja selecionado na ui, caso contrario nao mostra nada
-    req(input$mainPanel_Indices %in% c("id_msim1_graph", "id_msim2_graph"))
+    req(input$mainPanel_Indices %in% c("id_msim1_graph", "id_msim2_graph") ||  input$graph_d %in% c("Dendrograma - Jaccard","Dendrograma - Sorensen") )
     
        sliderInput("slider_msim_graph", 
                   label = "Selecione o número de clusters:", 
@@ -946,7 +946,7 @@ shinyServer(function(input, output, session) {
     
   })
   
-  
+  # Graficos
   msim1_graph <- reactive({
     
     #retornar vazio enquando input$rb_msim1_graph carrega (ele fica nulo quando carrega)
@@ -1160,6 +1160,683 @@ shinyServer(function(input, output, session) {
     ivi_graph()
     
   })
+  
+  
+  # Distribuicao diametrica ####
+  
+  dd_list <- reactive({
+    
+    nm <- varnames()
+    dados <- rawData()
+    
+    validate(
+      need(dados, "Por favor faça o upload da base de dados"),
+      need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" ),
+      need(nm$dap,"Por favor mapeie a coluna referente a 'dap'  "),
+      need(nm$parcelas,"Por favor mapeie a coluna referente a 'parcelas'  "),
+      need(nm$area.parcela,"Por favor mapeie a coluna ou insira um valor referente a 'area.parcela'  ") )
+    
+    lista <- list()
+    lista[["dd_geral"]] <- classe_diametro(df = dados, 
+                                           dap = nm$dap,
+                                           parcela = nm$parcelas,
+                                           area_parcela = nm$area.parcela, 
+                                           ic = nm$IC, 
+                                           dapmin = nm$diam.min, 
+                                           especies = NA, 
+                                           volume = nm$vcc,
+                                           rotulo.NI = nm$NI )
+   
+    lista[["dd_especie"]] <- classe_diametro(df = dados, 
+                                           dap = nm$dap,
+                                           parcela = nm$parcelas,
+                                           area_parcela = nm$area.parcela, 
+                                           ic = nm$IC, 
+                                           dapmin = nm$diam.min, 
+                                           especies = nm$especies, 
+                                           volume = nm$vcc,
+                                           rotulo.NI = nm$NI )
+    
+    lista[["dd_especie_indv_cc_column"]] <- classe_diametro(df = dados, 
+                                             dap = nm$dap,
+                                             parcela = nm$parcelas,
+                                             area_parcela = nm$area.parcela, 
+                                             ic = nm$IC, 
+                                             dapmin = nm$diam.min, 
+                                             especies = nm$especies, 
+                                             volume = NA,
+                                             rotulo.NI = nm$NI,
+                                             cc_to_column = T,
+                                             cctc_ha = T )
+    
+    lista[["dd_especie_vol_cc_column"]] <- classe_diametro(df = dados, 
+                                                      dap = nm$dap,
+                                                      parcela = nm$parcelas,
+                                                      area_parcela = nm$area.parcela, 
+                                                      ic = nm$IC, 
+                                                      dapmin = nm$diam.min, 
+                                                      especies = nm$especies, 
+                                                      volume = nm$vcc,
+                                                      rotulo.NI = nm$NI,
+                                                      cc_to_column = T,
+                                                      cctc_ha = T )
+    lista
+  })
+  
+  output$dd_geral_tab <- DT::renderDataTable({
+    
+    g <- dd_list()[["dd_geral"]]
+    
+    datatable( g,
+               rownames = F,
+               options = list(searching = FALSE,
+                              paging=FALSE,
+                              ordering=FALSE,
+                              initComplete = JS(
+                                "function(settings, json) {",
+                                "$(this.api().table().header()).css({'background-color': '#00a90a', 'color': '#fff'});",
+                                "}")
+               )
+             )
+               
+    
+  })
+  output$dd_indv_especie_tab <- DT::renderDataTable({
+    
+    g <- dd_list()[["dd_especie_indv_cc_column"]]
+    
+    datatable( g,
+               rownames = F,
+               options = list(searching = FALSE,
+                              paging=FALSE,
+                              ordering=FALSE,
+                              initComplete = JS(
+                                "function(settings, json) {",
+                                "$(this.api().table().header()).css({'background-color': '#00a90a', 'color': '#fff'});",
+                                "}")
+               )
+    )
+    
+    
+  })
+  output$dd_vol_especie_tab <- DT::renderDataTable({
+    
+    g <- dd_list()[["dd_especie_vol_cc_column"]]
+    
+    datatable( g,
+               rownames = F,
+               options = list(searching = FALSE,
+                              paging=FALSE,
+                              ordering=FALSE,
+                              initComplete = JS(
+                                "function(settings, json) {",
+                                "$(this.api().table().header()).css({'background-color': '#00a90a', 'color': '#fff'});",
+                                "}")
+               )
+    )
+    
+    
+  })
+  
+  dd_g1 <- reactive({
+    
+    g <- dd_list()[["dd_geral"]]
+    
+    ggplot(g, aes(as.factor(CC),IndvHA)) +
+      geom_bar(stat = "identity",color="black")+
+      scale_y_continuous( expand=c(0,10) ) +
+      ggthemes::theme_igray(base_family = "serif") +
+      labs(x = "Centro de Classe de Diâmetro - CCD (cm)", y = "Nº de Individuos por hectare") + 
+      theme(
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        axis.title   = element_text(size = 26,face="bold"), 
+        axis.text    = element_text(size = 22),
+        axis.line.x = element_line(color="black"),
+        axis.line.y = element_line(color="black"),
+        strip.text.x = element_text(size = 22)   )
+    
+    
+  })
+  
+  output$dd_graph_indv <- renderPlot({
+    
+    dd_g1()
+    
+    
+  })
+  
+  dd_g2 <- reactive({
+    
+    g <- dd_list()[["dd_geral"]]
+    
+    ggplot(g, aes(as.factor(CC),volume_ha)) +
+      geom_bar(stat = "identity",color="black")+
+      scale_y_continuous( expand=c(0,10) ) +
+      labs(x = "Centro de Classe de Diâmetro - CCD (cm)", y = "Volume por hectare") + 
+      ggthemes::theme_igray(base_family = "serif") +
+      theme(
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        axis.title   = element_text(size = 26,face="bold"), 
+        axis.text    = element_text(size = 22),
+        axis.line.x = element_line(color="black"),
+        axis.line.y = element_line(color="black"),
+        strip.text.x = element_text(size = 22)   )
+    
+  })
+  
+  output$dd_graph_vol <- renderPlot({
+    
+    dd_g2()
+    
+  })
+  
+  # BDq ####
+  
+  # Tabelas BDq
+  BDq_list <- reactive({
+    nm <- varnames()
+    dados <- rawData()
+    
+    validate(
+      need(dados, "Por favor faça o upload da base de dados"),
+      need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" ),
+      need(nm$dap,"Por favor mapeie a coluna referente a 'dap'  "),
+      need(nm$parcelas,"Por favor mapeie a coluna referente a 'parcelas'  "),
+      need(nm$area.parcela,"Por favor mapeie a coluna ou insira um valor referente a 'area.parcela'  ") )
+
+    x <- bdq.meyer(data             = dados, 
+                   col.parcelas     = nm$parcelas,
+                   col.dap          = nm$dap,
+                   area.parcela     = nm$area.parcela,
+                   intervalo.classe = nm$IC,
+                   min.dap          = nm$diam.min,
+                   i.licourt        = input$i.licourtBDq  )
+    
+    x
+    #x[[1]]
+    
+  })
+  output$BDq1 <- renderDataTable({
+    
+    BDqdt <- BDq_list()[[1]]
+    
+    datatable( as.data.frame(BDqdt),
+               options = list(searching = T,
+                              paging=T,
+                              initComplete = JS(
+                                "function(settings, json) {",
+                                "$(this.api().table().header()).css({'background-color': '#00a90a', 'color': '#fff'});",
+                                "}")
+               )  ) 
+    
+  }) 
+  output$BDq3 <- renderDataTable({
+    
+    BDqdt <- BDq_list()[[3]]
+    
+    
+    BDqdt <-data.frame( "Coeficientes" = c("b0", "b1")  ,
+                        "Valor"        = c( BDqdt[1], BDqdt[2] )  )
+    
+    
+    datatable(BDqdt,
+              options = list(searching = FALSE,
+                             paging=FALSE,
+                             initComplete = JS(
+                               "function(settings, json) {",
+                               "$(this.api().table().header()).css({'background-color': '#00a90a', 'color': '#fff'});",
+                               "}")
+              )  ) 
+    
+  }) 
+  
+  # grafico
+  BDq_graph <- reactive({
+    
+    req( BDq_list() )
+    
+    data <- BDq_list()[[1]]
+    
+    graph_bdq <- data %>% 
+      select("classe_de_diametro"      = CentroClasse, 
+             "Distribuição observada"  = IndvHectare , 
+             "Distribuição balanceada" = MeyerBalan  ) %>% 
+      gather(class, num_indv_ha, -classe_de_diametro, factor_key = T) %>% 
+      arrange(classe_de_diametro) %>% 
+      mutate(classe_de_diametro = as.factor(classe_de_diametro) )
+    
+    g <-  ggplot(graph_bdq, aes(x = classe_de_diametro, y = num_indv_ha) ) + 
+      geom_bar(aes(fill = class), stat = "identity",position = "dodge") +
+      labs(x = "Classe de diâmetro (cm)", y = "Número de indivíduos (ha)", fill = NULL) + 
+      scale_fill_manual(values =c("#108e00", "cyan3","firebrick2") ) +
+      ggthemes::theme_igray(base_family = "serif") +
+      theme(
+        legend.position="bottom",
+        legend.text = element_text(size = 20),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        axis.title   = element_text(size = 26,face="bold"), 
+        axis.text    = element_text(size = 22),
+        axis.line.x = element_line(color="black"),
+        axis.line.y = element_line(color="black"),
+        strip.text.x = element_text(size = 22)   )
+
+    g
+    
+  })
+  
+  output$BDq_graph_ <- renderPlot({
+    #plotly::renderPlotly
+    req(BDq_graph())
+    
+    g <- BDq_graph()
+    
+    #  plotly::ggplotly(p=g) 
+    g
+    
+  })
+  
+  # totalizacao de parcelas ####
+  
+  totData <- reactive({
+    
+    nm <- varnames()
+    dados <- rawData()
+
+    validate(
+      need(dados, "Por favor faça o upload da base de dados"),
+      need(input$df == "Dados em nivel de arvore", "Base de dados incompativel" ),
+      need(nm$dap,"Por favor mapeie a coluna referente a 'dap'  "),
+      need(nm$vcc,"Por favor mapeie a coluna referente a 'volume com casca' ou estime-o na aba preparação  "),
+      need(nm$parcelas,"Por favor mapeie a coluna referente a 'parcelas'  "),
+      need(nm$area.parcela,"Por favor mapeie a coluna ou insira um valor referente a 'area.parcela'  "),
+      need(nm$area.total,"Por favor mapeie a coluna ou insira um valor referente a 'area.total'  ")
+    )
+    
+    # Se o usuario inseir uma variavel de agrupamento, considera-la na hora dos calculos
+    if(nm$agrup =="" ){grupos<-nm$parcela}else{grupos <- c(nm$agrup, nm$parcela)}
+    
+    x <- inv_summary(df           = dados, 
+                     DAP          = nm$dap, 
+                     HT           = nm$ht,
+                     VCC          = nm$vcc,
+                     area_parcela = nm$area.parcela,
+                     groups       = grupos,
+                     area_total   = nm$area.total,
+                     idade        = NA,
+                     VSC          = nm$vsc,
+                     Hd           = NA)
+    
+   
+    
+    names(x)[names(x)=="AREA_TOTAL"] <- nm$area.total
+    names(x)[names(x)=="AREA_PARCELA"] <- nm$area.parcela
+    names(x)[names(x)=="DAP"] <- nm$dap
+    names(x)[names(x)=="HT"] <- nm$ht
+    names(x)[names(x)=="VCC"] <- nm$vcc
+    names(x)[names(x)=="VSC"] <- nm$vsc
+    x
+    
+  })
+  output$tot_parc_tab <- renderDataTable({ # renderizamos uma DT::DataTable
+    
+    data <- totData() 
+    
+    datatable(data,
+              options = list(initComplete = JS(
+                "function(settings, json) {",
+                "$(this.api().table().header()).css({'background-color': '#00a90a', 'color': '#fff'});",
+                "}")
+              )   
+    ) # Criamos uma DT::datatable com base no objeto
+    
+  })
+  
+  # Switch para trocar o dado utilizado no inventario ####
+  
+  invData <- reactive({
+    
+    #if(is.null(input$df)){ return()}
+    req(input$df)
+    
+    # Se o dado for em nivel de arvore, a totalização de parcelas deve ser feita para que
+    # NewData possa ser inserido em acs. Sem essa condição a ui gera mensagens de erro
+    switch(input$df, 
+           "Dados em nivel de arvore" = if(is.null(totData()) ){return()}else{ totData()},
+           "Dados em nivel de parcela" = rawData() )
+    
+  })
+  
+  # amostragem casual simples ####
+  
+  # funcao acs aplicada em invData
+  tabacs <- reactive({
+    
+    nm <- varnames()
+    dados <- invData()
+    
+    validate(
+      need(dados, "Por favor, faça a totalização de parcelas, ou o upload de uma base de dados em nível de parcela" ),
+      need(nm$vcc,"Por favor mapeie a coluna referente a 'volume com casca' ou estime-o na aba preparação  "),
+      need(nm$area.parcela,"Por favor mapeie a coluna ou insira um valor referente a 'area.parcela'  "),
+      need(nm$area.total,"Por favor mapeie a coluna ou insira um valor referente a 'area.total'  ")
+    )
+    
+
+    x <-     acs(df             = dados,
+                 VCC            = nm$vcc,
+                 area_parcela   = nm$area.parcela,
+                 area_total     = nm$area.total, 
+                 idade          = NA,
+                 grupos         = nm$agrup, 
+                 alpha          = input$alpha_inv, 
+                 Erro           = input$erro_inv, 
+                 casas_decimais = input$cd_inv, 
+                 pop            = input$pop_inv, 
+                 tidy           = TRUE)
+    
+    x
+    
+  })
+  # tabela acs
+  output$acs <- renderDataTable({
+    
+    acsdt <- tabacs() 
+    # converte em datatable        # cria formattable
+    as.datatable( formattable(acsdt, 
+                              list(    # colore a linha 6 da coluna dois de verde ou vemelho, se ela for menor ou maior que o numero da linha 1 coluna 2
+                                area(row=6, col=2) ~  formatter("span", 
+                                                                style = x ~ formattable::style(color = ifelse(x <= acsdt[1,2], "#108e00", "red"))) ,
+                                # colore o erro estimado de verde ou vemelho, se ela for menor ou maior que o erro desejado
+                                area(row=10, col=2) ~ formatter("span", 
+                                                                style = x ~ formattable::style(color = ifelse(x <= input$erro_inv, "#108e00", "red")))
+                                
+                                
+                              )#list
+    ), #formattable
+    # pre seleciona linhas
+    selection = list(mode = 'multiple', selected = c(6,10,15,16), target = 'row'),
+    options = list(searching = FALSE,
+                   paging=FALSE,
+                   initComplete = JS( # muda cor do cabecalho
+                     "function(settings, json) {",
+                     "$(this.api().table().header()).css({'background-color': '#00a90a', 'color': '#fff'});",
+                     "}")
+    ) 
+    
+    
+    
+    ) #as.datatable
+    
+    
+    
+  })
+  
+  # Amostragem ace ####
+  
+  # funcao ace aplicada em invData
+  list_ace <- reactive({
+    
+    nm <- varnames()
+    dados <- invData()
+    
+    validate(
+      need(dados, "Por favor, faça a totalização de parcelas, ou o upload de uma base de dados em nível de parcela" ),
+      need(nm$vcc,"Por favor mapeie a coluna referente a 'volume com casca' ou estime-o na aba preparação  "),
+      need(nm$area.parcela,"Por favor mapeie a coluna ou insira um valor referente a 'area.parcela'  "),
+      need(nm$area.total,"Por favor mapeie a coluna ou insira um valor referente a 'area.total'  "),
+      need(nm$agrup,"Por favor mapeie a coluna referente a 'agrupamento' ")
+    )
+    
+    x <- ace(df             = dados, 
+             VCC            = nm$vcc, 
+             area_parcela   = nm$area.parcela, 
+             area_estrato   = nm$area.total, 
+             grupos         = nm$agrup, 
+             idade          = NA, 
+             alpha          = input$alpha_inv, 
+             Erro           = input$erro_inv, 
+             casas_decimais = input$cd_inv, 
+             pop            = input$pop_inv, 
+             tidy           = TRUE)
+    x
+    
+  })
+  # tabela ace1
+  output$ace1 <- renderDataTable({
+    
+    ace1dt <- list_ace()[[1]] 
+    
+    datatable( ace1dt, # seleciona a linha 5 previamente
+               selection = list(mode = 'multiple', selected = c(13,17,18,19), target = 'row'),
+               options = list(searching = FALSE,
+                              paging=FALSE,
+                              initComplete = JS( # muda a cor do cabecalho
+                                "function(settings, json) {",
+                                "$(this.api().table().header()).css({'background-color': '#00a90a', 'color': '#fff'});",
+                                "}")
+               )   
+               
+    )
+    
+  })
+  # tabela ace2
+  output$ace2 <- renderDataTable({
+    
+    ace2dt <- list_ace()[[2]] 
+    
+    # converte em datatable        # cria formattable
+    as.datatable( formattable(ace2dt, 
+                              list(
+                                # colore o erro estimado de verde ou vemelho, se ela for menor ou maior que o erro desejado
+                                area(row=5, col=2) ~ formatter("span", 
+                                                               style = x ~ formattable::style(color = ifelse(x <= input$erro_inv, "#108e00", "red")))
+                                
+                                
+                              )#list
+    ), #formattable
+    # pre seleciona linhas
+    selection = list(mode = 'multiple', selected = c(5,10,11), target = 'row'),
+    options = list(searching = FALSE,
+                   paging=FALSE,
+                   initComplete = JS( # muda cor do cabecalho
+                     "function(settings, json) {",
+                     "$(this.api().table().header()).css({'background-color': '#00a90a', 'color': '#fff'});",
+                     "}")
+    ) 
+    
+    
+    
+    )
+    
+    
+  })
+  
+  
+  # Amostragem sistematica ####
+  
+  # funcao as aplicada em invData
+  tabas <- reactive({
+    
+    nm <- varnames()
+    dados <- invData()
+    
+    validate(
+      need(dados, "Por favor, faça a totalização de parcelas, ou o upload de uma base de dados em nível de parcela" ),
+      need(nm$vcc,"Por favor mapeie a coluna referente a 'volume com casca' ou estime-o na aba preparação  "),
+      need(nm$area.parcela,"Por favor mapeie a coluna ou insira um valor referente a 'area.parcela'  "),
+      need(nm$area.total,"Por favor mapeie a coluna ou insira um valor referente a 'area.total'  ")
+    )
+    
+    dados <- invData()
+    
+    x <- as_diffs(df             = dados, 
+                  VCC            = nm$vcc,
+                  area_parcela   = nm$area.parcela,
+                  area_total     = nm$area.total, 
+                  idade          = NA,
+                  grupos         = nm$agrup, 
+                  alpha          = input$alpha_inv, 
+                  Erro           = input$erro_inv, 
+                  casas_decimais = input$cd_inv, 
+                  tidy           = TRUE )
+    
+    x
+    
+  }) 
+  # tabela as
+  output$as <- renderDataTable({
+    
+    asdt <- tabas() 
+    
+    # converte em datatable        # cria formattable
+    as.datatable( formattable(asdt, 
+                              list(    # colore a linha 6 da coluna dois de verde ou vemelho, se ela for menor ou maior que o numero da linha 1 coluna 2
+                                area(row=6, col=2) ~  formatter("span", 
+                                                                style = x ~ formattable::style(color = ifelse(x <= asdt[1,2], "#108e00", "red"))) ,
+                                # colore o erro estimado de verde ou vemelho, se ela for menor ou maior que o erro desejado
+                                area(row=10, col=2) ~ formatter("span", 
+                                                                style = x ~ formattable::style(color = ifelse(x <= input$erro_inv, "#108e00", "red")))
+                                
+                                
+                              )#list
+    ), #formattable
+    # pre seleciona linhas
+    selection = list(mode = 'multiple', selected = c(6,10,15,16), target = 'row'),
+    options = list(searching = FALSE,
+                   paging=FALSE,
+                   initComplete = JS( # muda cor do cabecalho
+                     "function(settings, json) {",
+                     "$(this.api().table().header()).css({'background-color': '#00a90a', 'color': '#fff'});",
+                     "}")
+    ) 
+    
+    
+    
+    )
+    
+  })
+  
+  # Download tabelas ####
+  
+  datasetInput <- reactive({
+    switch(input$dataset,
+           "Dado utilizado / preparado"        = rawData(),
+           "Indice diversidade"                = tabdiversidade(),
+           "Matriz similaridade - Jaccard"     = tibble::rownames_to_column(as.data.frame(tabmsimilaridade()[[1]]), " "),
+           "Matriz similaridade - Sorensen"    = tibble::rownames_to_column(as.data.frame(tabmsimilaridade()[[2]]), " "),
+           "Indice de agregacao"               = tabagregate(),
+           "Estrutura"                         = tabestrutura(),
+           "Distribuicao diametrica geral"     = dd_list()[["dd_geral"]],
+           "Dist. Diametrica Indv. por parcela"= dd_list()[["dd_especie_indv_cc_column"]],
+           "Dist. Diametrica Vol. por parcela" = dd_list()[["dd_especie_vol_cc_column"]],
+           "BDq Meyer"                         = BDq_list()[[1]],
+           "BDq Meyer - Coeficientes"          = data.frame( "Coeficientes" = c("b0", "b1"),"Valor"= c( BDq_list()[[3]][1], BDq_list()[[3]][2] )),
+           "Totalizacao de parcelas"           = totData(),
+           "Amostragem Casual Simples"         = tabacs(),
+           "Amostragem Casual Estratificada 1" = list_ace()[[1]],
+           "Amostragem Casual Estratificada 2" = list_ace()[[2]],
+           "Amostragem Sistematica"            = tabas()
+    )
+  })
+  
+  output$table <- renderDataTable({
+    
+    datadownload <- datasetInput()
+    
+    datatable( datadownload,
+               options = list(searching = FALSE,
+                              paging=T,
+                              initComplete = JS(
+                                "function(settings, json) {",
+                                "$(this.api().table().header()).css({'background-color': '#00a90a', 'color': '#fff'});",
+                                "}")
+                              
+               )  )
+    
+  }) 
+  
+  output$downloadData <- downloadHandler(
+    filename = function() { 
+      
+      if(input$datasetformat==".csv")
+      {
+        paste(input$dataset, '.csv', sep='') 
+      }
+      else if(input$datasetformat==".xlsx")
+      {
+        paste(input$dataset, '.xlsx', sep='') 
+      }
+    },
+    
+    content = function(file) {
+      if(input$datasetformat==".csv")
+      {
+        write.csv2(datasetInput(), file, row.names = F)
+      }
+      else if(input$datasetformat==".xlsx")
+      {
+        xlsx::write.xlsx2(as.data.frame( datasetInput() ), file, row.names = F)
+      }
+      
+      
+      
+    }
+  )
+  
+  # Download graficos ####
+  
+  graphInput <- reactive({
+    switch(input$graph_d,
+           "Dendrograma - Jaccard"     = msim1_graph(),
+           "Dendrograma - Sorensen"    = msim2_graph(),
+           "DD dos Indv. por parcela"  = dd_g1(),
+           "DD do Vol. por parcela"    = dd_g2(),
+           "Distribuicao - BDq Meyer"  = BDq_graph() )
+  })
+  
+  output$graph_d_out <- renderPlot({
+    
+    g <- graphInput()
+    
+    g
+    
+    
+  }) 
+  
+  output$downloadGraph <- downloadHandler(
+    filename = function() { 
+      
+      if(input$graphformat==".png")
+      {
+        paste(input$graph_d, '.png', sep='') 
+      }
+      else if(input$graphformat==".jpg")
+      {
+        paste(input$graph_d, '.jpg', sep='') 
+      }
+      else if(input$graphformat==".pdf")
+      {
+        paste(input$graph_d, '.pdf', sep='') 
+      }
+      
+    },
+    
+    content = function(file) {
+      
+      ggsave(file, graphInput(), width = 12, height = 6 )
+      
+      
+    }
+  )
+  
+  
+  
   
   # ####
 })
