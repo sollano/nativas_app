@@ -510,7 +510,7 @@ shinyServer(function(input, output, session) {
     
     
   })
-      # area numerico
+  # area numerico
   output$selec_area_parcela_num <- renderUI({
     
     # precisa que o usuario nao tenha selecionado o volume
@@ -549,7 +549,7 @@ shinyServer(function(input, output, session) {
     )
     
   })
-     # Calculo de volume 
+  # Calculo de volume 
   output$ui_estvol1 <- renderUI({
     
     # precisa que o usuario nao tenha selecionado o volume
@@ -620,8 +620,7 @@ shinyServer(function(input, output, session) {
     )
     
   })
-
-    # calcular estrutura vertical
+  # calcular estrutura vertical
   output$checkbox_calc.est.vert <- renderUI({
     
     # precisa que o usuario nao tenha selecionado estrutura vertical E tenha selecionado altura
@@ -639,7 +638,6 @@ shinyServer(function(input, output, session) {
     )
     
   })
-  
   # tabela
   # rawData sera o dado utilizado durante o resto do app
   # as alteracoes feitas em 'preparacao' serao salvas aqui
@@ -647,6 +645,18 @@ shinyServer(function(input, output, session) {
   rawData <- reactive({
     
     data <- rawData_()
+    nm <- varnames()
+    
+    # Antes de rodar as mensagens a seguir, um dado precisa ser importado
+    validate(need(data,"please import a dataset"))
+    
+    # Aqui o dado nao ira rodar, caso essas condicoes sejam contrariadas
+    # Elas serao mostradas em vermelho, devido a errorClass (definida no comeco da UI )
+    validate(
+      need(is.numeric(data[[nm$dap]]), "dap column must be numeric"),
+      need(is.numeric(data[[nm$ht]]), "ht column must be numeric"),
+      need(is.numeric(data[[nm$vcc]]), "vcc column must be numeric"), errorClass = "WRONG")
+    
     
     # o primeiro if sera para remover as linhas
     
@@ -739,13 +749,15 @@ shinyServer(function(input, output, session) {
     data
     
   })
-  
-  # render
+ # render
   output$prep_table <- renderDataTable({
     
-    validate(need(!is.null(rawData()), "Please import a dataset"))
+    validate(need(rawData(), "Please import a dataset"))
+    
+    nm <- varnames()
     
     data <- rawData()
+    
     
     datatable(data,
               
@@ -759,7 +771,49 @@ shinyServer(function(input, output, session) {
     
     
   })
-  
+  output$avisos_prep <- renderUI({
+    
+    data <- rawData_()
+    nm <- varnames()
+    
+    # Essa parte do server ira gerar uma UI vazia, que gera avisos caso alguma condicao abaixo seja violada.
+    #
+    # Os erros so poderao ser mostrados se o usuario selecionar alguma coluna para ser removido
+    req(input$col.rm_vars)
+
+    
+    # A seguir sao geradas uma mensagem de aviso para cada uma das variaveis que o usuario pode selecionar na aba
+    # de mapeamento, caso elas tambem sejam selecionadas para serem removidas.
+    # E utilizado %in% pois input$col.rm_vars pode ter mais de um nome (o usuario pode remover mais de uma variavel de uma vez)
+    # e utilizado ! pois a condicao necessaria (que nao gera aviso) e que a variavel nao seja removida.
+    # A cor da mensagem (laranja) e definada no argumento errorClass
+    validate(
+      need(! nm$especies %in% input$col.rm_vars, 
+           "You just removed the 'especies' variable. This will prevent you from running most of the app's functions") ,
+      need(! nm$parcelas %in% input$col.rm_vars, 
+           "You just removed the 'parcelas' variable. This will prevent you from running most of the app's functions") ,
+      need(! nm$dap %in% input$col.rm_vars, 
+           "You just removed the 'dap' variable. This will prevent you from running some of the app's functions") , 
+      need(! nm$ht %in% input$col.rm_vars, 
+           "You just removed the 'ht' variable. This will prevent you from running some of the app's functions") , 
+      need(! nm$vcc %in% input$col.rm_vars, 
+           "You just removed the 'vcc' variable. This will prevent you from running some of the app's functions") ,
+      need(! nm$vsc %in% input$col.rm_vars, 
+           "You just removed the 'vsc' variable. This will prevent you from running some of the app's functions") ,
+      need(! nm$area.parcela %in% input$col.rm_vars, 
+           "You just removed the 'area.parcela' variable. This will prevent you from running some of the app's functions"),
+      need(! nm$area.total %in% input$col.rm_vars, 
+           "You just removed the 'area.total' variable. This will prevent you from running some of the app's functions"), 
+      need(! nm$agrup %in% input$col.rm_vars, 
+           "You just removed the 'agrup' variable. This will prevent you from running some of the app's functions"),
+      need(! nm$est.vertical %in% input$col.rm_vars, 
+           "You just removed the 'est.vertical' variable. This will prevent you from running some of the app's functions"),
+      need(! nm$est.interna %in% input$col.rm_vars, 
+           "You just removed the 'est.interna' variable. This will prevent you from running some of the app's functions"), errorClass = "AVISO")
+    
+    # A errorClass AVISO foi criada no comeco da UI
+    
+  })
   # Set names ####
   varnames <- reactive({
     

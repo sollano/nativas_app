@@ -16,8 +16,39 @@ library(xlsxjars)
 library(rmarkdown)
 
 shinyUI(
-  
+  # Intro, taglists e error messages colors ####
   tagList(tags$style(HTML(".irs-single, .irs-bar-edge, .irs-bar{background: #00a90a}")), # this is actually .css; this changes the color for the sliders
+          
+          # Cor de todas as mensagens da funcao need
+          tags$head(
+            tags$style(HTML("
+                            .shiny-output-error-validation {
+                            color: #00a90a;
+                            }
+                            "))
+            ),
+          
+          # cor das mensagens que eu especificar com "WRONG"
+          tags$head(
+            tags$style(HTML("
+                            .shiny-output-error-WRONG {
+                            color: red;
+                            }
+                            "))
+            ),
+          
+          # cor das mensagens que eu especificar com "AVISO"
+          tags$head(
+            tags$style(HTML("
+                            .shiny-output-error-AVISO {
+                            color: orange;
+                            }
+                            "))
+          ),
+          
+          
+          
+          
           navbarPage("App Inventário de Nativas",
                      
                      theme = "green_yeti2.css",
@@ -249,7 +280,7 @@ shinyUI(
                                     
                                   ),# sidebarPanel
                                   
-                                  mainPanel(p("colocar aviso sobre remover colunas importantes"),
+                                  mainPanel(shiny::htmlOutput("avisos_prep"),
                                             tableOutput("teste"),
                                             DT::dataTableOutput("prep_table")
                                   )# mainPanel
@@ -416,7 +447,7 @@ shinyUI(
                                 
                                 ),# tabPanel BDq
                        # tabPanel Estrutura volumétrica ####
-                       tabPanel("Estrutura volumétrica"),
+                      # tabPanel("Estrutura volumétrica"),
                        
                        # tabPanel inventario florestal ####
                        tabPanel("Inventário florestal",
