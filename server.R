@@ -34,6 +34,8 @@ source("funs/inv_summary.R"        , encoding="UTF-8")
 source("funs/round_df.R"           , encoding="UTF-8")
 source("funs/estrat_vert_souza.R"  , encoding="UTF-8")
 source("funs/classe_diametro.R"    , encoding="UTF-8")
+source("funs/htdapratio.R"         , encoding="UTF-8")
+source("funs/consistency.R"        , encoding="UTF-8")
 
 # vectors for names ####
 
@@ -746,15 +748,37 @@ shinyServer(function(input, output, session) {
       
     }
     
+    
+    # O if a seguir sera para remover linhas inconsistentes selecionadas pelo usuario
+    
+    # se o usuario nao selecionar nada, nada acontece
+    # caso contrario ele filtra o dado conforme o usuario seleciona as variaveis
+    
+    if( ( is.null(input$consist_table_rows_selected) || input$consist_table_rows_selected == 0 || is.null(input$do_consist) || is.na(input$do_consist) || input$do_consist == "Nao" ) ){
+      
+      # esse if acima so foi feito dessa forma pois tentar adicionar ! nas condicoes acima
+      # nao funcionou, por algum motivo.
+      # portanto foi utilizado um if vazio com a condicao oposta a desejada,
+      # e o resultado esperado dentro do else.
+      
+    }else{
+      data_inconsist <- consist_fun()
+      
+      # Pega o numero da linha original (rowid) das linhas que o usuario selecionou na tabela (input$consist_table_rows_selected)
+      insconsist_rows <- data_inconsist [input$consist_table_rows_selected, "rowid" ]
+      
+      # remove linhas inconsistentes
+      data <- data[ -insconsist_rows ,  ]
+    }
+    
+    
     data
     
   })
  # render
-  output$prep_table <- renderDataTable({
+  output$prep_table <- DT::renderDataTable({
     
     validate(need(rawData(), "Please import a dataset"))
-    
-    nm <- varnames()
     
     data <- rawData()
     
@@ -772,16 +796,14 @@ shinyServer(function(input, output, session) {
     
   })
   output$avisos_prep <- renderUI({
-    
     data <- rawData_()
     nm <- varnames()
-    
+
     # Essa parte do server ira gerar uma UI vazia, que gera avisos caso alguma condicao abaixo seja violada.
     #
     # Os erros so poderao ser mostrados se o usuario selecionar alguma coluna para ser removido
     req(input$col.rm_vars)
 
-    
     # A seguir sao geradas uma mensagem de aviso para cada uma das variaveis que o usuario pode selecionar na aba
     # de mapeamento, caso elas tambem sejam selecionadas para serem removidas.
     # E utilizado %in% pois input$col.rm_vars pode ter mais de um nome (o usuario pode remover mais de uma variavel de uma vez)
@@ -858,6 +880,85 @@ shinyServer(function(input, output, session) {
   
   output$teste <- renderTable({
     varnames()
+    
+  })
+  
+  # Consistencia ####
+  consist_fun <- reactive({
+    
+    data <- rawData_()
+
+    req(data)
+    req(input$col.dap)
+    req(input$col.ht)
+    
+    #htdapratio(data, dap = input$col.dap, ht = input$col.ht) 
+    consistency(data, dap = input$col.dap, ht = input$col.ht, parcela = input$col.parcelas) 
+  })
+  output$consist_warning <- renderUI({
+    # Essa aviso ira aparcer na UI caso consit_fun() nao seja nulo.
+    # Esse objeto so nao sera nulo quando a funcao rodar, ou seja,
+    # quando houverem dados inconsistentes.
+    # Caso contrario a UI fica vazia, e nao aparece nada
+    validate(need(is.null(consist_fun()), "Dados inconsistentes foram detectados" ))
+  })
+  output$consist_show_table <- renderUI({
+    
+    req(consist_fun())
+    
+    # Funcionando de forma semelhante a consist_warning,
+    # se o objeto consist_fun() nao for nulo, ou seja,
+    # se houverem dados a serem consistidos, essa ui sera criada,
+    # e da a opcao ao usuario de visualizar ou nao a tabela contando estes dados
+    radioButtons("show_consist_table", h4("Deseja visualiza-los?"), c("Sim", "Nao"), selected = "Nao" )
+    
+    
+  })
+  output$consist_choice <- renderUI({
+    
+    req(input$show_consist_table, input$show_consist_table == "Sim")
+    
+    # Se o usuario quiser ver a tabela, essa UI ira aparecer, que da a ele a opcao de
+    # remover ou nao as linhas da tabela em que ele clicou
+    radioButtons("do_consist",
+                 h4("Remover linhas selecionadas da tabela de dados inconsistentes?"), 
+                 c("Sim","Nao"),
+                 selected = "Nao")
+    
+  })
+  output$consist_table_help <- renderUI({
+    
+    req(input$show_consist_table, input$show_consist_table == "Sim")
+    
+    # Se o usuario quiser ver a tabela, essa UI ira aparecer, 
+    # que gera um titulo e um texto de ajuda para a mesma
+    
+    list(
+      h2("Dados inconsistentes:"),
+      p("Analise os dados a seguir e clique nas linhas que desejar remover da analise."),
+      p("Em seguida basta selecionar a última opção 'Sim' à esquerda, e os dados serão removidos.")
+      
+    )
+  })
+  output$consist_table <- DT::renderDataTable({
+    
+    # Se o usuario quiser ver a tabela, mostrar ela 
+    req(input$show_consist_table, input$show_consist_table == "Sim")
+    
+    consist_data <- consist_fun() 
+    
+    datatable(consist_data,
+              
+              options = list(
+   #             width = "200px",
+                initComplete = JS(
+                  "function(settings, json) {",
+                  "$(this.api().table().header()).css({'background-color': '#00a90a', 'color': '#fff'});",
+                  "}")
+              )
+    ) # Criamos uma DT::datatable com base no objeto
+    
+    
     
   })
   
@@ -1781,6 +1882,7 @@ shinyServer(function(input, output, session) {
   
   datasetInput <- reactive({
     switch(input$dataset,
+           "Dados inconsistentes"              = consist_fun(),
            "Dado utilizado / preparado"        = rawData(),
            "Indice diversidade"                = tabdiversidade(),
            "Matriz similaridade - Jaccard"     = tibble::rownames_to_column(as.data.frame(tabmsimilaridade()[[1]]), " "),

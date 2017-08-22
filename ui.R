@@ -275,14 +275,22 @@ shinyUI(
                                     uiOutput("ui_estvol1"),
                                     uiOutput("ui_estvol3"),
                                     uiOutput("ui_estvol4"),
-                                    uiOutput("checkbox_calc.est.vert")
+                                    uiOutput("checkbox_calc.est.vert"),
+                                    uiOutput("consist_warning"),
+                                    uiOutput("consist_show_table"),
+                                    uiOutput("consist_choice")
+                                    
                                     
                                     
                                   ),# sidebarPanel
                                   
                                   mainPanel(shiny::htmlOutput("avisos_prep"),
                                             tableOutput("teste"),
-                                            DT::dataTableOutput("prep_table")
+                                            DT::dataTableOutput("prep_table"),
+                                            br(),
+                                            br(),
+                                            uiOutput("consist_table_help"),
+                                            DT::dataTableOutput("consist_table")
                                   )# mainPanel
                                   
                                   
@@ -534,6 +542,7 @@ shinyUI(
                                              
                                              selectInput("dataset", "Escolha uma tabela:", 
                                                          choices = c(
+                                                           "Dados inconsistentes",
                                                            "Dado utilizado / preparado",
                                                            "Indice diversidade",
                                                            "Matriz similaridade - Jaccard",
