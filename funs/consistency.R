@@ -12,9 +12,20 @@ consistency <- function(df, dap, ht, parcela,lower=0.2, upper=10){
     stop("dap not set", call. = F) 
   }
   
+  # se dap nao for numerico, parar
+  if(  !is.numeric(DF[[dap]] ) ){  
+    stop("dap column must be numeric", call. = F) 
+  }
+  
+  
   # se ht nao for fornecido, for igual "", nulo, ou  nao existir no dataframe, parar
   if(  missing(ht) || is.null(ht) || is.na(ht) || ht == "" || is.null(DF[[ht]] ) ){  
     stop("ht not set", call. = F) 
+  }
+  
+  # se ht nao for numerico, parar
+  if(  !is.numeric(DF[[ht]] ) ){  
+    stop("ht column must be numeric", call. = F) 
   }
   
   # add nomes das linhas como coluna numerica (numerica e importante caso se queira usar esta coluna como filtro futuramente)
