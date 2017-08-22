@@ -1,4 +1,4 @@
-library(shiny)
+options(java.parameters = "-Xss2048k")
 library(DT)
 #library(plotly)
 library(formattable)
@@ -900,7 +900,7 @@ shinyServer(function(input, output, session) {
     # Esse objeto so nao sera nulo quando a funcao rodar, ou seja,
     # quando houverem dados inconsistentes.
     # Caso contrario a UI fica vazia, e nao aparece nada
-    validate(need(is.null(consist_fun()), "Dados inconsistentes foram detectados" ))
+    validate(need(is.null(consist_fun()), "Dados inconsistentes foram detectados" ), errorClass = "AVISO")
   })
   output$consist_show_table <- renderUI({
     
@@ -910,7 +910,7 @@ shinyServer(function(input, output, session) {
     # se o objeto consist_fun() nao for nulo, ou seja,
     # se houverem dados a serem consistidos, essa ui sera criada,
     # e da a opcao ao usuario de visualizar ou nao a tabela contando estes dados
-    radioButtons("show_consist_table", h4("Deseja visualiza-los?"), c("Sim", "Nao"), selected = "Nao" )
+    radioButtons("show_consist_table", h4("Deseja visualizá-los?"), c("Sim", "Nao"), selected = "Nao" )
     
     
   })
@@ -942,8 +942,11 @@ shinyServer(function(input, output, session) {
   })
   output$consist_table <- DT::renderDataTable({
     
-    # Se o usuario quiser ver a tabela, mostrar ela 
-    req(input$show_consist_table, input$show_consist_table == "Sim")
+    # Se o usuario quiser ver a tabela, e ela nao for nula,
+    # nem a opcao de ver ela for nula, mostrar se nao, aviso
+    validate(need(!is.null(consist_fun()) & !is.null(input$show_consist_table) & input$show_consist_table == "Sim", "Dados inconsistentes foram detectados" ), errorClass = "AVISO" )
+    
+    #req(input$show_consist_table, input$show_consist_table == "Sim")
     
     consist_data <- consist_fun() 
     

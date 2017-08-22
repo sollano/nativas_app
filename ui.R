@@ -1,3 +1,4 @@
+options(java.parameters = "-Xss2048k")
 library(shiny)
 library(DT)
 #library(plotly)
@@ -284,14 +285,18 @@ shinyUI(
                                     
                                   ),# sidebarPanel
                                   
-                                  mainPanel(shiny::htmlOutput("avisos_prep"),
-                                            tableOutput("teste"),
-                                            DT::dataTableOutput("prep_table"),
-                                            br(),
-                                            br(),
-                                            uiOutput("consist_table_help"),
-                                            DT::dataTableOutput("consist_table")
-                                  )# mainPanel
+                                 mainPanel( tabsetPanel(
+                                    tabPanel("Dado pos preparação",
+                                             shiny::htmlOutput("avisos_prep"),
+                                             DT::dataTableOutput("prep_table"),
+                                             tableOutput("teste")
+                                             ),
+                                    tabPanel("Dados inconsistentes",
+                                             uiOutput("consist_table_help"),
+                                             DT::dataTableOutput("consist_table")
+                                             )
+
+                                  ))# mainPanel
                                   
                                   
                                 )
