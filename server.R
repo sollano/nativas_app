@@ -656,8 +656,7 @@ shinyServer(function(input, output, session) {
     # Elas serao mostradas em vermelho, devido a errorClass (definida no comeco da UI )
     validate(
       need(is.numeric(data[[nm$dap]]), "dap column must be numeric"),
-      need(is.numeric(data[[nm$ht]]), "ht column must be numeric"),
-      need(is.numeric(data[[nm$vcc]]), "vcc column must be numeric"), errorClass = "WRONG")
+      need(is.numeric(data[[nm$ht]]), "ht column must be numeric"), errorClass = "WRONG")
     
     
     # o primeiro if sera para remover as linhas
