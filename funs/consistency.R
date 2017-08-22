@@ -49,7 +49,8 @@ consistency <- function(df, dap, ht, parcela,lower=0.2, upper=10){
     filter(DAP_test != "ok" | HT_test != "ok" | ratio_test != "ok") %>% 
    # filter_at(vars( "DAP_test", "HT_test", "ratio_test" ), any_vars(. != "ok") ) %>% 
     select(rowid, DAP_test, HT_test, ratio_test,  everything() ) %>% 
-    arrange(rowid)
+    arrange(rowid) %>% 
+    as.data.frame
   
   if(missing(parcela) || is.null(parcela) || is.na(parcela) || parcela == ""){
     
