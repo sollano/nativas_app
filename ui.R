@@ -277,9 +277,7 @@ shinyUI(
                                     uiOutput("ui_estvol3"),
                                     uiOutput("ui_estvol4"),
                                     uiOutput("checkbox_calc.est.vert"),
-                                    uiOutput("consist_warning"),
-                                    uiOutput("consist_show_table"),
-                                    uiOutput("consist_choice")
+                                    uiOutput("consist_warning1")
                                     
                                     
                                     
@@ -292,7 +290,9 @@ shinyUI(
                                              tableOutput("teste")
                                              ),
                                     tabPanel("Dados inconsistentes",
+                                             uiOutput("consist_warning2"),
                                              uiOutput("consist_table_help"),
+                                             uiOutput("consist_choice"),
                                              DT::dataTableOutput("consist_table")
                                              )
 

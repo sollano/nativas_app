@@ -888,55 +888,52 @@ shinyServer(function(input, output, session) {
     
     data <- rawData_()
 
-    req(data)
-    req(input$col.dap)
-    req(input$col.ht)
+    # Aqui a funcao nao ira rodar, caso essas condicoes sejam contrariadas
+      req(data, is.numeric(data[[input$col.dap]]),is.numeric(data[[input$col.ht]]) )
     
     #htdapratio(data, dap = input$col.dap, ht = input$col.ht) 
     consistency(data, dap = input$col.dap, ht = input$col.ht, parcela = input$col.parcelas) 
   })
-  output$consist_warning <- renderUI({
+  output$consist_warning1 <- renderUI({
     # Essa aviso ira aparcer na UI caso consit_fun() nao seja nulo.
     # Esse objeto so nao sera nulo quando a funcao rodar, ou seja,
     # quando houverem dados inconsistentes.
     # Caso contrario a UI fica vazia, e nao aparece nada
     validate(need(is.null(consist_fun()), "Dados inconsistentes foram detectados" ), errorClass = "AVISO")
   })
-  output$consist_show_table <- renderUI({
+  output$consist_warning2 <- renderUI({
+    # Essa aviso ira aparcer na UI caso consit_fun() nao seja um objeto valido.
+    # Esse objeto so  sera nulo quando a funcao rodar e gerar um resultado nulo.
+    # Isso ocorre quando nao sao encontradas inconsistencias.
+    # Caso contrario a UI fica vazia, e nao aparece nada
+    validate(need(consist_fun(), "Não foram encontradas inconsistências" ) )
+  })
+  output$consist_choice <- renderUI({
     
     req(consist_fun())
     
     # Funcionando de forma semelhante a consist_warning,
     # se o objeto consist_fun() nao for nulo, ou seja,
-    # se houverem dados a serem consistidos, essa ui sera criada,
-    # e da a opcao ao usuario de visualizar ou nao a tabela contando estes dados
-    radioButtons("show_consist_table", h4("Deseja visualizá-los?"), c("Sim", "Nao"), selected = "Nao" )
-    
-    
-  })
-  output$consist_choice <- renderUI({
-    
-    req(input$show_consist_table, input$show_consist_table == "Sim")
-    
-    # Se o usuario quiser ver a tabela, essa UI ira aparecer, que da a ele a opcao de
+    # se houverem dados a serem consistidos, essa UI ira aparecer, que da a ele a opcao de
     # remover ou nao as linhas da tabela em que ele clicou
     radioButtons("do_consist",
                  h4("Remover linhas selecionadas da tabela de dados inconsistentes?"), 
                  c("Sim","Nao"),
-                 selected = "Nao")
+                 selected = "Nao",
+                 inline = T)
     
   })
   output$consist_table_help <- renderUI({
     
-    req(input$show_consist_table, input$show_consist_table == "Sim")
+    req(consist_fun())
     
-    # Se o usuario quiser ver a tabela, essa UI ira aparecer, 
+    # Se houverem inconsistencias, essa UI ira aparecer, 
     # que gera um titulo e um texto de ajuda para a mesma
     
     list(
       h2("Dados inconsistentes:"),
       p("Analise os dados a seguir e clique nas linhas que desejar remover da analise."),
-      p("Em seguida basta selecionar a última opção 'Sim' à esquerda, e os dados serão removidos.")
+      p("Em seguida basta selecionar a opção 'Sim' àbaixo, e os dados serão removidos.")
       
     )
   })
@@ -944,7 +941,7 @@ shinyServer(function(input, output, session) {
     
     # Se o usuario quiser ver a tabela, e ela nao for nula,
     # nem a opcao de ver ela for nula, mostrar se nao, aviso
-    validate(need(!is.null(consist_fun()) & !is.null(input$show_consist_table) & input$show_consist_table == "Sim", "Dados inconsistentes foram detectados" ), errorClass = "AVISO" )
+    validate(need(consist_fun(),""), errorClass = "AVISO" )
     
     #req(input$show_consist_table, input$show_consist_table == "Sim")
     
