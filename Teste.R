@@ -124,3 +124,12 @@ inv_summary(inv2, "DBH_11", "Htot_11", "VOL", "transect.area", groups = c("trans
 inv_summary(inv2, "DBH_11", "Htot_11", "VOL", 1000, groups = c("transect", "scientific.name") )
 
 
+
+
+# centro de classe ####
+bdq.meyer(inv, "transecto", "dap", 10000, intervalo.classe = 5, min.dap = 5)[[1]]
+classe_diametro(inv, "dap","transecto", 10000,ic = 5, dapmin = 5)
+# diametro maximo do bdq.meyer esta errado
+
+bdq.meyer(inv, "transecto", "dap", 10000, intervalo.classe = 10, min.dap = 5)[[1]]
+classe_diametro(inv, "dap","transecto", 10000,ic = 10, dapmin = 5)
