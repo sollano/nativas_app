@@ -200,11 +200,11 @@ shinyUI(
                        
                        column(4,
                               wellPanel(
-                                h3("Nível de agrupamento"),
-                                p("Selecione o nome da variável referente ao nível de agrupamento"#, 
+                                h3("Estrato"),
+                                p("Selecione o nome da variável referente à Estrato"#, 
                                   #style = "font-family: 'Source Sans Pro';"
                                 ),
-                                uiOutput("selec_agrup")
+                                uiOutput("selec_estrato")
                               )) # Coluna area.total
                        
                        
@@ -287,6 +287,7 @@ shinyUI(
                                     tabPanel("Dado pos preparação",
                                              shiny::htmlOutput("avisos_prep"),
                                              DT::dataTableOutput("prep_table"),
+                                             hr(),
                                              tableOutput("teste")
                                              ),
                                     tabPanel("Dados inconsistentes",

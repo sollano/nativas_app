@@ -37,6 +37,26 @@ source("funs/classe_diametro.R"    , encoding="UTF-8")
 source("funs/htdapratio.R"         , encoding="UTF-8")
 source("funs/consistency.R"        , encoding="UTF-8")
 
+# Funcao para testar se uma variavel e numerica
+# Sera utilizada dentro da funcao validate
+check_numeric <- function(input, df, code){
+  
+  if(is.null(input) ){
+    
+    
+  }else if(is.na(input)){
+    
+    
+  }else if(input == ""){
+    
+  }else if(!is.null(input) && !is.numeric(df[[input]]) ){
+    
+    paste(code, "column must be numeric")
+    
+  }
+  
+}
+
 # vectors for names ####
 
 especies_names <- c("nome.cient","scientific.name","Scientific.Name","SCIENTIFIC.NAME" ,"scientific_name", "Scientific_Name","SCIENTIFIC_NAME","nome.cientifico", "Nome.Cientifico","NOME.CIENTIFICO","nome_cientifico", "Nome_Cientifico","NOME_CIENTIFICO")
@@ -374,11 +394,11 @@ shinyServer(function(input, output, session) {
     )# selectize
     
   })
-  output$selec_agrup        <- renderUI({
+  output$selec_estrato        <- renderUI({
     
     data <- rawData_()
     
-    selectizeInput("col.agrup",
+    selectizeInput("col.estrato",
                    NULL, # nome que sera mostrado na UI
                    choices = names(data),
                    selected = estratos_names,
@@ -651,12 +671,13 @@ shinyServer(function(input, output, session) {
     
     # Antes de rodar as mensagens a seguir, um dado precisa ser importado
     validate(need(data,"please import a dataset"))
-    
+    validate(check_numeric(nm$dap, data, "dap"))
+    validate(check_numeric(nm$ht, data, "ht"))
     # Aqui o dado nao ira rodar, caso essas condicoes sejam contrariadas
     # Elas serao mostradas em vermelho, devido a errorClass (definida no comeco da UI )
-    validate(
-      need(is.numeric(data[[nm$dap]]), "dap column must be numeric"),
-      need(is.numeric(data[[nm$ht]]), "ht column must be numeric"), errorClass = "WRONG")
+    #validate(
+    #  need(is.numeric(data[[nm$dap]]), "dap column must be numeric"),
+     # need(is.numeric(data[[nm$ht]]), "ht column must be numeric"), errorClass = "WRONG")
     
     
     # o primeiro if sera para remover as linhas
@@ -825,8 +846,8 @@ shinyServer(function(input, output, session) {
            "You just removed the 'area.parcela' variable. This will prevent you from running some of the app's functions"),
       need(! nm$area.total %in% input$col.rm_vars, 
            "You just removed the 'area.total' variable. This will prevent you from running some of the app's functions"), 
-      need(! nm$agrup %in% input$col.rm_vars, 
-           "You just removed the 'agrup' variable. This will prevent you from running some of the app's functions"),
+      need(! nm$estrato %in% input$col.rm_vars, 
+           "You just removed the 'estrato' variable. This will prevent you from running some of the app's functions"),
       need(! nm$est.vertical %in% input$col.rm_vars, 
            "You just removed the 'est.vertical' variable. This will prevent you from running some of the app's functions"),
       need(! nm$est.interna %in% input$col.rm_vars, 
@@ -838,7 +859,7 @@ shinyServer(function(input, output, session) {
   # Set names ####
   varnames <- reactive({
     
-    #req(input$col.especies,input$col.parcelas, input$col.dap,input$col.ht,input$col.vcc, input$col.vsc,input$col.area.parcela,input$col.area.total, input$col.col.agrup,  input$col.est.vertical,input$col.est.interna)
+    #req(input$col.especies,input$col.parcelas, input$col.dap,input$col.ht,input$col.vcc, input$col.vsc,input$col.area.parcela,input$col.area.total, input$col.col.estrato,  input$col.est.vertical,input$col.est.interna)
     
     varnameslist <- list(
       especies=input$col.especies,
@@ -849,7 +870,7 @@ shinyServer(function(input, output, session) {
       vsc=input$col.vsc,
       area.parcela=input$col.area.parcela,
       area.total=input$col.area.total,
-      agrup=input$col.agrup,
+      estrato=input$col.estrato,
       est.vertical=input$col.est.vertical,
       est.interna=input$col.est.interna,
       NI=input$rotutuloNI,
@@ -888,7 +909,12 @@ shinyServer(function(input, output, session) {
     data <- rawData_()
 
     # Aqui a funcao nao ira rodar, caso essas condicoes sejam contrariadas
-      req(data, is.numeric(data[[input$col.dap]]),is.numeric(data[[input$col.ht]]) )
+    #  req(data, is.numeric(data[[input$col.dap]]),is.numeric(data[[input$col.ht]]) )
+    validate(
+      req(input$col.dap),
+      req(input$col.ht),
+      check_numeric(input$col.dap, data, "dap"),
+      check_numeric(input$col.ht, data, "ht")  )
     
     #htdapratio(data, dap = input$col.dap, ht = input$col.ht) 
     consistency(data, dap = input$col.dap, ht = input$col.ht, parcela = input$col.parcelas) 
@@ -1613,8 +1639,8 @@ shinyServer(function(input, output, session) {
       need(nm$area.total,"Por favor mapeie a coluna ou insira um valor referente a 'area.total'  ")
     )
     
-    # Se o usuario inseir uma variavel de agrupamento, considera-la na hora dos calculos
-    if(nm$agrup =="" ){grupos<-nm$parcela}else{grupos <- c(nm$agrup, nm$parcela)}
+    # Se o usuario inseir uma variavel de Estrato, considera-la na hora dos calculos
+    if(nm$estrato =="" ){grupos<-nm$parcela}else{grupos <- c(nm$estrato, nm$parcela)}
     
     x <- inv_summary(df           = dados, 
                      DAP          = nm$dap, 
@@ -1688,7 +1714,7 @@ shinyServer(function(input, output, session) {
                  area_parcela   = nm$area.parcela,
                  area_total     = nm$area.total, 
                  idade          = NA,
-                 grupos         = nm$agrup, 
+                 grupos         = nm$estrato, 
                  alpha          = input$alpha_inv, 
                  Erro           = input$erro_inv, 
                  casas_decimais = input$cd_inv, 
@@ -1745,14 +1771,14 @@ shinyServer(function(input, output, session) {
       need(nm$vcc,"Por favor mapeie a coluna referente a 'volume com casca' ou estime-o na aba preparação  "),
       need(nm$area.parcela,"Por favor mapeie a coluna ou insira um valor referente a 'area.parcela'  "),
       need(nm$area.total,"Por favor mapeie a coluna ou insira um valor referente a 'area.total'  "),
-      need(nm$agrup,"Por favor mapeie a coluna referente a 'agrupamento' ")
+      need(nm$estrato,"Por favor mapeie a coluna referente a 'Estrato' ")
     )
     
     x <- ace(df             = dados, 
              VCC            = nm$vcc, 
              area_parcela   = nm$area.parcela, 
              area_estrato   = nm$area.total, 
-             grupos         = nm$agrup, 
+             grupos         = nm$estrato, 
              idade          = NA, 
              alpha          = input$alpha_inv, 
              Erro           = input$erro_inv, 
@@ -1835,7 +1861,7 @@ shinyServer(function(input, output, session) {
                   area_parcela   = nm$area.parcela,
                   area_total     = nm$area.total, 
                   idade          = NA,
-                  grupos         = nm$agrup, 
+                  grupos         = nm$estrato, 
                   alpha          = input$alpha_inv, 
                   Erro           = input$erro_inv, 
                   casas_decimais = input$cd_inv, 
