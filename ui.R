@@ -424,8 +424,8 @@ shinyUI(
                                     tabPanel("DD Geral", DT::dataTableOutput("dd_geral_tab") ),
                                     tabPanel("DD dos indivíduos por ha por espécie", DT::dataTableOutput("dd_indv_especie_tab") ),
                                     tabPanel("DD do volume por ha por espécie", DT::dataTableOutput("dd_vol_especie_tab") ),
-                                    tabPanel("Gráfico dos indiv. por ha por DD", plotOutput("dd_graph_indv") ),
-                                    tabPanel("Gráfico do vol. por ha por DD", plotOutput("dd_graph_vol") ) 
+                                    tabPanel("Gráfico dos indiv. por ha por DD", plotOutput("dd_graph_indv",height = "550px") ),
+                                    tabPanel("Gráfico do vol. por ha por DD", plotOutput("dd_graph_vol",height = "550px") ) 
                                   )
                                   
                                 )
@@ -450,7 +450,7 @@ shinyUI(
                                   tabsetPanel(
                                     
                                     tabPanel("BDq", DT::dataTableOutput("BDq1") ),
-                                    tabPanel("Gráfico", plotOutput( "BDq_graph_" ) ),
+                                    tabPanel("Gráfico", plotOutput( "BDq_graph_" ,height = "550px") ),
                                     tabPanel("Detalhes do ajuste", DT::dataTableOutput("BDq3", "70%") )
                                     
                                   )
@@ -616,7 +616,7 @@ shinyUI(
                                              
                                            ),
                                            mainPanel(
-                                             plotOutput("graph_d_out")
+                                             plotOutput("graph_d_out",height = "550px")
                                            )
                                          )
                                 ) # download graficos

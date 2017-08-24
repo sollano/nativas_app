@@ -800,7 +800,7 @@ shinyServer(function(input, output, session) {
     
     validate(need(rawData(), "Please import a dataset"))
     
-    data <- rawData()
+    data <- round_df(rawData(), 4)
     
     
     datatable(data,
@@ -970,7 +970,7 @@ shinyServer(function(input, output, session) {
     
     #req(input$show_consist_table, input$show_consist_table == "Sim")
     
-    consist_data <- consist_fun() 
+    consist_data <- round_df(consist_fun() , 2)
     
     datatable(consist_data,
               
@@ -1406,7 +1406,7 @@ shinyServer(function(input, output, session) {
   
   output$dd_geral_tab <- DT::renderDataTable({
     
-    g <- dd_list()[["dd_geral"]]
+    g <- round_df(dd_list()[["dd_geral"]], 2)
     
     datatable( g,
                rownames = F,
@@ -1424,7 +1424,7 @@ shinyServer(function(input, output, session) {
   })
   output$dd_indv_especie_tab <- DT::renderDataTable({
     
-    g <- dd_list()[["dd_especie_indv_cc_column"]]
+    g <- round_df(dd_list()[["dd_especie_indv_cc_column"]], 2)
     
     datatable( g,
                rownames = F,
@@ -1442,7 +1442,7 @@ shinyServer(function(input, output, session) {
   })
   output$dd_vol_especie_tab <- DT::renderDataTable({
     
-    g <- dd_list()[["dd_especie_vol_cc_column"]]
+    g <- round_df(dd_list()[["dd_especie_vol_cc_column"]], 2)
     
     datatable( g,
                rownames = F,
@@ -1462,25 +1462,27 @@ shinyServer(function(input, output, session) {
   dd_g1 <- reactive({
     
     g <- dd_list()[["dd_geral"]]
+    #g$CC2 <-  sapply(g$CC , gsub, pattern= "[.]",replacement= "," )
     
     ggplot(g, aes(as.factor(CC),IndvHA)) +
       geom_bar(stat = "identity",color="black")+
-      scale_y_continuous( expand=c(0,10) ) +
+      scale_y_continuous( expand=c(0,15) ) +
       ggthemes::theme_igray(base_family = "serif") +
       labs(x = "Centro de Classe de Diâmetro - CCD (cm)", y = "Nº de Individuos por hectare") + 
+      geom_text(aes(label = CC ), position = position_dodge(0.9), vjust = -0.3, size = 7 ) + 
       theme(
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(),
         panel.border = element_blank(),
         axis.title   = element_text(size = 26,face="bold"), 
         axis.text    = element_text(size = 22),
+        axis.text.x = element_blank(),
         axis.line.x = element_line(color="black"),
         axis.line.y = element_line(color="black"),
         strip.text.x = element_text(size = 22)   )
     
     
   })
-  
   output$dd_graph_indv <- renderPlot({
     
     dd_g1()
@@ -1494,21 +1496,22 @@ shinyServer(function(input, output, session) {
     
     ggplot(g, aes(as.factor(CC),volume_ha)) +
       geom_bar(stat = "identity",color="black")+
-      scale_y_continuous( expand=c(0,10) ) +
+      scale_y_continuous( expand=c(0,15) ) +
       labs(x = "Centro de Classe de Diâmetro - CCD (cm)", y = "Volume por hectare") + 
       ggthemes::theme_igray(base_family = "serif") +
+      geom_text(aes(label = CC ), position = position_dodge(0.9), vjust = -0.3, size = 7 ) + 
       theme(
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(),
         panel.border = element_blank(),
         axis.title   = element_text(size = 26,face="bold"), 
         axis.text    = element_text(size = 22),
+        axis.text.x = element_blank(),
         axis.line.x = element_line(color="black"),
         axis.line.y = element_line(color="black"),
         strip.text.x = element_text(size = 22)   )
     
   })
-  
   output$dd_graph_vol <- renderPlot({
     
     dd_g2()
