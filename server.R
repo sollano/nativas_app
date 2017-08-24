@@ -911,8 +911,8 @@ shinyServer(function(input, output, session) {
     # Aqui a funcao nao ira rodar, caso essas condicoes sejam contrariadas
     #  req(data, is.numeric(data[[input$col.dap]]),is.numeric(data[[input$col.ht]]) )
     validate(
-      req(input$col.dap),
-      req(input$col.ht),
+      need(input$col.dap,""),
+      need(input$col.ht,""),
       check_numeric(input$col.dap, data, "dap"),
       check_numeric(input$col.ht, data, "ht")  )
     
