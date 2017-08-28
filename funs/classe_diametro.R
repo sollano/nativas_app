@@ -118,7 +118,6 @@ classe_diametro <- function(df, dap, parcela, area_parcela, ic = 5, dapmin = 5, 
   df_final <- df %>% 
     filter(!is.na( .data[[DAPAA]] ) ) %>% # remover NA
     mutate(CC = ceiling(( .data[[DAPAA]] )/ic) * ic - ic/2  ) %>% # Calcular Centro de classe
-    filter(CC > dapmin) %>% # Remover classes menores que o dap minimo
     group_by_at(vars(ESPECIESAA, CC )) %>% # Agrupar e calcular o numero de individuos, e n de individuos por ha
     summarise(
       NumIndv=n(),
@@ -127,6 +126,7 @@ classe_diametro <- function(df, dap, parcela, area_parcela, ic = 5, dapmin = 5, 
       volume_ha = sum( .data[[VOLUMEAA]], na.rm = T) / (AREA_PARCELAAA/10000 * npar )     ) %>% 
     mutate(DR =  round(NumIndv/sum(NumIndv) * 100, 4) ) %>% # Calcular densidade relativa
     arrange( CC ) %>% 
+    filter(CC >= dapmin) %>% # Remover classes menores que o dap minimo
     ungroup %>% 
     as.data.frame
 
