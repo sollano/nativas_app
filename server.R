@@ -394,7 +394,7 @@ shinyServer(function(input, output, session) {
     )# selectize
     
   })
-  output$selec_estrato        <- renderUI({
+  output$selec_estrato      <- renderUI({
     
     data <- rawData_()
     
@@ -1218,7 +1218,6 @@ shinyServer(function(input, output, session) {
     
   })
   
-  
   # Índices de agregação ####
   
   # funcao agregate
@@ -1304,8 +1303,7 @@ shinyServer(function(input, output, session) {
                )  ) 
     
   }) 
-  
-  
+
   # grafico estrutura (IVI)
   ivi_graph <- reactive({
     
@@ -1335,14 +1333,12 @@ shinyServer(function(input, output, session) {
     x
     
   })
-  
   output$estrg <- renderPlot({
     
     ivi_graph()
     
   })
-  
-  
+
   # Distribuicao diametrica ####
   
   dd_list <- reactive({
@@ -1489,7 +1485,6 @@ shinyServer(function(input, output, session) {
     
     
   })
-  
   dd_g2 <- reactive({
     
     g <- dd_list()[["dd_geral"]]
@@ -1840,8 +1835,7 @@ shinyServer(function(input, output, session) {
     
     
   })
-  
-  
+
   # Amostragem sistematica ####
   
   # funcao as aplicada em invData
@@ -2019,10 +2013,7 @@ shinyServer(function(input, output, session) {
       
     }
   )
-  
-  
-  
-  
+
   # ####
 })
 
