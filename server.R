@@ -586,13 +586,14 @@ shinyServer(function(input, output, session) {
       radioButtons("modelo_estvol",
                    label = "Selecione o modelo para ser utilizado:",
                    choices = c(
-                     "LN(VFFC) = b0 + b1 * LN(DAP) + b2 * LN(HT) + e",
-                     "VFFC = b0 + b1 * DAP + b2 * HT + e",
-                     "LN(VFFC) = b0 + b1 * 1/DAP + e",
-                     "VFFC = b0 + b1 * DAP + e", 
-                     "VFFC = b0 + b1 * DAP² + e", 
-                     "VFFC = b0 + b1 * DAP + b2 * DAP² + e",
-                     "VFFC = b0 + b1 * LN(DAP) + e"
+                     "LN(VFCC) = b0 + b1 * LN(DAP) + b2 * LN(HT) + e",
+                     "VFCC = b0 + b1 * DAP + b2 * HT + e",
+                     "VFCC = b0 * DAP^b1 * HT^b2 + e",
+                     "LN(VFCC) = b0 + b1 * 1/DAP + e",
+                     "VFCC = b0 + b1 * DAP + e", 
+                     "VFCC = b0 + b1 * DAP² + e", 
+                     "VFCC = b0 + b1 * DAP + b2 * DAP² + e",
+                     "VFCC = b0 + b1 * LN(DAP) + e"
                    ) )      )
       
 
@@ -719,27 +720,27 @@ shinyServer(function(input, output, session) {
       # e o resultado esperado dentro do else.
     }else{
       
-      if(input$modelo_estvol == "LN(VFFC) = b0 + b1 * 1/DAP + e"){
+      if(input$modelo_estvol == "LN(VFCC) = b0 + b1 * 1/DAP + e"){
         data$VOL <- exp( input$b0_estvol + 1/data[[input$col.dap]] * input$b1_estvol )
         data <- data %>% select(VOL, everything())
       }
       
-      if(input$modelo_estvol == "VFFC = b0 + b1 * DAP + e"){
+      if(input$modelo_estvol == "VFCC = b0 + b1 * DAP + e"){
         data$VOL <- input$b0_estvol + data[[input$col.dap]] * input$b1_estvol
         data <- data %>% select(VOL, everything())
       }
       
-      if(input$modelo_estvol == "VFFC = b0 + b1 * DAP² + e"){
+      if(input$modelo_estvol == "VFCC = b0 + b1 * DAP² + e"){
         data$VOL <- input$b0_estvol + data[[input$col.dap]]^2 * input$b1_estvol
         data <- data %>% select(VOL, everything())
       }
       
-      if(input$modelo_estvol == "VFFC = b0 + b1 * DAP + b2 * DAP² + e"){
+      if(input$modelo_estvol == "VFCC = b0 + b1 * DAP + b2 * DAP² + e"){
         data$VOL <- input$b0_estvol + data[[input$col.dap]] * input$b1_estvol + data[[input$col.dap]]^2 * input$b2_estvol
         data <- data %>% select(VOL, everything())
       }
       
-      if(input$modelo_estvol == "VFFC = b0 + b1 * LN(DAP) + e"){
+      if(input$modelo_estvol == "VFCC = b0 + b1 * LN(DAP) + e"){
         data$VOL <- input$b0_estvol + log(data[[input$col.dap]]) * input$b1_estvol
         data <- data %>% select(VOL, everything())
         
@@ -749,12 +750,15 @@ shinyServer(function(input, output, session) {
       # modelos com b2 e ht precisam de mais uma condicao
       if( is.null(input$modelo_estvol) ||  is.null(input$col.ht)  |  is.na(input$col.ht) || is.na(input$b2_estvol) || input$col.ht ==""  || input$b2_estvol == "" ){
         
-      }else if(input$modelo_estvol == "LN(VFFC) = b0 + b1 * LN(DAP) + b2 * LN(HT) + e"){
+      }else if(input$modelo_estvol == "LN(VFCC) = b0 + b1 * LN(DAP) + b2 * LN(HT) + e"){
         data$VOL <- exp( input$b0_estvol + log(data[[input$col.dap]]) * input$b1_estvol + log(data[[input$col.ht]]) * input$b2_estvol )
         data <- data %>% select(VOL, everything())
         
-      }else  if(input$modelo_estvol == "VFFC = b0 + b1 * DAP + b2 * HT + e"){
+      }else  if(input$modelo_estvol == "VFCC = b0 + b1 * DAP + b2 * HT + e"){
         data$VOL <- input$b0_estvol + data[[input$col.dap]] * input$b1_estvol + data[[input$col.ht]] * input$b2_estvol
+        data <- data %>% select(VOL, everything())
+      }else if(input$modelo_estvol == "VFCC = b0 * DAP^b1 * HT^b2 + e"){
+        data$VOL <- input$b0_estvol * data[[input$col.dap]] ^ input$b1_estvol * data[[input$col.ht]] ^ input$b2_estvol
         data <- data %>% select(VOL, everything())
       }
       

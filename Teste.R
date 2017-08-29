@@ -127,9 +127,54 @@ inv_summary(inv2, "DBH_11", "Htot_11", "VOL", 1000, groups = c("transect", "scie
 
 
 # centro de classe ####
+inv <- read.csv("examples/Inventory_exemplo.csv")
+
 bdq.meyer(inv, "transecto", "dap", 10000, intervalo.classe = 5, min.dap = 5)[[1]]
 classe_diametro(inv, "dap","transecto", 10000,ic = 5, dapmin = 5)
 # diametro maximo do bdq.meyer esta errado
 
 bdq.meyer(inv, "transecto", "dap", 10000, intervalo.classe = 10, min.dap = 5)[[1]]
 classe_diametro(inv, "dap","transecto", 10000,ic = 10, dapmin = 5)
+
+# Gráfico IVI ####
+
+gdata <- estrutura(inv, "nome.cient", "dap", "transecto", "parc.area") %>% 
+  arrange(-IVI) %>% 
+  mutate(n = as.numeric(row.names(.)), class = ifelse(n>10,"demais especies",as.character(especie)) ) 
+
+gdata$class <- factor(gdata$class, levels = unique(gdata$class))
+
+gdata
+ggplot(gdata, aes( ordered(class, levels = rev(levels(class)) ) , IVI)) + 
+  geom_bar(stat = "identity",color="black") + 
+  coord_flip()
+
+
+
+gdata2 <- 
+gdata %>% 
+  gather(IVI_contrib, valor, FR , DR , DoR) %>% 
+  group_by(class, IVI_contrib) %>% 
+  summarise(valor_d = sum(valor), IVI = sum(IVI), IVI_contrib_porc = round(valor_d/3/IVI * 100)) %>% 
+  group_by(class, IVI_contrib) %>% 
+  # nest() %>% 
+  mutate(IVI_contrib_count = map2(IVI_contrib, IVI_contrib_porc, ~rep(.x, times = .y) ) ) %>% 
+  unnest(IVI_contrib_count)
+    
+gdata_final <- left_join(gdata, gdata2, by="class")
+head(gdata_final, 15)
+
+ggplot(gdata_final, aes( ordered(class, levels = rev(levels(class)) ) , IVI)) + 
+  geom_bar(stat = "identity", alpha = 0.2) + 
+  coord_flip()
+
+
+ggplot(gdata2, aes( class , IVI_contrib_porc, fill=IVI_contrib) ) + 
+  geom_bar(stat = "identity") + 
+  coord_flip()
+
+
+
+ggplot(gdata2, aes( ordered(class, levels = rev(levels(class)) ) , IVI)) + 
+  geom_bar(aes(fill=IVI_contrib_count),position = "stack", stat = "summary", fun.y = "mean") + 
+  coord_flip()
