@@ -427,11 +427,13 @@ shinyUI(
                                   br(),
                                   tabsetPanel(
                                     
-                                    tabPanel("DD Geral", DT::dataTableOutput("dd_geral_tab") ),
-                                    tabPanel("DD dos indivíduos por ha por espécie", DT::dataTableOutput("dd_indv_especie_tab") ),
-                                    tabPanel("DD do volume por ha por espécie", DT::dataTableOutput("dd_vol_especie_tab") ),
-                                    tabPanel("Gráfico dos indiv. por ha por DD", plotOutput("dd_graph_indv",height = "550px") ),
-                                    tabPanel("Gráfico do vol. por ha por DD", plotOutput("dd_graph_vol",height = "550px") ) 
+                                    tabPanel("Distribuição diamétrica Geral", DT::dataTableOutput("dd_geral_tab") ),
+                                    tabPanel("Distribuição diamétrica dos indivíduos por ha por espécie", DT::dataTableOutput("dd_indv_especie_tab") ),
+                                    tabPanel("Distribuição diamétrica do volume por ha por espécie", DT::dataTableOutput("dd_vol_especie_tab") ),
+                                    tabPanel("Distribuição diamétrica de G por ha por espécie", DT::dataTableOutput("dd_G_especie_tab") ),
+                                    tabPanel("Gráfico dos indivíduos por ha por classe diamétrica", plotOutput("dd_graph_indv",height = "550px") ),
+                                    tabPanel("Gráfico do volume por ha por classe diamétrica", plotOutput("dd_graph_vol",height = "550px")),
+                                    tabPanel("Gráfico de G por ha por classe diamétrica", plotOutput("dd_graph_G",height = "550px")) 
                                   )
                                   
                                 )
