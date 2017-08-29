@@ -1,6 +1,6 @@
 #' @export
 
-classe_diametro <- function(df, dap, parcela, area_parcela, ic = 5, dapmin = 5, especies=NA, volume=NA, rotulo.NI="NI",cc_to_column=F, cctc_ha=T){
+classe_diametro <- function(df, dap, parcela, area_parcela, ic = 5, dapmin = 5, especies=NA, volume=NA, rotulo.NI="NI", cc_to_column=F, G_to_cc=F, cctc_ha=T){
   
   # se df nao for fornecido, for igual "", nulo, ou  nao for dataframe, parar
   if(  missing(df) || df == "" || is.null(df) || !is.data.frame(df) ){  
@@ -41,7 +41,7 @@ classe_diametro <- function(df, dap, parcela, area_parcela, ic = 5, dapmin = 5, 
   if(is.null(volume)|| is.na(volume) || volume==""){
     volume <- NA
   }
-  
+
   # Permitir se e nse como entrada de nomes de variaveis
   DAPAA <- dap
   PARCELAAA <- parcela
@@ -112,16 +112,20 @@ classe_diametro <- function(df, dap, parcela, area_parcela, ic = 5, dapmin = 5, 
     VOLUMEAA <- "vol"
     
   }
-  
- # VOLUMEAA <- rlang::sym(VOLUMEAA)
+
+  # VOLUMEAA <- rlang::sym(VOLUMEAA)
   
   df_final <- df %>% 
     filter(!is.na( .data[[DAPAA]] ) ) %>% # remover NA
-    mutate(CC = ceiling(( .data[[DAPAA]] )/ic) * ic - ic/2  ) %>% # Calcular Centro de classe
+    mutate(
+      CC = ceiling(( .data[[DAPAA]] )/ic) * ic - ic/2, # Calcular Centro de classe
+      g = pi * .data[[DAPAA]]^2 / 40000   ) %>%  # Calcular area seccional
     group_by_at(vars(ESPECIESAA, CC )) %>% # Agrupar e calcular o numero de individuos, e n de individuos por ha
     summarise(
       NumIndv=n(),
       IndvHA = round( NumIndv / (AREA_PARCELAAA/10000 * npar ),  1 ),
+      G = sum(g),
+      G_ha = sum(g) / (AREA_PARCELAAA/10000 * npar ),
       volume = sum( .data[[VOLUMEAA]], na.rm = T  ),
       volume_ha = sum( .data[[VOLUMEAA]], na.rm = T) / (AREA_PARCELAAA/10000 * npar )     ) %>% 
     mutate(DR =  round(NumIndv/sum(NumIndv) * 100, 4) ) %>% # Calcular densidade relativa
@@ -142,9 +146,21 @@ classe_diametro <- function(df, dap, parcela, area_parcela, ic = 5, dapmin = 5, 
   
   # Se o usuario quiser o centro de classe na coluna e nao tiver fornecido volume,
   # popular o centro de classe com o numero de individuos
-  if(cc_to_column==T && !is(testesp, "try-error") && is(testvol, "try-error") ){
+  if(cc_to_column==T &&  G_to_cc==T ){
     
-    if(cctc_ha==T){df_final$NI<- df_final$IndvHA}else if(cctc_ha==F){df_final$NI<- df_final$NumIndv}else(stop("cctc_ha must be TRUE or FALSE",call. = F))
+    if(cctc_ha==T){df_final$G_f <- df_final$G_ha}else if(cctc_ha==F){df_final$G_f <- df_final$G}else(stop("cctc_ha must be TRUE or FALSE",call. = F))
+    
+    df_final <- df_final %>% 
+      select(ESPECIESAA,CC,G_f) %>% 
+      tidyr::spread(CC,G_f, fill = 0) %>% 
+      mutate(Total=rowSums(.[, sapply(., is.numeric)]) ) %>% 
+      as.data.frame %>% 
+      round_df(4)
+    df_final[df_final==0] <- ""
+    
+  }else if(cc_to_column==T && !is(testesp, "try-error") && is(testvol, "try-error") ){
+    
+    if(cctc_ha==T){df_final$NI <- df_final$IndvHA}else if(cctc_ha==F){df_final$NI <- df_final$NumIndv}else(stop("cctc_ha must be TRUE or FALSE",call. = F))
     
     df_final <- df_final %>% 
       select(ESPECIESAA,CC,NI) %>% 
