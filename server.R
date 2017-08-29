@@ -1325,7 +1325,7 @@ shinyServer(function(input, output, session) {
       geom_bar(stat = "identity", width = .8, color = "black") +
       # geom_text(aes(label = scales::percent(IVI_contrib_porc) ), position = position_stack(vjust = 0.5), size = 4) + 
       coord_flip() +
-      labs(x = "Especies", y="IVI", fill = "Legenda") +
+      labs(x = "Espécies", y="IVI", fill = "Legenda") +
       ggthemes::theme_igray(base_family = "serif") +
       theme(
         legend.position = "bottom",
@@ -1560,7 +1560,7 @@ shinyServer(function(input, output, session) {
     ggplot(g, aes(as.factor(CC),G_ha)) +
       geom_bar(stat = "identity",color="black")+
      # scale_y_continuous( expand=c(0,15) ) +
-      labs(x = "Centro de Classe de Diâmetro - CCD (cm)", y = "Area Basal (G) por hectare") + 
+      labs(x = "Centro de Classe de Diâmetro - CCD (cm)", y = "Área Basal (G) por hectare") + 
       ggthemes::theme_igray(base_family = "serif") +
       geom_text(aes(label = CC ), position = position_dodge(0.9), vjust = -0.3, size = 6 ) + 
       theme(
@@ -1981,8 +1981,9 @@ shinyServer(function(input, output, session) {
            "Indice de agregacao"               = tabagregate(),
            "Estrutura"                         = tabestrutura(),
            "Distribuicao diametrica geral"     = dd_list()[["dd_geral"]],
-           "Dist. Diametrica Indv. por parcela"= dd_list()[["dd_especie_indv_cc_column"]],
-           "Dist. Diametrica Vol. por parcela" = dd_list()[["dd_especie_vol_cc_column"]],
+           "Dist. Diametrica Indv. por especie"= dd_list()[["dd_especie_indv_cc_column"]],
+           "Dist. Diametrica Vol. por especie" = dd_list()[["dd_especie_vol_cc_column"]],
+           "Dist. Diametrica G por especie"    = dd_list()[["dd_especie_G_cc_column"]],
            "BDq Meyer"                         = BDq_list()[[1]],
            "BDq Meyer - Coeficientes"          = data.frame( "Coeficientes" = c("b0", "b1"),"Valor"= c( BDq_list()[[3]][1], BDq_list()[[3]][2] )),
            "Totalizacao de parcelas"           = totData(),
@@ -2043,8 +2044,10 @@ shinyServer(function(input, output, session) {
     switch(input$graph_d,
            "Dendrograma - Jaccard"     = msim1_graph(),
            "Dendrograma - Sorensen"    = msim2_graph(),
-           "DD dos Indv. por parcela"  = dd_g1(),
-           "DD do Vol. por parcela"    = dd_g2(),
+           "Grafico IVI"               = ivi_graph(),
+           "Indv. por especie por CC"  = dd_g1(),
+           "Vol. por especie por CC"   = dd_g2(),
+           "G por especie por CC"      = dd_g3(),
            "Distribuicao - BDq Meyer"  = BDq_graph() )
   })
   
