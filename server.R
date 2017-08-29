@@ -14,7 +14,7 @@ library(ggthemes)
 library(xlsx)
 library(rJava)
 library(xlsxjars)
-library(rmarkdown)
+#library(rmarkdown)
 
 # Data e functions
 
