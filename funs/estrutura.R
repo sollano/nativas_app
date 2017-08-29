@@ -20,7 +20,7 @@ estrutura = function(data, col.especies, col.dap, col.parcelas, area.parcela, es
     stop("col.parcelas not set", call. = F) 
   }
   
-  # se area.parcela nao for fornecido, for igual "", nulo, ou  nao existir no dataframe, parar
+  # se area.parcela nao for fornecido, for igual "", nulo, parar
   if(  missing(area.parcela) || is.null(area.parcela) || is.na(area.parcela) || area.parcela == "" ){  
     stop("area.parcela not set", call. = F) 
   }
