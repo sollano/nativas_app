@@ -1310,15 +1310,23 @@ shinyServer(function(input, output, session) {
     
     validate(
       need(tabestrutura(), "Por favor faça a análise estrutural")  )
-
-    tabestr <- tabestrutura()
     
-    x <- ggplot(tabestr, aes(DA, IVI)) + 
-        geom_point(size=5,alpha=.8) +   
+        tabestrutura() %>% 
+      arrange(-IVI) %>% 
+      mutate(n = as.numeric(row.names(.)), class = ifelse(n>input$n_IVI_g,"Demais especies",as.character(especie)),class = factor(class, levels=unique(class)) )%>% 
+      gather(IVI_contrib, valor, FR , DR , DoR, factor_key = T) %>% 
+      group_by(class, IVI_contrib) %>% 
+      summarise(valor_d = sum(valor), IVI = sum(IVI), IVI_sep = valor_d/3,IVI_contrib_porc = round(valor_d/3/IVI,2)) %>% 
+      ggplot(aes( ordered(class, levels = rev(levels(class)) ) , IVI_sep, fill=IVI_contrib ) ) + 
+      geom_bar(stat = "identity", width = .8, color = "black") +
+      # geom_text(aes(label = scales::percent(IVI_contrib_porc) ), position = position_stack(vjust = 0.5), size = 4) + 
+      coord_flip() +
+      labs(x = "Especies", y="IVI", fill = "Legenda") +
       ggthemes::theme_igray(base_family = "serif") +
-      labs(x="Densidade Absoluta (DA)",y="Indice de Valor de Importância (IVI)") +
       theme(
-        plot.title = element_text(size = 22,face="bold",hjust = 0.5),
+        legend.position = "bottom",
+        legend.text = element_text(size = 18),
+        legend.title = element_text(size=22, face="bold"),
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(),
         panel.border = element_blank(),
@@ -1326,11 +1334,8 @@ shinyServer(function(input, output, session) {
         axis.text    = element_text(size = 22),
         axis.line.x = element_line(color="black"),
         axis.line.y = element_line(color="black"),
-        strip.text.x = element_text(size = 22)   )  
-    
-    
-
-    x
+        strip.text.x = element_text(size = 22)   ) + 
+      guides(fill = guide_legend(reverse=T))
     
   })
   output$estrg <- renderPlot({
@@ -1465,7 +1470,7 @@ shinyServer(function(input, output, session) {
       scale_y_continuous( expand=c(0,15) ) +
       ggthemes::theme_igray(base_family = "serif") +
       labs(x = "Centro de Classe de Diâmetro - CCD (cm)", y = "Nº de Individuos por hectare") + 
-      geom_text(aes(label = CC ), position = position_dodge(0.9), vjust = -0.3, size = 7 ) + 
+      geom_text(aes(label = CC ), position = position_dodge(0.9), vjust = -0.3, size = 6 ) + 
       theme(
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(),
@@ -1494,7 +1499,7 @@ shinyServer(function(input, output, session) {
       scale_y_continuous( expand=c(0,15) ) +
       labs(x = "Centro de Classe de Diâmetro - CCD (cm)", y = "Volume por hectare") + 
       ggthemes::theme_igray(base_family = "serif") +
-      geom_text(aes(label = CC ), position = position_dodge(0.9), vjust = -0.3, size = 7 ) + 
+      geom_text(aes(label = CC ), position = position_dodge(0.9), vjust = -0.3, size = 6 ) + 
       theme(
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(),
@@ -1545,6 +1550,7 @@ shinyServer(function(input, output, session) {
     
     datatable( as.data.frame(BDqdt),
                options = list(searching = T,
+                              rownames = F,
                               paging=T,
                               initComplete = JS(
                                 "function(settings, json) {",
