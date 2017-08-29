@@ -1406,6 +1406,20 @@ shinyServer(function(input, output, session) {
                                                       rotulo.NI = nm$NI,
                                                       cc_to_column = T,
                                                       cctc_ha = T )
+    
+    lista[["dd_especie_G_cc_column"]] <- classe_diametro(df = dados, 
+                                                           dap = nm$dap,
+                                                           parcela = nm$parcelas,
+                                                           area_parcela = nm$area.parcela, 
+                                                           ic = nm$IC, 
+                                                           dapmin = nm$diam.min, 
+                                                           especies = nm$especies, 
+                                                           volume = NA,
+                                                           rotulo.NI = nm$NI,
+                                                           cc_to_column = T,
+                                                           G_to_cc = T,
+                                                           cctc_ha = T )
+    
     lista
   })
   
@@ -1463,6 +1477,24 @@ shinyServer(function(input, output, session) {
     
     
   })
+  output$dd_G_especie_tab <- DT::renderDataTable({
+    
+    g <- round_df(dd_list()[["dd_especie_G_cc_column"]], 4)
+    
+    datatable( g,
+               rownames = F,
+               options = list(searching = FALSE,
+                              paging=FALSE,
+                              ordering=FALSE,
+                              initComplete = JS(
+                                "function(settings, json) {",
+                                "$(this.api().table().header()).css({'background-color': '#00a90a', 'color': '#fff'});",
+                                "}")
+               )
+    )
+    
+    
+  })
   
   dd_g1 <- reactive({
     
@@ -1471,7 +1503,7 @@ shinyServer(function(input, output, session) {
     
     ggplot(g, aes(as.factor(CC),IndvHA)) +
       geom_bar(stat = "identity",color="black")+
-      scale_y_continuous( expand=c(0,15) ) +
+   #   scale_y_continuous( expand=c(0,15) ) +
       ggthemes::theme_igray(base_family = "serif") +
       labs(x = "Centro de Classe de Diâmetro - CCD (cm)", y = "Nº de Individuos por hectare") + 
       geom_text(aes(label = CC ), position = position_dodge(0.9), vjust = -0.3, size = 6 ) + 
@@ -1500,7 +1532,7 @@ shinyServer(function(input, output, session) {
     
     ggplot(g, aes(as.factor(CC),volume_ha)) +
       geom_bar(stat = "identity",color="black")+
-      scale_y_continuous( expand=c(0,15) ) +
+    #  scale_y_continuous( expand=c(0,15) ) +
       labs(x = "Centro de Classe de Diâmetro - CCD (cm)", y = "Volume por hectare") + 
       ggthemes::theme_igray(base_family = "serif") +
       geom_text(aes(label = CC ), position = position_dodge(0.9), vjust = -0.3, size = 6 ) + 
@@ -1519,6 +1551,33 @@ shinyServer(function(input, output, session) {
   output$dd_graph_vol <- renderPlot({
     
     dd_g2()
+    
+  })
+  dd_g3 <- reactive({
+   
+    g <- dd_list()[["dd_geral"]] 
+    
+    ggplot(g, aes(as.factor(CC),G_ha)) +
+      geom_bar(stat = "identity",color="black")+
+     # scale_y_continuous( expand=c(0,15) ) +
+      labs(x = "Centro de Classe de Diâmetro - CCD (cm)", y = "Area Basal (G) por hectare") + 
+      ggthemes::theme_igray(base_family = "serif") +
+      geom_text(aes(label = CC ), position = position_dodge(0.9), vjust = -0.3, size = 6 ) + 
+      theme(
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        axis.title   = element_text(size = 26,face="bold"), 
+        axis.text    = element_text(size = 22),
+        axis.text.x = element_blank(),
+        axis.line.x = element_line(color="black"),
+        axis.line.y = element_line(color="black"),
+        strip.text.x = element_text(size = 22)   )
+    
+  })
+  output$dd_graph_G <- renderPlot({
+    
+    dd_g3()
     
   })
   

@@ -136,45 +136,71 @@ classe_diametro(inv, "dap","transecto", 10000,ic = 5, dapmin = 5)
 bdq.meyer(inv, "transecto", "dap", 10000, intervalo.classe = 10, min.dap = 5)[[1]]
 classe_diametro(inv, "dap","transecto", 10000,ic = 10, dapmin = 5)
 
+classe_diametro(inv, "dap","transecto", 10000,"nome.cient",ic = 10, dapmin = 5)
+
+classe_diametro(inv, "dap","transecto", 10000,"nome.cient",ic = 10, dapmin = 5, cc_to_column = T)
+classe_diametro(inv, "dap","transecto", 10000,"nome.cient",ic = 10, dapmin = 5, cc_to_column = T, G_to_cc = T)
+
+
 # Gráfico IVI ####
 
 gdata <- estrutura(inv, "nome.cient", "dap", "transecto", "parc.area") %>% 
   arrange(-IVI) %>% 
-  mutate(n = as.numeric(row.names(.)), class = ifelse(n>10,"demais especies",as.character(especie)) ) 
+  mutate(n = as.numeric(row.names(.)), class = ifelse(n>10,"Demais especies",as.character(especie)),class = factor(class, levels=unique(class)) ) 
 
-gdata$class <- factor(gdata$class, levels = unique(gdata$class))
-
-gdata
-ggplot(gdata, aes( ordered(class, levels = rev(levels(class)) ) , IVI)) + 
-  geom_bar(stat = "identity",color="black") + 
-  coord_flip()
-
-
+gdata$class
 
 gdata2 <- 
-gdata %>% 
-  gather(IVI_contrib, valor, FR , DR , DoR) %>% 
+  gdata %>% 
+  gather(IVI_contrib, valor, FR , DR , DoR, factor_key = T) %>% 
   group_by(class, IVI_contrib) %>% 
-  summarise(valor_d = sum(valor), IVI = sum(IVI), IVI_contrib_porc = round(valor_d/3/IVI * 100)) %>% 
+  summarise(valor_d = sum(valor), IVI = sum(IVI), IVI_sep = valor_d/3,IVI_contrib_porc = round(valor_d/3/IVI,2))
+gdata2
+
+ggplot(gdata2, aes( ordered(class, levels = rev(levels(class)) ) , IVI_sep, fill=IVI_contrib ) ) + 
+  geom_bar(stat = "identity", width = .8, color = "black") +
+  # geom_text(aes(label = scales::percent(IVI_contrib_porc) ), position = position_stack(vjust = 0.5), size = 4) + 
+  coord_flip() +
+  labs(x = "Especies", y="IVI", fill = "Legenda") +
+  ggthemes::theme_igray(base_family = "serif") +
+  theme(
+    legend.position = "bottom",
+    legend.text = element_text(size = 18),
+    legend.title = element_text(size=22, face="bold"),
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(),
+    panel.border = element_blank(),
+    axis.title   = element_text(size = 26,face="bold"), 
+    axis.text    = element_text(size = 22),
+    axis.line.x = element_line(color="black"),
+    axis.line.y = element_line(color="black"),
+    strip.text.x = element_text(size = 22)   ) + 
+  guides(fill = guide_legend(reverse=T))
+
+
+
+estrutura(inv, "nome.cient", "dap", "transecto", "parc.area") %>% 
+  arrange(-IVI) %>% 
+  mutate(n = as.numeric(row.names(.)), class = ifelse(n>10,"Demais especies",as.character(especie)),class = factor(class, levels=unique(class)) )%>% 
+  gather(IVI_contrib, valor, FR , DR , DoR, factor_key = T) %>% 
   group_by(class, IVI_contrib) %>% 
-  # nest() %>% 
-  mutate(IVI_contrib_count = map2(IVI_contrib, IVI_contrib_porc, ~rep(.x, times = .y) ) ) %>% 
-  unnest(IVI_contrib_count)
-    
-gdata_final <- left_join(gdata, gdata2, by="class")
-head(gdata_final, 15)
-
-ggplot(gdata_final, aes( ordered(class, levels = rev(levels(class)) ) , IVI)) + 
-  geom_bar(stat = "identity", alpha = 0.2) + 
-  coord_flip()
-
-
-ggplot(gdata2, aes( class , IVI_contrib_porc, fill=IVI_contrib) ) + 
-  geom_bar(stat = "identity") + 
-  coord_flip()
-
-
-
-ggplot(gdata2, aes( ordered(class, levels = rev(levels(class)) ) , IVI)) + 
-  geom_bar(aes(fill=IVI_contrib_count),position = "stack", stat = "summary", fun.y = "mean") + 
-  coord_flip()
+  summarise(valor_d = sum(valor), IVI = sum(IVI), IVI_sep = valor_d/3,IVI_contrib_porc = round(valor_d/3/IVI,2)) %>% 
+  ggplot(aes( ordered(class, levels = rev(levels(class)) ) , IVI_sep, fill=IVI_contrib ) ) + 
+  geom_bar(stat = "identity", width = .8, color = "black") +
+  # geom_text(aes(label = scales::percent(IVI_contrib_porc) ), position = position_stack(vjust = 0.5), size = 4) + 
+  coord_flip() +
+  labs(x = "Especies", y="IVI", fill = "Legenda") +
+  ggthemes::theme_igray(base_family = "serif") +
+  theme(
+    legend.position = "bottom",
+    legend.text = element_text(size = 18),
+    legend.title = element_text(size=22, face="bold"),
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(),
+    panel.border = element_blank(),
+    axis.title   = element_text(size = 26,face="bold"), 
+    axis.text    = element_text(size = 22),
+    axis.line.x = element_line(color="black"),
+    axis.line.y = element_line(color="black"),
+    strip.text.x = element_text(size = 22)   ) + 
+  guides(fill = guide_legend(reverse=T))
