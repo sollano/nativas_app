@@ -548,46 +548,24 @@ shinyUI(
                                 
                               tabsetPanel(
                                 tabPanel("Download de tabelas", 
-                                         sidebarLayout(
+                                         fluidPage(
                                            
-                                           sidebarPanel(
-                                             
-                                             h3("Download de tabelas"),
-                                             
-                                             selectInput("dataset", "Escolha uma tabela:", 
-                                                         choices = c(
-                                                           "Dados inconsistentes",
-                                                           "Dado utilizado / preparado",
-                                                           "Indice diversidade",
-                                                           "Matriz similaridade - Jaccard",
-                                                           "Matriz similaridade - Sorensen",
-                                                           "Indice de agregacao",
-                                                           "Estrutura",
-                                                           "Distribuicao diametrica geral",
-                                                           "Dist. Diametrica Indv. por especie",
-                                                           "Dist. Diametrica Vol. por especie",
-                                                           "Dist. Diametrica G por especie",
-                                                           "BDq Meyer",
-                                                           "BDq Meyer - Coeficientes",
-                                                           "Totalizacao de parcelas",
-                                                           "Amostragem Casual Simples", 
-                                                           "Amostragem Casual Estratificada 1", 
-                                                           "Amostragem Casual Estratificada 2",
-                                                           "Amostragem Sistematica"
-                                                         )),
-                                             
-                                             selectInput("datasetformat",
-                                                         "Escolha o formato da tabela:",
-                                                         choices = c("Valor separado por Virgulas (.CSV)" = ".csv",
-                                                                     "Planilha do Excel (.xlsx)" = ".xlsx")
-                                             ),
-                                             
-                                             downloadButton('downloadData', 'Download')
-                                             
-                                           ),
-                                           mainPanel(
-                                             DT::dataTableOutput('table')      
-                                           )
+                                     
+                                           h2("Download de tabelas", style = "text-align: center;"),
+                                           br(),
+                                           
+                                             fluidRow(
+                                               column(
+                                                 10
+                                                 ,uiOutput("checkbox_df_download")
+                                                 )
+                                               
+                                                      ),
+                                           br(),
+                                           
+                                           fluidRow(column(3,downloadButton('downloadData', 'Download'), offset=4))
+                                           
+
                                          )
                                 ), # download tabelas
                                 

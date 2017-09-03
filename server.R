@@ -36,6 +36,7 @@ source("funs/estrat_vert_souza.R"  , encoding="UTF-8")
 source("funs/classe_diametro.R"    , encoding="UTF-8")
 source("funs/htdapratio.R"         , encoding="UTF-8")
 source("funs/consistency.R"        , encoding="UTF-8")
+source("funs/xlsx.write.list.R"    , encoding="UTF-8")
 
 # Funcao para testar se uma variavel e numerica
 # Sera utilizada dentro da funcao validate
@@ -1971,6 +1972,117 @@ shinyServer(function(input, output, session) {
   
   # Download tabelas ####
   
+  output$checkbox_df_download <- renderUI({
+    
+    checkboxGroupInput("dataset", h3("Escolha uma ou mais tabelas, e clique no botão abaixo:"), 
+                       choices =  c(
+                         "Dados inconsistentes"              ,
+                         "Dado utilizado / preparado"        ,
+                         "Indice diversidade"                ,
+                         "Matriz similaridade - Jaccard"     ,
+                         "Matriz similaridade - Sorensen"    ,
+                         "Indice de agregacao"               ,
+                         "Estrutura"                         ,
+                         "Distribuicao diametrica geral"     ,
+                         "Dist. Diametrica Indv. por especie",
+                         "Dist. Diametrica Vol. por especie" ,
+                         "Dist. Diametrica G por especie"    ,
+                         "BDq Meyer"                         ,
+                         "BDq Meyer - Coeficientes"          ,
+                         "Totalizacao de parcelas"           ,
+                         "Amostragem Casual Simples"         ,
+                         "Amostragem Casual Estratificada 1" ,
+                         "Amostragem Casual Estratificada 2" ,
+                         "Amostragem Sistematica"            
+                       ), inline = T )
+    
+    
+  })
+  
+  list_of_df_to_download <- reactive({
+    
+    L <- list()
+    
+    if("Dados inconsistentes" %in% input$dataset ) {
+      L[["Dados inconsistentes"]] <- try( consist_fun(), silent = T) 
+    }
+    
+    if("Dado utilizado / preparado" %in% input$dataset ) {
+      L[["Dado utilizado / preparado"]] <-  try(rawData(), silent = T)
+    }
+   
+    if("Indice diversidade" %in% input$dataset ) {
+      L[["Indice diversidade"]] <-  try(tabdiversidade(), silent=T)
+    }
+    
+    if("Matriz similaridade - Jaccard" %in% input$dataset ) {
+      L[["Matriz similaridade - Jaccard"]] <-  try(tibble::rownames_to_column(as.data.frame(tabmsimilaridade()[[1]]), " "), silent=T)
+    }
+    
+    
+    if("Matriz similaridade - Sorensen" %in% input$dataset ) {
+      L[["Matriz similaridade - Sorensen"]] <- try(tibble::rownames_to_column(as.data.frame(tabmsimilaridade()[[2]]), " ") , silent=T)
+    }
+    
+    if("Indice de agregacao" %in% input$dataset ) {
+      L[["Indice de agregacao"]] <-  try(tabagregate(), silent=T)
+    }
+    
+    if("Estrutura" %in% input$dataset ) {
+      L[["Estrutura"]] <- try(tabestrutura() , silent = T)
+    }
+    
+    if("Distribuicao diametrica geral" %in% input$dataset ) {
+      L[["Distribuicao diametrica geral"]] <-  try(dd_list()[["dd_geral"]], silent=T)
+    }
+    
+    if("Dist. Diametrica Indv. por especie" %in% input$dataset ) {
+      L[["Dist. Diametrica Indv. por especie"]] <- try(dd_list()[["dd_especie_indv_cc_column"]] , silent=T)
+    }
+    
+    if("Dist. Diametrica Vol. por especie" %in% input$dataset ) {
+      L[["Dist. Diametrica Vol. por especie"]] <- try(dd_list()[["dd_especie_vol_cc_column"]]  , silent=T)
+    }
+    
+    if("Dist. Diametrica G por especie" %in% input$dataset ) {
+      L[["Dist. Diametrica G por especie"]] <- try(dd_list()[["dd_especie_G_cc_column"]], silent=T) 
+    }
+    
+    if("BDq Meyer" %in% input$dataset ) {
+      L[["BDq Meyer"]] <-   try(BDq_list()[[1]], silent=T)
+    }
+    
+    if("BDq Meyer - Coeficientes"  %in% input$dataset ) {
+      L[["BDq Meyer - Coeficientes" ]] <- try( data.frame( "Coeficientes" = c("b0", "b1"),"Valor"= c( BDq_list()[[3]][1], BDq_list()[[3]][2] )), silent=T)
+    }
+    
+    if("Totalizacao de parcelas" %in% input$dataset ) {
+      L[["Totalizacao de parcelas"]] <- try(totData() , silent=T) 
+    }
+    
+    if("Amostragem Casual Simples" %in% input$dataset ) {
+      L[["Amostragem Casual Simples"]] <- try(tabacs() , silent=T)
+    }
+    
+    if("Amostragem Casual Estratificada 1" %in% input$dataset ) {
+      L[["Amostragem Casual Estratificada 1"]] <- try(list_ace()[[1]], silent = T)
+    }
+    
+    if("Amostragem Casual Estratificada 2" %in% input$dataset ) {
+      L[["Amostragem Casual Estratificada 2"]] <- try(list_ace()[[2]] , silent=T)
+    }
+    
+    if("Amostragem Sistematica" %in% input$dataset ) {
+      L[["Amostragem Sistematica"]] <- try( tabas() , silent=T)
+    }
+
+    L
+     
+  })
+  
+  
+  output$valor_checkbox <- renderPrint({input$dataset})
+  
   datasetInput <- reactive({
     switch(input$dataset,
            "Dados inconsistentes"              = consist_fun(),
@@ -1998,7 +2110,7 @@ shinyServer(function(input, output, session) {
     
     datadownload <- datasetInput()
     
-    datatable( datadownload,
+    datatable( list_of_df_to_download(),
                options = list(searching = FALSE,
                               paging=T,
                               initComplete = JS(
@@ -2011,31 +2123,10 @@ shinyServer(function(input, output, session) {
   }) 
   
   output$downloadData <- downloadHandler(
-    filename = function() { 
-      
-      if(input$datasetformat==".csv")
-      {
-        paste(input$dataset, '.csv', sep='') 
-      }
-      else if(input$datasetformat==".xlsx")
-      {
-        paste(input$dataset, '.xlsx', sep='') 
-      }
-    },
+    filename = function(){"tabelas_app.xlsx"},
     
-    content = function(file) {
-      if(input$datasetformat==".csv")
-      {
-        write.csv2(datasetInput(), file, row.names = F)
-      }
-      else if(input$datasetformat==".xlsx")
-      {
-        xlsx::write.xlsx2(as.data.frame( datasetInput() ), file, row.names = F)
-      }
-      
-      
-      
-    }
+    content = function(file){xlsx.write.list(file, list_of_df_to_download() )}
+    
   )
   
   # Download graficos ####
