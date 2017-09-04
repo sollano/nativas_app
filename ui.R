@@ -563,7 +563,13 @@ shinyUI(
                                                       ),
                                            br(),
                                            
-                                           fluidRow(column(3,downloadButton('downloadData', 'Download'), offset=4))
+                                           fluidRow(column(3,downloadButton('downloadData', 'Baixar tabelas selecionadas'), offset=4)),
+                                           br(),
+                                           h3("Ou, para baixar todas as tabelas possíveis, clique abaixo:"),
+                                           fluidRow(
+                                             column(3,downloadButton('downloadAllData', 'Baixar todas as tabelas'), offset=4)
+                                             )
+                                           
                                            
 
                                          )
