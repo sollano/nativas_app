@@ -181,7 +181,7 @@ shinyUI(
                        column(4,
                               wellPanel(
                                 h3("Área da parcela"),
-                                p("Selecione o nome da variável referente à Área da parcela:"#, 
+                                p("Selecione o nome da variável referente à Área da parcela (m²):"#, 
                                   #style = "font-family: 'Source Sans Pro';"
                                 ),
                                 uiOutput("selec_area.parcela")
@@ -191,7 +191,7 @@ shinyUI(
                        column(4,
                               wellPanel(
                                 h3("Área total"),
-                                p("Selecione o nome da variável referente à Área total"#, 
+                                p("Selecione o nome da variável referente à Área total (ha)"#, 
                                   #style = "font-family: 'Source Sans Pro';"
                                 ),
                                 uiOutput("selec_area.total")

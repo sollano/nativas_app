@@ -541,7 +541,7 @@ shinyServer(function(input, output, session) {
     
     list(
       
-      h3("Área da parcela (numérico)"),
+      h3("Área da parcela (m²) (numérico)"),
       
       
       numericInput( # cria uma lista de opcoes em que o usuario pode clicar
@@ -560,7 +560,7 @@ shinyServer(function(input, output, session) {
     req(is.null(input$col.area.total) || input$col.area.total=="" )
     
     list(
-      h3("Área total (numérico)"),
+      h3("Área total (ha) (numérico)"),
       
       numericInput( # cria uma lista de opcoes em que o usuario pode clicar
         'num.area.total', # Id
