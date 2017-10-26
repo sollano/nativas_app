@@ -596,9 +596,9 @@ shinyUI(
                                                            "Dendrograma - Jaccard",
                                                            "Dendrograma - Sorensen",
                                                            "Grafico IVI",
-                                                           "Indv. por especie por CC",
-                                                           "Vol. por especie por CC",
-                                                           "G por especie por CC",
+                                                           "Indv. por ha por CC",
+                                                           "Vol. por ha por CC",
+                                                           "G por ha por CC",
                                                            "Distribuicao - BDq Meyer" )),
                                              
                                              selectInput("graphformat",

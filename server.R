@@ -2145,9 +2145,9 @@ shinyServer(function(input, output, session) {
            "Dendrograma - Jaccard"     = msim1_graph(),
            "Dendrograma - Sorensen"    = msim2_graph(),
            "Grafico IVI"               = ivi_graph(),
-           "Indv. por especie por CC"  = dd_g1(),
-           "Vol. por especie por CC"   = dd_g2(),
-           "G por especie por CC"      = dd_g3(),
+           "Indv. por ha por CC"  = dd_g1(),
+           "Vol. por ha por CC"   = dd_g2(),
+           "G por ha por CC"      = dd_g3(),
            "Distribuicao - BDq Meyer"  = BDq_graph() )
   })
   
