@@ -1323,22 +1323,28 @@ shinyServer(function(input, output, session) {
     column(width=3,
            h3("Configuração do gráfico:")
     ),
-    column(4,
-           numericInput("n_IVI_g", h4("Número de espécies no eixo y:"),10,1,n_max,1) ) 
+    column(3,
+           numericInput("n_IVI_g", h4("Número de espécies no eixo y:"),10,1,n_max,1) ),
+    
+    column(3,
+           radioButtons("g_ivi_bw", 
+                        "Gráfico em tons de cinza?", 
+                        c("Sim"=T,"Nao"=F),
+                        selected = F,
+                        inline = T))
     
     )
     
     
   })
   ivi_graph <- reactive({
-    print(input$mainPanel_Estrutural)
-    
-    
+
     validate(
       need(input$n_IVI_g, ""),
+     # need(input$g_ivi_bw, ""),
       need(tabestrutura(), "Por favor faça a análise estrutural")  )
     
-        tabestrutura() %>% 
+     g <- tabestrutura() %>% 
       arrange(-IVI) %>% 
       mutate(n = as.numeric(row.names(.)), 
              class = ifelse(n>input$n_IVI_g,"Demais especies",as.character(especie)),
@@ -1366,6 +1372,9 @@ shinyServer(function(input, output, session) {
         strip.text.x = element_text(size = 22)   ) + 
       guides(fill = guide_legend(reverse=T))
     
+     if(input$g_ivi_bw){g <- g + ggplot2::scale_fill_grey(start = 0.8, end = 0.2) }
+     
+     g
   })
   output$estrg <- renderPlot({
     
