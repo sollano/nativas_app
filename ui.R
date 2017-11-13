@@ -404,12 +404,8 @@ shinyUI(
                                          fluidPage(
                                            h1("Análise estrutural", style = "text-align: center;"),
                                            br(),
-                                           fluidRow(
-                                             column(width=3,
-                                                    h3("Configuração do gráfico:")
-                                             ),
-                                             column(4,
-                                                    numericInput("n_IVI_g", h4("Número de espécies no eixo y:"),10,1,90,1) )),
+                                           fluidRow( uiOutput("ivi_graph_opts")
+                                                        ),
                                            fluidRow( 
                                              tabsetPanel(id = "mainPanel_Estrutural",
                                                          tabPanel("Análise estrutural", DT::dataTableOutput("estr") ),

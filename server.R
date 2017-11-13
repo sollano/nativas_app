@@ -1310,15 +1310,39 @@ shinyServer(function(input, output, session) {
   }) 
 
   # grafico estrutura (IVI)
+  output$ivi_graph_opts <- renderUI({
+    req(input$mainPanel_Estrutural=="Gráfico IVI")
+    
+    dados <- rawData()
+    nm <- varnames()
+    
+    n_max <- nlevels(as.factor(dados[[nm$especies]]))
+    
+    
+    list(
+    column(width=3,
+           h3("Configuração do gráfico:")
+    ),
+    column(4,
+           numericInput("n_IVI_g", h4("Número de espécies no eixo y:"),10,1,n_max,1) ) 
+    
+    )
+    
+    
+  })
   ivi_graph <- reactive({
+    print(input$mainPanel_Estrutural)
     
     
     validate(
+      need(input$n_IVI_g, ""),
       need(tabestrutura(), "Por favor faça a análise estrutural")  )
     
         tabestrutura() %>% 
       arrange(-IVI) %>% 
-      mutate(n = as.numeric(row.names(.)), class = ifelse(n>input$n_IVI_g,"Demais especies",as.character(especie)),class = factor(class, levels=unique(class)) )%>% 
+      mutate(n = as.numeric(row.names(.)), 
+             class = ifelse(n>input$n_IVI_g,"Demais especies",as.character(especie)),
+             class = factor(class, levels=unique(class)) ) %>% 
       gather(IVI_contrib, valor, FR , DR , DoR, factor_key = T) %>% 
       group_by(class, IVI_contrib) %>% 
       summarise(valor_d = sum(valor), IVI = sum(IVI), IVI_sep = valor_d/3,IVI_contrib_porc = round(valor_d/3/IVI,2)) %>% 
