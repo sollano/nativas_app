@@ -414,23 +414,39 @@ shinyServer(function(input, output, session) {
     
   })
   
-  output$selec_est.vertical <- renderUI({
+  
+  output$selec_est.vertical_2 <- renderUI({
     
     data <- rawData_()
     
-    selectizeInput("col.est.vertical",
-                   NULL, # nome que sera mostrado na UI
-                   choices = names(data),
-                  # selected =  ,
-                   multiple = T,
-                   options = list(
-                     maxItems = 1,
-                     placeholder = 'Selecione uma coluna abaixo:'#,
-                     #    onInitialize = I('function() { this.setValue(""); }')
-                   ) # options    
-    )# selectize
+    switch(input$est.vert.calc,
+           "Definir" =   h5("A estrutura vertical será calculada utilizando a variável altura, segundo o método de Souza (2002)."),
+           
+           "Inserir" =    selectizeInput("col.est.vertical",
+                                         NULL, # nome que sera mostrado na UI
+                                         choices = names(data),
+                                         # selected =  ,
+                                         multiple = T,
+                                         options = list(
+                                           maxItems = 1,
+                                           placeholder = 'Selecione uma coluna abaixo:'#,
+                                           #    onInitialize = I('function() { this.setValue(""); }')
+                                         ) # options
+           )
+    ) #switch
     
   })
+  output$selec_est.vertical_warning <- renderUI({
+
+  req(input$est.vert.calc == "Definir" )
+  validate(
+    need(!is.null(input$col.ht) , # ht nao e nulo? quando a resposta for nao a mensagem aparece
+                "Variável 'Altura' não definida. A estrutura horizontal não será calculada." ), errorClass = "AVISO")
+    
+    
+    
+  })
+  
   output$selec_est.interna  <- renderUI({
     
     data <- rawData_()
@@ -645,24 +661,7 @@ shinyServer(function(input, output, session) {
     )
     
   })
-  # calcular estrutura vertical
-  output$checkbox_calc.est.vert <- renderUI({
-    
-    # precisa que o usuario nao tenha selecionado estrutura vertical E tenha selecionado altura
-    req((is.null(input$col.est.vertical) || input$col.est.vertical=="") &&  (!is.null(input$col.ht) || input$col.ht!="")   )
-    
-    list(
-    
-    h3("Calcular Estrutura interna"),
-    
-    h5("A estrutura interna será calculada utilizando a variável altura, segundo o método de Souza (2002)"),
-      
-    radioButtons("est.vert.calc",
-                  "Deseja classificar a estrutura interna utilizando a variável altura?",
-                 c("Sim", "Nao"), "Nao" )
-    )
-    
-  })
+
   # tabela
   # rawData sera o dado utilizado durante o resto do app
   # as alteracoes feitas em 'preparacao' serao salvas aqui
@@ -768,7 +767,7 @@ shinyServer(function(input, output, session) {
     }
     
     # A seguir e feito o calculo da estrutura vertical, caso o usuario nao tenha inserido uma variavel referente a mesma, e selecione que desja calcular
-    if(!is.null(input$est.vert.calc) && !is.na(input$est.vert.calc) && input$est.vert.calc=="Sim"){
+    if(!is.null(input$est.vert.calc) && !is.na(input$est.vert.calc) && input$est.vert.calc=="Definir" && !is.null(input$col.ht) && !is.na(input$col.ht) ){
       
       data <- estrat_vert_souza(data, input$col.ht)
       
@@ -891,7 +890,7 @@ shinyServer(function(input, output, session) {
       varnameslist$vcc <- "VOL"
       }
     
-    if(!is.null(input$est.vert.calc) && !is.na(input$est.vert.calc) && input$est.vert.calc=="Sim"){
+    if(!is.null(input$est.vert.calc) && !is.na(input$est.vert.calc) && input$est.vert.calc=="Definir" && !is.null(input$col.ht) && !is.na(input$col.ht) ){
       varnameslist$est.vertical <- "est.vert"
       }
     
