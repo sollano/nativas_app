@@ -1507,14 +1507,13 @@ shinyServer(function(input, output, session) {
    #   scale_y_continuous( expand=c(0,15) ) +
       ggthemes::theme_igray(base_family = "serif") +
       labs(x = "Centro de Classe de Diâmetro - CCD (cm)", y = "Nº de Individuos por hectare") + 
-      geom_text(aes(label = CC ), position = position_dodge(0.9), vjust = -0.3, size = 6 ) + 
+      geom_text(aes(label = round(IndvHA,1) ), position = position_dodge(0.9), vjust = -0.3, size = 6 ) + 
       theme(
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(),
         panel.border = element_blank(),
         axis.title   = element_text(size = 26,face="bold"), 
         axis.text    = element_text(size = 22),
-        axis.text.x = element_blank(),
         axis.line.x = element_line(color="black"),
         axis.line.y = element_line(color="black"),
         strip.text.x = element_text(size = 22)   )
@@ -1536,14 +1535,13 @@ shinyServer(function(input, output, session) {
     #  scale_y_continuous( expand=c(0,15) ) +
       labs(x = "Centro de Classe de Diâmetro - CCD (cm)", y = "Volume por hectare") + 
       ggthemes::theme_igray(base_family = "serif") +
-      geom_text(aes(label = CC ), position = position_dodge(0.9), vjust = -0.3, size = 6 ) + 
+      geom_text(aes(label = round(volume_ha,1) ), position = position_dodge(0.9), vjust = -0.3, size = 6 ) + 
       theme(
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(),
         panel.border = element_blank(),
         axis.title   = element_text(size = 26,face="bold"), 
         axis.text    = element_text(size = 22),
-        axis.text.x = element_blank(),
         axis.line.x = element_line(color="black"),
         axis.line.y = element_line(color="black"),
         strip.text.x = element_text(size = 22)   )
@@ -1563,14 +1561,13 @@ shinyServer(function(input, output, session) {
      # scale_y_continuous( expand=c(0,15) ) +
       labs(x = "Centro de Classe de Diâmetro - CCD (cm)", y = "Área Basal (G) por hectare") + 
       ggthemes::theme_igray(base_family = "serif") +
-      geom_text(aes(label = CC ), position = position_dodge(0.9), vjust = -0.3, size = 6 ) + 
+      geom_text(aes(label = round(G_ha,1) ), position = position_dodge(0.9), vjust = -0.3, size = 6 ) + 
       theme(
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(),
         panel.border = element_blank(),
         axis.title   = element_text(size = 26,face="bold"), 
         axis.text    = element_text(size = 22),
-        axis.text.x = element_blank(),
         axis.line.x = element_line(color="black"),
         axis.line.y = element_line(color="black"),
         strip.text.x = element_text(size = 22)   )
@@ -1659,10 +1656,11 @@ shinyServer(function(input, output, session) {
       mutate(classe_de_diametro = as.factor(classe_de_diametro) )
     
     g <-  ggplot(graph_bdq, aes(x = classe_de_diametro, y = num_indv_ha) ) + 
-      geom_bar(aes(fill = class), stat = "identity",position = "dodge") +
+      geom_bar(aes(fill = class), stat = "identity",position = "dodge", color='black') +
       labs(x = "Classe de diâmetro (cm)", y = "Número de indivíduos (ha)", fill = NULL) + 
       scale_fill_manual(values =c("#108e00", "cyan3","firebrick2") ) +
       ggthemes::theme_igray(base_family = "serif") +
+      geom_text(aes(label = round(num_indv_ha,1), group=class ), position = position_dodge(width = 1), vjust = -0.3, size = 6 ) + 
       theme(
         legend.position="bottom",
         legend.text = element_text(size = 20),
