@@ -1,20 +1,21 @@
 options(java.parameters = "-Xss2048k")
-library(DT)
+library(shiny)
+suppressPackageStartupMessages(library(DT))
 #library(plotly)
 library(formattable)
 library(readxl)
 #library(plyr)
 library(tibble)
 library(tidyr)
-library(dplyr)
+suppressPackageStartupMessages(library(dplyr))
 library(lazyeval)
 library(ggplot2)
 library(ggdendro)
 library(ggthemes)
-library(xlsx)
+suppressPackageStartupMessages(library(xlsx))
 library(rJava)
 library(xlsxjars)
-#library(rmarkdown)
+library(rmarkdown)
 
 # Data e functions
 
@@ -1975,7 +1976,7 @@ shinyServer(function(input, output, session) {
     checkboxGroupInput("dataset", h3("Escolha uma ou mais tabelas, e clique no botão abaixo:"), 
                        choices =  c(
                          "Dados inconsistentes"              ,
-                         "Dado utilizado / preparado"        ,
+                         "Dado utilizado"                    ,
                          "Indice diversidade"                ,
                          "Matriz similaridade - Jaccard"     ,
                          "Matriz similaridade - Sorensen"    ,
@@ -2005,8 +2006,8 @@ shinyServer(function(input, output, session) {
       L[["Dados inconsistentes"]] <- try( consist_fun(), silent = T) 
     }
     
-    if("Dado utilizado / preparado" %in% input$dataset ) {
-      L[["Dado utilizado / preparado"]] <-  try(rawData(), silent = T)
+    if("Dado utilizado" %in% input$dataset ) {
+      L[["Dado utilizado"]] <-  try(rawData(), silent = T)
     }
    
     if("Indice diversidade" %in% input$dataset ) {
@@ -2084,7 +2085,7 @@ shinyServer(function(input, output, session) {
       L[["Dados inconsistentes"]] <- try( consist_fun(), silent = T) 
 
     
-      L[["Dado utilizado / preparado"]] <-  try(rawData(), silent = T)
+      L[["Dado utilizado"]] <-  try(rawData(), silent = T)
 
       L[["Indice diversidade"]] <-  try(tabdiversidade(), silent=T)
 
@@ -2123,14 +2124,14 @@ shinyServer(function(input, output, session) {
   })
 
   output$downloadData <- downloadHandler(
-    filename = function(){"tabelas_app.xlsx"},
+    filename = function(){"tabelas_app_nativas.xlsx"},
     
     content = function(file){xlsx.write.list(file, list_of_df_to_download() )}
     
   )
   
   output$downloadAllData <- downloadHandler(
-    filename = function(){"tabelas_app.xlsx"},
+    filename = function(){"tabelas_app_nativas.xlsx"},
     
     content = function(file){xlsx.write.list(file, list_of_df_all() )}
     
@@ -2143,9 +2144,9 @@ shinyServer(function(input, output, session) {
            "Dendrograma - Jaccard"     = msim1_graph(),
            "Dendrograma - Sorensen"    = msim2_graph(),
            "Grafico IVI"               = ivi_graph(),
-           "Indv. por especie por CC"  = dd_g1(),
-           "Vol. por especie por CC"   = dd_g2(),
-           "G por especie por CC"      = dd_g3(),
+           "Indv. por ha por CC"  = dd_g1(),
+           "Vol. por ha por CC"   = dd_g2(),
+           "G por ha por CC"      = dd_g3(),
            "Distribuicao - BDq Meyer"  = BDq_graph() )
   })
   

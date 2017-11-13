@@ -3,9 +3,9 @@ title: nativas_app
 account: sollano
 server: shinyapps.io
 appId: 125500
-bundleId: 983419
+bundleId: 1018419
 url: https://sollano.shinyapps.io/nativas_app/
-when: 1505488496.44896
+when: 1507603813.08862
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: default.ico|exe_creator.R|infoafter.txt|infobefore.txt|nativas_app.bat|nativas_app.iss|R-3.4.1-win.exe|server_old.R|setup.ico|testando_consistencia.R|testando_fund_dap.R|Teste.R|ui_old.R|RInno_installer/setup_nativas_app.exe|utils/app.R|utils/config.cfg|utils/ensure.R|utils/get_app_from_app_url.R|utils/package_manager.R|utils/wsf/run.wsf|utils/wsf/js/JSON.minify.js|utils/wsf/js/json2.js|utils/wsf/js/run.js
+ignoredFiles: server_old.R|testando_consistencia.R|testando_fund_dap.R|Teste.R|ui_old.R
