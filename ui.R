@@ -162,16 +162,16 @@ shinyUI(
                                     #style = "font-family: 'Source Sans Pro';"
                                   ),
                                   uiOutput("selec_vcc")
-                                )), # Coluna vcc
+                                )) #, # Coluna vcc
                          
-                         column(4,
-                                wellPanel(
-                                  h3("Volume sem casca"),
-                                  p("Selecione o nome da variável referente à Volume sem casca:"#, 
+                      #   column(4,
+                      #          wellPanel(
+                      #            h3("Volume sem casca"),
+                       #           p("Selecione o nome da variável referente à Volume sem casca:"#, 
                                     #style = "font-family: 'Source Sans Pro';"
-                                  ),
-                                  uiOutput("selec_vsc")
-                                )) # Coluna vsc
+                        #          ),
+                       #           uiOutput("selec_vsc")
+                       #         )) # Coluna vsc
                          
                          
                          
@@ -218,10 +218,18 @@ shinyUI(
                        column(4,
                               wellPanel(
                                 h3("Estrutura vertical"),
-                                p("Selecione o nome da variável referente à Estrutura vertical"#, 
+                                p("Selecione o método de definição da Estrutura vertical"#, 
                                   #style = "font-family: 'Source Sans Pro';"
                                 ),
-                                uiOutput("selec_est.vertical")
+                                radioButtons("est.vert.calc", 
+                                             "Deseja definir a posição sociológica com base na variável altura, 
+                                              ou inserir uma variável referente à posição sociológica?", 
+                                             c("Definir", "Inserir"), 
+                                             inline = T,
+                                             selected = "Inserir"
+                                ),
+                                uiOutput("selec_est.vertical_2"),
+                                uiOutput("selec_est.vertical_warning")
                               )), # Coluna area.total
                        
                        
@@ -396,12 +404,8 @@ shinyUI(
                                          fluidPage(
                                            h1("Análise estrutural", style = "text-align: center;"),
                                            br(),
-                                           fluidRow(
-                                             column(width=3,
-                                                    h3("Configuração do gráfico:")
-                                             ),
-                                             column(4,
-                                                    numericInput("n_IVI_g", h4("Número de espécies no eixo y:"),10,1,90,1) )),
+                                           fluidRow( uiOutput("ivi_graph_opts")
+                                                        ),
                                            fluidRow( 
                                              tabsetPanel(id = "mainPanel_Estrutural",
                                                          tabPanel("Análise estrutural", DT::dataTableOutput("estr") ),

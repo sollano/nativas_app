@@ -414,23 +414,39 @@ shinyServer(function(input, output, session) {
     
   })
   
-  output$selec_est.vertical <- renderUI({
+  
+  output$selec_est.vertical_2 <- renderUI({
     
     data <- rawData_()
     
-    selectizeInput("col.est.vertical",
-                   NULL, # nome que sera mostrado na UI
-                   choices = names(data),
-                  # selected =  ,
-                   multiple = T,
-                   options = list(
-                     maxItems = 1,
-                     placeholder = 'Selecione uma coluna abaixo:'#,
-                     #    onInitialize = I('function() { this.setValue(""); }')
-                   ) # options    
-    )# selectize
+    switch(input$est.vert.calc,
+           "Definir" =   h5("A estrutura vertical será calculada utilizando a variável altura, segundo o método de Souza (2002)."),
+           
+           "Inserir" =    selectizeInput("col.est.vertical",
+                                         NULL, # nome que sera mostrado na UI
+                                         choices = names(data),
+                                         # selected =  ,
+                                         multiple = T,
+                                         options = list(
+                                           maxItems = 1,
+                                           placeholder = 'Selecione uma coluna abaixo:'#,
+                                           #    onInitialize = I('function() { this.setValue(""); }')
+                                         ) # options
+           )
+    ) #switch
     
   })
+  output$selec_est.vertical_warning <- renderUI({
+
+  req(input$est.vert.calc == "Definir" )
+  validate(
+    need(!is.null(input$col.ht) , # ht nao e nulo? quando a resposta for nao a mensagem aparece
+                "Variável 'Altura' não definida. A estrutura horizontal não será calculada." ), errorClass = "AVISO")
+    
+    
+    
+  })
+  
   output$selec_est.interna  <- renderUI({
     
     data <- rawData_()
@@ -645,24 +661,7 @@ shinyServer(function(input, output, session) {
     )
     
   })
-  # calcular estrutura vertical
-  output$checkbox_calc.est.vert <- renderUI({
-    
-    # precisa que o usuario nao tenha selecionado estrutura vertical E tenha selecionado altura
-    req((is.null(input$col.est.vertical) || input$col.est.vertical=="") &&  (!is.null(input$col.ht) || input$col.ht!="")   )
-    
-    list(
-    
-    h3("Calcular Estrutura interna"),
-    
-    h5("A estrutura interna será calculada utilizando a variável altura, segundo o método de Souza (2002)"),
-      
-    radioButtons("est.vert.calc",
-                  "Deseja classificar a estrutura interna utilizando a variável altura?",
-                 c("Sim", "Nao"), "Nao" )
-    )
-    
-  })
+
   # tabela
   # rawData sera o dado utilizado durante o resto do app
   # as alteracoes feitas em 'preparacao' serao salvas aqui
@@ -768,7 +767,7 @@ shinyServer(function(input, output, session) {
     }
     
     # A seguir e feito o calculo da estrutura vertical, caso o usuario nao tenha inserido uma variavel referente a mesma, e selecione que desja calcular
-    if(!is.null(input$est.vert.calc) && !is.na(input$est.vert.calc) && input$est.vert.calc=="Sim"){
+    if(!is.null(input$est.vert.calc) && !is.na(input$est.vert.calc) && input$est.vert.calc=="Definir" && !is.null(input$col.ht) && !is.na(input$col.ht) ){
       
       data <- estrat_vert_souza(data, input$col.ht)
       
@@ -891,7 +890,7 @@ shinyServer(function(input, output, session) {
       varnameslist$vcc <- "VOL"
       }
     
-    if(!is.null(input$est.vert.calc) && !is.na(input$est.vert.calc) && input$est.vert.calc=="Sim"){
+    if(!is.null(input$est.vert.calc) && !is.na(input$est.vert.calc) && input$est.vert.calc=="Definir" && !is.null(input$col.ht) && !is.na(input$col.ht) ){
       varnameslist$est.vertical <- "est.vert"
       }
     
@@ -1311,15 +1310,45 @@ shinyServer(function(input, output, session) {
   }) 
 
   # grafico estrutura (IVI)
+  output$ivi_graph_opts <- renderUI({
+    req(input$mainPanel_Estrutural=="Gráfico IVI")
+    
+    dados <- rawData()
+    nm <- varnames()
+    
+    n_max <- nlevels(as.factor(dados[[nm$especies]]))
+    
+    
+    list(
+    column(width=3,
+           h3("Configuração do gráfico:")
+    ),
+    column(3,
+           numericInput("n_IVI_g", h4("Número de espécies no eixo y:"),10,1,n_max,1) ),
+    
+    column(3,
+           radioButtons("g_ivi_bw", 
+                        "Gráfico em tons de cinza?", 
+                        c("Sim"=T,"Nao"=F),
+                        selected = F,
+                        inline = T))
+    
+    )
+    
+    
+  })
   ivi_graph <- reactive({
-    
-    
+
     validate(
+      need(input$n_IVI_g, ""),
+     # need(input$g_ivi_bw, ""),
       need(tabestrutura(), "Por favor faça a análise estrutural")  )
     
-        tabestrutura() %>% 
+     g <- tabestrutura() %>% 
       arrange(-IVI) %>% 
-      mutate(n = as.numeric(row.names(.)), class = ifelse(n>input$n_IVI_g,"Demais especies",as.character(especie)),class = factor(class, levels=unique(class)) )%>% 
+      mutate(n = as.numeric(row.names(.)), 
+             class = ifelse(n>input$n_IVI_g,"Demais especies",as.character(especie)),
+             class = factor(class, levels=unique(class)) ) %>% 
       gather(IVI_contrib, valor, FR , DR , DoR, factor_key = T) %>% 
       group_by(class, IVI_contrib) %>% 
       summarise(valor_d = sum(valor), IVI = sum(IVI), IVI_sep = valor_d/3,IVI_contrib_porc = round(valor_d/3/IVI,2)) %>% 
@@ -1343,6 +1372,9 @@ shinyServer(function(input, output, session) {
         strip.text.x = element_text(size = 22)   ) + 
       guides(fill = guide_legend(reverse=T))
     
+     if(input$g_ivi_bw){g <- g + ggplot2::scale_fill_grey(start = 0.8, end = 0.2) }
+     
+     g
   })
   output$estrg <- renderPlot({
     
@@ -1508,14 +1540,13 @@ shinyServer(function(input, output, session) {
    #   scale_y_continuous( expand=c(0,15) ) +
       ggthemes::theme_igray(base_family = "serif") +
       labs(x = "Centro de Classe de Diâmetro - CCD (cm)", y = "Nº de Individuos por hectare") + 
-      geom_text(aes(label = CC ), position = position_dodge(0.9), vjust = -0.3, size = 6 ) + 
+      geom_text(aes(label = round(IndvHA,1) ), position = position_dodge(0.9), vjust = -0.3, size = 6 ) + 
       theme(
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(),
         panel.border = element_blank(),
         axis.title   = element_text(size = 26,face="bold"), 
         axis.text    = element_text(size = 22),
-        axis.text.x = element_blank(),
         axis.line.x = element_line(color="black"),
         axis.line.y = element_line(color="black"),
         strip.text.x = element_text(size = 22)   )
@@ -1537,14 +1568,13 @@ shinyServer(function(input, output, session) {
     #  scale_y_continuous( expand=c(0,15) ) +
       labs(x = "Centro de Classe de Diâmetro - CCD (cm)", y = "Volume por hectare") + 
       ggthemes::theme_igray(base_family = "serif") +
-      geom_text(aes(label = CC ), position = position_dodge(0.9), vjust = -0.3, size = 6 ) + 
+      geom_text(aes(label = round(volume_ha,1) ), position = position_dodge(0.9), vjust = -0.3, size = 6 ) + 
       theme(
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(),
         panel.border = element_blank(),
         axis.title   = element_text(size = 26,face="bold"), 
         axis.text    = element_text(size = 22),
-        axis.text.x = element_blank(),
         axis.line.x = element_line(color="black"),
         axis.line.y = element_line(color="black"),
         strip.text.x = element_text(size = 22)   )
@@ -1564,14 +1594,13 @@ shinyServer(function(input, output, session) {
      # scale_y_continuous( expand=c(0,15) ) +
       labs(x = "Centro de Classe de Diâmetro - CCD (cm)", y = "Área Basal (G) por hectare") + 
       ggthemes::theme_igray(base_family = "serif") +
-      geom_text(aes(label = CC ), position = position_dodge(0.9), vjust = -0.3, size = 6 ) + 
+      geom_text(aes(label = round(G_ha,1) ), position = position_dodge(0.9), vjust = -0.3, size = 6 ) + 
       theme(
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(),
         panel.border = element_blank(),
         axis.title   = element_text(size = 26,face="bold"), 
         axis.text    = element_text(size = 22),
-        axis.text.x = element_blank(),
         axis.line.x = element_line(color="black"),
         axis.line.y = element_line(color="black"),
         strip.text.x = element_text(size = 22)   )
@@ -1660,10 +1689,11 @@ shinyServer(function(input, output, session) {
       mutate(classe_de_diametro = as.factor(classe_de_diametro) )
     
     g <-  ggplot(graph_bdq, aes(x = classe_de_diametro, y = num_indv_ha) ) + 
-      geom_bar(aes(fill = class), stat = "identity",position = "dodge") +
+      geom_bar(aes(fill = class), stat = "identity",position = "dodge", color='black') +
       labs(x = "Classe de diâmetro (cm)", y = "Número de indivíduos (ha)", fill = NULL) + 
       scale_fill_manual(values =c("#108e00", "cyan3","firebrick2") ) +
       ggthemes::theme_igray(base_family = "serif") +
+      geom_text(aes(label = round(num_indv_ha,1), group=class ), position = position_dodge(width = 1), vjust = -0.3, size = 6 ) + 
       theme(
         legend.position="bottom",
         legend.text = element_text(size = 20),
