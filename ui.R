@@ -482,47 +482,60 @@ shinyUI(
                                               
                                               # ####
                                               fluidRow(
-                                             column( 3,  sliderInput("erro_inv", 
-                                                            label = "Selecione o erro admitido (%):", 
-                                                            min = 1, 
-                                                            max = 20, 
-                                                            value = 10,
-                                                            step = 1)),
-                                             
-                                             column(3,
-                                               sliderInput("alpha_inv", 
-                                                           label = "Selecione o nível de significância:", 
-                                                           min = 0.01, 
-                                                           max = 0.10, 
-                                                           value = 0.05,
-                                                           step = 0.01)
-                                             ),
-                                             
-                                             column(3,
-                                                    sliderInput("cd_inv", 
-                                                                label = "Selecione o nº de casas decimais:", 
-                                                                min = 0, 
-                                                                max = 10, 
-                                                                value = 4,
-                                                                step = 1)
-                                                    ),
-                                             
-                                             column(3,
-                                                    radioButtons(
-                                                      inputId='pop_inv', # Id
-                                                      label='Considerar a população infinita ou finita?', # nome que sera mostrado na UI
-                                                      choices=c(Infinita="inf", Finita="fin"), # opcoes e seus nomes
-                                                      selected="inf")
-                                                    )
+                                                
+                                                column(2,
+                                                       sliderInput("alpha_inv", 
+                                                                   label = "Selecione o nível de significância:", 
+                                                                   min = 0.01, 
+                                                                   max = 0.10, 
+                                                                   value = 0.05,
+                                                                   step = 0.01)
+                                                ),
+                                                
+                                                column( 2,  sliderInput("erro_inv", 
+                                                                        label = "Selecione o erro admitido (%):", 
+                                                                        min = 1, 
+                                                                        max = 20, 
+                                                                        value = 10,
+                                                                        step = 1)),
+                                                
+                                                column(2,
+                                                       sliderInput("cd_inv", 
+                                                                   label = "Selecione o nº de casas decimais:", 
+                                                                   min = 0, 
+                                                                   max = 10, 
+                                                                   value = 4,
+                                                                   step = 1)
+                                                ),
+                                                
+                                                column(2,
+                                                       radioButtons(
+                                                         inputId='pop_inv', # Id
+                                                         label='Considerar a população infinita ou finita?', # nome que sera mostrado na UI
+                                                         choices=c(Infinita="inf", Finita="fin"), # opcoes e seus nomes
+                                                         selected="inf",
+                                                         inline = T)
+                                                ),
+                                                
+                                                column(3,
+                                                       uiOutput("acs_estrato_rb"), uiOutput("as_estrato_rb")
+                                                )
+                                                
                                               ),
                                               
-                                              
-                                        fluidRow(   
-                                          tabsetPanel(
-                                          tabPanel("Totalização de Parcelas",DT::dataTableOutput("tot_parc_tab") ) , 
-                                          tabPanel("Amostragem Casual Simples",DT::dataTableOutput("acs") ), 
-                                          tabPanel("Amostragem Casual Estratificada",DT::dataTableOutput("ace1"),br(),DT::dataTableOutput("ace2") ), 
-                                          tabPanel("Amostragem Sistemática",DT::dataTableOutput("as") ) )
+                                              fluidRow(
+                                                radioButtons("yi_inv",
+                                                             label="Selecione a variável utilizada nas estatísticas:",
+                                                             choices = c("IndvHA", "G_HA","VCC_HA", "VSC_HA"),
+                                                             selected = "VCC_HA",
+                                                             inline=T )
+                                              ),
+                                          fluidRow(   
+                                          tabsetPanel(id="tabset_inv",
+                                          tabPanel("Totalização de parcelas",DT::dataTableOutput("tot_parc_tab") ) , 
+                                          tabPanel("Amostragem casual simples",DT::dataTableOutput("acs") ), 
+                                          tabPanel("Amostragem casual estratificada",DT::dataTableOutput("ace1"),br(),DT::dataTableOutput("ace2") ), 
+                                          tabPanel("Amostragem sistemática",DT::dataTableOutput("as") ) )
                                         )
                                   # ####
                                     
