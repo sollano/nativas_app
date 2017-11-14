@@ -522,7 +522,8 @@ shinyUI(
                                                 ),
                                                 
                                                 column(3,
-                                                       uiOutput("acs_estrato_rb"), uiOutput("as_estrato_rb")
+                                                       uiOutput("acs_estrato_rb"), uiOutput("as_estrato_rb"),
+                                                       uiOutput("acs_as_warning")
                                                 )
                                                 
                                               ),
