@@ -1,6 +1,6 @@
 #' @export
 
-arv_summary <- function(df, arvore, fuste, dap, .groups, area_parcela, area_total, ht, vol){
+arv_summary <- function(df, arvore, dap, .groups, area_parcela, area_total, ht, vol){
   
   # se df nao for fornecido, nulo, ou  nao for dataframe, parar
   if(  missing(df) || is.null(df) || is.na(df) || !is.data.frame(df) ){  
@@ -12,12 +12,6 @@ arv_summary <- function(df, arvore, fuste, dap, .groups, area_parcela, area_tota
     stop("arvore not set", call. = F) 
   }
   
-  # se fuste nao for fornecido, for igual "", nulo, ou  nao existir no dataframe, parar
-  if(  missing(fuste) || is.null(fuste) || is.na(fuste) || fuste == "" || is.null(df[[fuste]]) ){  
-    stop("fuste not set", call. = F) 
-  }
-  
-  
   # se dap nao for fornecido, for igual "", nulo, ou  nao existir no dataframe, parar
   if(  missing(dap) || is.null(dap) || is.na(dap) || dap == "" || is.null(df[[dap]]) ){  
     stop("dap not set", call. = F) 
@@ -28,13 +22,13 @@ arv_summary <- function(df, arvore, fuste, dap, .groups, area_parcela, area_tota
   # que a funcao ira parar
   if(  missing(.groups) || all(is.null(.groups)) || all(is.na(.groups)) || all(.groups == "") ){  
     
-    .groups_final <- c(arvore, fuste)
+    .groups_final <- arvore
   }else{
     
     # comando para remover grupos vazios ("" NA to null )
     .groups <- do.call(cbind, lapply(.groups, function(x){if(is.na(x)|x==""){x<-NULL}else{x} } ) )   
     
-    .groups_final <- c(.groups, arvore, fuste)
+    .groups_final <- c(.groups, arvore)
   }
   
   # Variaveis opcionais
@@ -67,7 +61,7 @@ arv_summary <- function(df, arvore, fuste, dap, .groups, area_parcela, area_tota
     ) %>% 
     na_if(0) %>% 
     as.data.frame
-    ungroup
+  ungroup
   
   # Remover variaveis nao informadas
   if(missing(area_parcela) || is.null(area_parcela) || is.na(area_parcela) || area_parcela==F || area_parcela==""   ){y$AREA_PARCELA <- NULL}

@@ -65,8 +65,6 @@ check_numeric <- function(input, df, code){
 # vectors for names ####
 
 arvore_names <- c("ARVORE", "Arvore", "arvore", "ARV", "Arv", "arv", "ARV.", "Arv.", "arv.","NP","Np","np","Árvore","ÁRVORE","árvore" )
-fuste_names <- c("FUSTE", "Fuste", "fuste")
-
 especies_names <- c("nome.cient","scientific.name","Scientific.Name","SCIENTIFIC.NAME" ,"scientific_name", "Scientific_Name","SCIENTIFIC_NAME","nome.cientifico", "Nome.Cientifico","NOME.CIENTIFICO","nome_cientifico", "Nome_Cientifico","NOME_CIENTIFICO","nome.cientifíco", "Nome.Científico","NOME.CIENTÍFICO","nome_científico", "Nome_Científico","NOME_CIENTÍFICO","nome cientifico", "Nome Cientifico","NOME CIENTIFICO","nome científico", "Nome Científico","NOME CIENTÍFICO","Especie", "especie", "Especies", "especies","Espécie", "espécie", "Espécies", "espécies")
 parcelas_names <- c("transecto","transect", "Transect", "TRNASECT", "transect.code","Transect.Code","TRANSECT.CODE","transect_code","Transect_Code","TRANSECT_CODE","parcela", "Parcela","PARCELA","cod.parcela","Cod.Parcela","COD.PARCELA", "cod_parcela","Cod_Parcela","COD_PARCELA")
 est.vertical_names <- c("pos.copa","canopy", "canopy_09")
@@ -247,13 +245,13 @@ shinyServer(function(input, output, session) {
   # ui
   
   
-  output$selec_arvore     <- renderUI({
+  output$selec_arvore       <- renderUI({
     
     data <- rawData_()
     
     selectizeInput( # cria uma lista de opcoes em que o usuario pode clicar
       "col.arvore", # Id
-      NULL, # nome que sera mostrado na UI
+      "Esta variável é necessária para o processamento de dados em nível de fuste", # nome que sera mostrado na UI
       choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
       selected = arvore_names,
       multiple=T,
@@ -266,25 +264,6 @@ shinyServer(function(input, output, session) {
     
     # obs: multiple = T & maxItems = 1, garantem que a celula fique vazia, caso o app falhe
     # em tentar adivinhar o nome da especie
-  })
-  output$selec_fuste     <- renderUI({
-    
-    data <- rawData_()
-    
-    selectizeInput( # cria uma lista de opcoes em que o usuario pode clicar
-      "col.fuste", # Id
-      NULL, # nome que sera mostrado na UI
-      choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
-      selected = fuste_names,     
-      multiple=T,
-      options = list(
-        maxItems = 1,
-        placeholder = 'selecione uma coluna abaixo'#,
-        #onInitialize = I('function() { this.setValue(""); }')
-      ) # options    
-    ) # selctize
-    
-    
   })
   output$selec_parcelas     <- renderUI({
     
@@ -305,7 +284,6 @@ shinyServer(function(input, output, session) {
     
     
   })
-  
   output$selec_especies     <- renderUI({
     
     data <- rawData_()
@@ -326,6 +304,7 @@ shinyServer(function(input, output, session) {
     # obs: multiple = T & maxItems = 1, garantem que a celula fique vazia, caso o app falhe
     # em tentar adivinhar o nome da especie
   })
+  
   output$selec_cap          <- renderUI({
     
     data <- rawData_()
@@ -351,7 +330,7 @@ shinyServer(function(input, output, session) {
     
     selectizeInput( # cria uma lista de opcoes em que o usuario pode clicar
       "col.dap", # Id
-      NULL, # nome que sera mostrado na UI
+      "Caso o CAP seja fornecido, o DAP será calculado automaticamente", # nome que sera mostrado na UI
       choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
       selected = DAP_names,     
       multiple=T,
@@ -364,7 +343,6 @@ shinyServer(function(input, output, session) {
     
     
   })
-  
   output$selec_ht           <- renderUI({
     
     data <- rawData_()
@@ -384,6 +362,80 @@ shinyServer(function(input, output, session) {
     
     
   })
+  
+  output$selec_vcc          <- renderUI({
+    
+    data <- rawData_()
+    
+    selectizeInput( # cria uma lista de opcoes em que o usuario pode clicar
+      "col.vcc", # Id
+      "Caso o dado não possua uma coluna de volume, este pode ser calculado na aba 'Preparação' ", # nome que sera mostrado na UI
+      choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
+      selected = VCC_names,     
+      multiple=T,
+      options = list(
+        maxItems = 1,
+        placeholder = 'selecione uma coluna abaixo'#,
+        #onInitialize = I('function() { this.setValue(""); }')
+      ) # options    
+    ) # selctize
+    
+    
+  })
+  output$selec_area.parcela <- renderUI({
+    
+    data <- rawData_()
+    
+    selectizeInput("col.area.parcela",
+                   "Pode ser informada como valor numérico na aba 'Preparação dos dados'", # nome que sera mostrado na UI
+                   choices = names(data),
+                   selected = area_parcela_names,
+                   multiple = T,
+                   options = list(
+                     maxItems = 1,
+                     placeholder = 'Selecione uma coluna abaixo:'#,
+                     #    onInitialize = I('function() { this.setValue(""); }')
+                   ) # options    
+    )# selectize
+    
+  })
+  output$selec_area.total   <- renderUI({
+    
+    data <- rawData_()
+    
+    selectizeInput("col.area.total",
+                   "Pode ser informada como valor numérico na aba 'Preparação'dos dados", # nome que sera mostrado na UI
+                   choices = names(data),
+                   selected = area_total_names,
+                   multiple = T,
+                   options = list(
+                     maxItems = 1,
+                     placeholder = 'Selecione uma coluna abaixo:'#,
+                     #    onInitialize = I('function() { this.setValue(""); }')
+                   ) # options    
+    )# selectize
+    
+  })
+  output$selec_vsc          <- renderUI({
+    
+    data <- rawData_()
+    
+    selectizeInput( # cria uma lista de opcoes em que o usuario pode clicar
+      "col.vsc", # Id
+      "Caso o dado não possua uma coluna de volume, este pode ser calculado na aba 'Preparação' ", # nome que sera mostrado na UI
+      choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
+      selected = VSC_names,     
+      multiple=T,
+      options = list(
+        maxItems = 1,
+        placeholder = 'selecione uma coluna abaixo'#,
+        #onInitialize = I('function() { this.setValue(""); }')
+      ) # options    
+    ) # selctize
+    
+    
+  })
+  
   output$selec_est.vertical_2 <- renderUI({
     
     data <- rawData_()
@@ -432,80 +484,6 @@ shinyServer(function(input, output, session) {
     )# selectize
     
   })
-  
-  output$selec_vcc          <- renderUI({
-    
-    data <- rawData_()
-    
-    selectizeInput( # cria uma lista de opcoes em que o usuario pode clicar
-      "col.vcc", # Id
-      "Caso o dado não possua uma coluna de volume, este pode ser calculado na aba 'Preparação' ", # nome que sera mostrado na UI
-      choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
-      selected = VCC_names,     
-      multiple=T,
-      options = list(
-        maxItems = 1,
-        placeholder = 'selecione uma coluna abaixo'#,
-        #onInitialize = I('function() { this.setValue(""); }')
-      ) # options    
-    ) # selctize
-    
-    
-  })
-  output$selec_area.parcela <- renderUI({
-    
-    data <- rawData_()
-    
-    selectizeInput("col.area.parcela",
-                   NULL, # nome que sera mostrado na UI
-                   choices = names(data),
-                   selected = area_parcela_names,
-                   multiple = T,
-                   options = list(
-                     maxItems = 1,
-                     placeholder = 'Selecione uma coluna abaixo:'#,
-                     #    onInitialize = I('function() { this.setValue(""); }')
-                   ) # options    
-    )# selectize
-    
-  })
-  output$selec_area.total   <- renderUI({
-    
-    data <- rawData_()
-    
-    selectizeInput("col.area.total",
-                   NULL, # nome que sera mostrado na UI
-                   choices = names(data),
-                   selected = area_total_names,
-                   multiple = T,
-                   options = list(
-                     maxItems = 1,
-                     placeholder = 'Selecione uma coluna abaixo:'#,
-                     #    onInitialize = I('function() { this.setValue(""); }')
-                   ) # options    
-    )# selectize
-    
-  })
-  output$selec_vsc          <- renderUI({
-    
-    data <- rawData_()
-    
-    selectizeInput( # cria uma lista de opcoes em que o usuario pode clicar
-      "col.vsc", # Id
-      "Caso o dado não possua uma coluna de volume, este pode ser calculado na aba 'Preparação' ", # nome que sera mostrado na UI
-      choices = names(data), # como as opcoes serao atualizadas de acordo com o arquivo que o usuario insere, deixamos este campo em branco
-      selected = VSC_names,     
-      multiple=T,
-      options = list(
-        maxItems = 1,
-        placeholder = 'selecione uma coluna abaixo'#,
-        #onInitialize = I('function() { this.setValue(""); }')
-      ) # options    
-    ) # selctize
-    
-    
-  })
-  
   output$selec_estrato      <- renderUI({
     
     data <- rawData_()
@@ -523,9 +501,7 @@ shinyServer(function(input, output, session) {
     )# selectize
     
   })
-  
-  
-  
+
   # Preparação ####
   # ui
   output$selec_rotuloNI     <- renderUI({
@@ -946,27 +922,25 @@ shinyServer(function(input, output, session) {
     varnameslist <- list(
       
       arvore = input$col.arvore,
-      fuste = input$col.fuste,
       parcelas=input$col.parcelas,
-      
       especies=input$col.especies,
+      
       cap = input$col.cap,
       dap=input$col.dap,
-      
       ht=input$col.ht,
-      est.vertical=input$col.est.vertical,
-      est.interna=input$col.est.interna,
       
       vcc=input$col.vcc,
      # vsc=input$col.vsc,
       area.parcela=input$col.area.parcela,
       area.total=input$col.area.total,
 
-      estrato=input$col.estrato,
+     est.vertical=input$col.est.vertical,
+     est.interna=input$col.est.interna,
+     estrato=input$col.estrato,
      
-      NI=input$rotutuloNI,
-      IC=input$int.classe,
-      diam.min=input$diam.min
+     NI=input$rotutuloNI,
+     IC=input$int.classe,
+     diam.min=input$diam.min
       )
     
     # Se o usuario inserir valores numericos para as areas, defini-las na lista
@@ -1034,8 +1008,7 @@ shinyServer(function(input, output, session) {
       ht = input$col.ht, 
       parcela = input$col.parcelas, 
       especie = input$col.especies,
-      arvore = input$col.arvore,
-      fuste = input$col.fuste
+      arvore = input$col.arvore
       )) 
   })
   output$consist_warning1 <- renderUI({
@@ -1119,12 +1092,10 @@ shinyServer(function(input, output, session) {
       need(dados, "Por favor faça o upload da base de dados"),
       need(input$df == "Dados em nivel de fuste", "Base de dados incompativel" ),
       need(nm$arvore,"Por favor mapeie a coluna referente a 'Árvore'  "),
-      need(nm$fuste,"Por favor mapeie a coluna referente a 'Fuste'  "),
       need(nm$dap,"Por favor mapeie a coluna referente a 'CAP' ou 'DAP'  ") )
     arv_summary(
       df = dados,
       arvore = nm$arvore,
-      fuste = nm$fuste,
       dap = nm$dap,
       ht = nm$ht,
       vol = nm$vcc,
@@ -2453,13 +2424,14 @@ shinyServer(function(input, output, session) {
   
   graphInput <- reactive({
     switch(input$graph_d,
-           "Dendrograma - Jaccard"     = msim1_graph(),
-           "Dendrograma - Sorensen"    = msim2_graph(),
-           "Grafico IVI"               = ivi_graph(),
-           "Indv. por ha por CC"  = dd_g1(),
-           "Vol. por ha por CC"   = dd_g2(),
-           "G por ha por CC"      = dd_g3(),
-           "Distribuicao - BDq Meyer"  = BDq_graph() )
+           "Dendrograma - Jaccard"      = msim1_graph(),
+           "Dendrograma - Sorensen"     = msim2_graph(),
+           "Grafico IVI"                = ivi_graph(),
+           "Grafico Estrutura Vertical" = est.vert_graph(),
+           "Indv. por ha por CC"        = dd_g1(),
+           "Vol. por ha por CC"         = dd_g2(),
+           "G por ha por CC"            = dd_g3(),
+           "Distribuicao - BDq Meyer"   = BDq_graph() )
   })
   
   output$graph_d_out <- renderPlot({
