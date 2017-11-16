@@ -64,18 +64,18 @@ check_numeric <- function(input, df, code){
 
 # vectors for names ####
 
-arvore_names <- c("ARVORE", "Arvore", "arvore", "ARV", "Arv", "arv", "ARV.", "Arv.", "arv.","NP","Np","np" )
+arvore_names <- c("ARVORE", "Arvore", "arvore", "ARV", "Arv", "arv", "ARV.", "Arv.", "arv.","NP","Np","np","Árvore","ÁRVORE","árvore" )
 fuste_names <- c("FUSTE", "Fuste", "fuste")
 
-especies_names <- c("nome.cient","scientific.name","Scientific.Name","SCIENTIFIC.NAME" ,"scientific_name", "Scientific_Name","SCIENTIFIC_NAME","nome.cientifico", "Nome.Cientifico","NOME.CIENTIFICO","nome_cientifico", "Nome_Cientifico","NOME_CIENTIFICO", "Especie", "especie", "Especies", "especies")
+especies_names <- c("nome.cient","scientific.name","Scientific.Name","SCIENTIFIC.NAME" ,"scientific_name", "Scientific_Name","SCIENTIFIC_NAME","nome.cientifico", "Nome.Cientifico","NOME.CIENTIFICO","nome_cientifico", "Nome_Cientifico","NOME_CIENTIFICO","nome.cientifíco", "Nome.Científico","NOME.CIENTÍFICO","nome_científico", "Nome_Científico","NOME_CIENTÍFICO","nome cientifico", "Nome Cientifico","NOME CIENTIFICO","nome científico", "Nome Científico","NOME CIENTÍFICO","Especie", "especie", "Especies", "especies","Espécie", "espécie", "Espécies", "espécies")
 parcelas_names <- c("transecto","transect", "Transect", "TRNASECT", "transect.code","Transect.Code","TRANSECT.CODE","transect_code","Transect_Code","TRANSECT_CODE","parcela", "Parcela","PARCELA","cod.parcela","Cod.Parcela","COD.PARCELA", "cod_parcela","Cod_Parcela","COD_PARCELA")
 est.vertical_names <- c("pos.copa","canopy", "canopy_09")
 est.interno_names <- c("luminosidade","light", "light_09")
 
-CAP_names <- c("CAP","Cap","cap", "cbh", "Cbh","CBH","CBH_11")
-DAP_names <- c("DAP","Dap","dap", "dbh", "Dbh","DBH","DBH_11")
-HT_names <- c("HT_EST", "HT", "Ht", "ht","Htot","ALTURA","Altura","Altura_Total", "ALTURA_TOTAL")
-VCC_names <- c("VCC","Vcc", "vcc", "VOL", "Vol", "vol" ,"VOLUME")
+CAP_names <- c("CAP","Cap","cap", "cbh", "Cbh","CBH","CBH_11","CAP(cm)","CAP(cm)","Cap (cm)","Cap(cm)")
+DAP_names <- c("DAP","Dap","dap", "dbh", "Dbh","DBH","DBH_11","DAP(cm)","DAP(cm)","Dap (cm)","Dap(cm)")
+HT_names <- c("HT_EST", "HT", "Ht", "ht","Htot","ALTURA","Altura","Altura_Total", "ALTURA_TOTAL","HT (m)","HT(m)","Ht (m)","Ht(m)","Altura Total (m)","Altura total(m)")
+VCC_names <- c("VCC","Vcc", "vcc", "VOL", "Vol", "vol" ,"VOLUME", "Volume (m³)", "VOLUME (m³)", "VOL(m³)", "Volume(m³)", "VOLUME(m³)", "VOL(m³)")
 area_parcela_names <- c("trans.area","AREA_PARCELA","Area_Parcela","area_parcela","parc.area" ,"AREAPARCELA", "areaparcela", "transect.area", "Transect.Area", "TRANSECT.AREA","transect_area","Transect_Area","TRANSECT_AREA")
 area_total_names <- c("sub.area","AREA_TOTAL", "AREATOTAL", "area_total", "areatotal","AREA_TALHAO", "AREATALHAO", "area_talhao", "areatalhao","total.area","Total.Area","TOTAL.AREA","total_area","Total_Area","TOTAL_AREA", "area.total", "Area.total", "Area.Total", "AREA.TOTAL")
 idade_names <- c("IDADE", "Idade","idade")
