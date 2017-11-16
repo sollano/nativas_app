@@ -1609,7 +1609,9 @@ shinyServer(function(input, output, session) {
                                            dapmin = nm$diam.min, 
                                            especies = NA, 
                                            volume = nm$vcc,
-                                           rotulo.NI = nm$NI )
+                                           rotulo.NI = nm$NI,
+                                           keep_unused_classes = TRUE
+                                           )
    
     lista[["dd_especie"]] <- classe_diametro(df = dados, 
                                            dap = nm$dap,
@@ -1619,7 +1621,9 @@ shinyServer(function(input, output, session) {
                                            dapmin = nm$diam.min, 
                                            especies = nm$especies, 
                                            volume = nm$vcc,
-                                           rotulo.NI = nm$NI )
+                                           rotulo.NI = nm$NI,
+                                           keep_unused_classes = TRUE
+    )
     
     lista[["dd_especie_indv_cc_column"]] <- classe_diametro(df = dados, 
                                              dap = nm$dap,
@@ -1631,7 +1635,9 @@ shinyServer(function(input, output, session) {
                                              volume = NA,
                                              rotulo.NI = nm$NI,
                                              cc_to_column = T,
-                                             cctc_ha = T )
+                                             cctc_ha = T,
+                                             keep_unused_classes = TRUE
+                                                                     )
     
     lista[["dd_especie_vol_cc_column"]] <- classe_diametro(df = dados, 
                                                       dap = nm$dap,
@@ -1643,7 +1649,9 @@ shinyServer(function(input, output, session) {
                                                       volume = nm$vcc,
                                                       rotulo.NI = nm$NI,
                                                       cc_to_column = T,
-                                                      cctc_ha = T )
+                                                      cctc_ha = T,
+                                                      keep_unused_classes = TRUE
+                                                                   )
     
     lista[["dd_especie_G_cc_column"]] <- classe_diametro(df = dados, 
                                                            dap = nm$dap,
@@ -1656,7 +1664,9 @@ shinyServer(function(input, output, session) {
                                                            rotulo.NI = nm$NI,
                                                            cc_to_column = T,
                                                            G_to_cc = T,
-                                                           cctc_ha = T )
+                                                           cctc_ha = T,
+                                                         keep_unused_classes = TRUE
+                                                      )
     
     lista
   })
@@ -1698,7 +1708,7 @@ shinyServer(function(input, output, session) {
     
   })
   output$dd_vol_especie_tab <- DT::renderDataTable({
-    
+    nm <- varnames()
     validate(need(nm$vcc,"Por favor mapeie a coluna referente a 'volume com casca' ou estime-o na aba preparação  "))
     
     g <- round_df(dd_list()[["dd_especie_vol_cc_column"]], 2)
@@ -1767,6 +1777,7 @@ shinyServer(function(input, output, session) {
   })
   dd_g2 <- reactive({
     
+    nm <- varnames()
     validate(need(nm$vcc,"Por favor mapeie a coluna referente a 'volume com casca' ou estime-o na aba preparação  "))
     
     g <- dd_list()[["dd_geral"]]
