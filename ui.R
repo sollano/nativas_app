@@ -90,6 +90,13 @@ shinyUI(
                                                  "Utilizar o dado de exemplo em nivel de arvore" ), 
                                                selected = "Fazer o upload"),
                                   
+                                  radioButtons("df", 
+                                               "Tipo da base de dados:", 
+                                               choices = c("Dados em nivel de fuste",
+                                                           "Dados em nivel de arvore",
+                                                           "Dados em nivel de parcela"),
+                                               selected = "Dados em nivel de fuste"),
+
                                   uiOutput("upload"), # tipos de arquivos aceitos
                                   hr(),
                                   uiOutput("upload_csv"), # tipos de arquivos aceitos
@@ -158,40 +165,67 @@ shinyUI(
                                    #style = "font-family: 'Source Sans Pro';"
                                  ),
                                  uiOutput("selec_especies")
-                               )) # Coluna Espécie
+                               )), # Coluna Espécie,
+                        
+                        column(4,
+                               wellPanel(
+                                 h3("Circunferência (CAP)"),
+                                 p("Selecione o nome da variável referente à 'CAP':"#, 
+                                   #style = "font-family: 'Source Sans Pro';"
+                                 ),
+                                 uiOutput("selec_cap")
+                               )), # Coluna Espécie
                         
                         
+                        column(4,
+                               wellPanel(
+                                 h3("Diâmetro (DAP)"),
+                                 p("Selecione o nome da variável referente à 'DAP':"#, 
+                                   #style = "font-family: 'Source Sans Pro';"
+                                 ),
+                                 uiOutput("selec_dap")
+                               )) # Coluna dap
                       ),
                       
                        fluidRow(
                          
                          column(4,
                                 wellPanel(
-                                  h3("CAP"),
-                                  p("Selecione o nome da variável referente à 'CAP':"#, 
+                                  h3("Altura total"),
+                                  p("Selecione o nome da variável referente à 'Altura total':"#, 
                                     #style = "font-family: 'Source Sans Pro';"
-                                    ),
-                                  uiOutput("selec_cap")
-                                )), # Coluna Espécie
-                       
-                       
-                       column(4,
-                              wellPanel(
-                                h3("Diâmetro (DAP)"),
-                                p("Selecione o nome da variável referente à 'DAP':"#, 
-                                  #style = "font-family: 'Source Sans Pro';"
-                                ),
-                                uiOutput("selec_dap")
-                              )), # Coluna dap
-                       
-                       column(4,
-                              wellPanel(
-                                h3("Altura total"),
-                                p("Selecione o nome da variável referente à 'Altura total':"#, 
-                                  #style = "font-family: 'Source Sans Pro';"
-                                ),
-                                uiOutput("selec_ht")
-                              )) # Coluna ht
+                                  ),
+                                  uiOutput("selec_ht")
+                                )), # Coluna ht
+                         
+                         column(4,
+                                wellPanel(
+                                  h3("Estrutura vertical"),
+                                  p("Selecione o método de definição da 'Estrutura vertical'"#, 
+                                    #style = "font-family: 'Source Sans Pro';"
+                                  ),
+                                  radioButtons("est.vert.calc", 
+                                               "Deseja definir a posição sociológica com base na variável altura, 
+                                             ou inserir uma variável referente à posição sociológica?", 
+                                               c("Definir", "Inserir"), 
+                                               inline = T,
+                                               selected = "Inserir"
+                                  ),
+                                  uiOutput("selec_est.vertical_2"),
+                                  uiOutput("selec_est.vertical_warning")
+                                )), # Coluna area.total
+                         
+                         
+                         column(4,
+                                wellPanel(
+                                  h3("Estrutura interna"),
+                                  p("Selecione o nome da variável referente à 'Estrutura interna'"#, 
+                                    #style = "font-family: 'Source Sans Pro';"
+                                  ),
+                                  uiOutput("selec_est.interna")
+                                )) # Coluna area.total
+                         
+                         
                        
                        
                        ), # fluidRow 2
@@ -254,36 +288,7 @@ shinyUI(
                                   #style = "font-family: 'Source Sans Pro';"
                                 ),
                                 uiOutput("selec_estrato")
-                              )), # Coluna area.total
-                       
-                       column(4,
-                              wellPanel(
-                                h3("Estrutura vertical"),
-                                p("Selecione o método de definição da 'Estrutura vertical'"#, 
-                                  #style = "font-family: 'Source Sans Pro';"
-                                ),
-                                radioButtons("est.vert.calc", 
-                                             "Deseja definir a posição sociológica com base na variável altura, 
-                                             ou inserir uma variável referente à posição sociológica?", 
-                                             c("Definir", "Inserir"), 
-                                             inline = T,
-                                             selected = "Inserir"
-                                ),
-                                uiOutput("selec_est.vertical_2"),
-                                uiOutput("selec_est.vertical_warning")
-                              )), # Coluna area.total
-                       
-                       
-                       column(4,
-                              wellPanel(
-                                h3("Estrutura interna"),
-                                p("Selecione o nome da variável referente à 'Estrutura interna'"#, 
-                                  #style = "font-family: 'Source Sans Pro';"
-                                ),
-                                uiOutput("selec_est.interna")
-                              )) # Coluna area.total
-                       
-                       
+                              ))                       
                      ) # fluidRow 4  
                        
                      
@@ -467,7 +472,8 @@ shinyUI(
                                            fluidRow( 
                                              tabsetPanel(id = "mainPanel_Estrutural",
                                                          tabPanel("Análise estrutural", DT::dataTableOutput("estr") ),
-                                                         tabPanel("Gráfico IVI", plotOutput("estrg",height = "550px" ) ) )
+                                                         tabPanel("Gráfico IVI", plotOutput("estrg",height = "550px" ) ),
+                                                         tabPanel("Gráfico estrutura vertical", plotOutput("est.vert_plot", height = "550px")) )
                                              ) #,
                                          #  fluidRow( column(width=4,uiOutput("rb_graphmsim"),offset = 3 ), 
                                         #             column(width=3,uiOutput("slider_graphmsim")) )

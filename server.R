@@ -95,15 +95,7 @@ shinyServer(function(input, output, session) {
     
     validate(need(input$df_select == "Fazer o upload", "" )  )
     
-    list(    
-      
-      radioButtons("df", 
-                   "Tipo da base de dados:", 
-                   choices = c("Dados em nivel de fuste",
-                               "Dados em nivel de arvore",
-                               "Dados em nivel de parcela"),
-                   selected = "Dados em nivel de fuste"),
-      
+    list(   
       
       radioButtons("df_extension", 
                    "Informe o formato do arquivo:", 
@@ -312,6 +304,7 @@ shinyServer(function(input, output, session) {
     
     
   })
+  
   output$selec_especies     <- renderUI({
     
     data <- rawData_()
@@ -332,7 +325,6 @@ shinyServer(function(input, output, session) {
     # obs: multiple = T & maxItems = 1, garantem que a celula fique vazia, caso o app falhe
     # em tentar adivinhar o nome da especie
   })
-  
   output$selec_cap          <- renderUI({
     
     data <- rawData_()
@@ -371,6 +363,7 @@ shinyServer(function(input, output, session) {
     
     
   })
+  
   output$selec_ht           <- renderUI({
     
     data <- rawData_()
@@ -388,6 +381,54 @@ shinyServer(function(input, output, session) {
       ) # options    
     ) # selctize
     
+    
+  })
+  output$selec_est.vertical_2 <- renderUI({
+    
+    data <- rawData_()
+    
+    switch(input$est.vert.calc,
+           "Definir" =   h5("A estrutura vertical será calculada utilizando a variável altura, segundo o método de Souza (2002)."),
+           
+           "Inserir" =    selectizeInput("col.est.vertical",
+                                         NULL, # nome que sera mostrado na UI
+                                         choices = names(data),
+                                         # selected =  ,
+                                         multiple = T,
+                                         options = list(
+                                           maxItems = 1,
+                                           placeholder = 'Selecione uma coluna abaixo:'#,
+                                           #    onInitialize = I('function() { this.setValue(""); }')
+                                         ) # options
+           )
+    ) #switch
+    
+  })
+  output$selec_est.vertical_warning <- renderUI({
+    
+    req(input$est.vert.calc == "Definir" )
+    validate(
+      need(!is.null(input$col.ht) , # ht nao e nulo? quando a resposta for nao a mensagem aparece
+           "Variável 'Altura' não definida. A estrutura horizontal não será calculada." ), errorClass = "AVISO")
+    
+    
+    
+  })
+  output$selec_est.interna  <- renderUI({
+    
+    data <- rawData_()
+    
+    selectizeInput("col.est.interna",
+                   NULL, # nome que sera mostrado na UI
+                   choices = names(data),
+                   # selected = ,
+                   multiple = T,
+                   options = list(
+                     maxItems = 1,
+                     placeholder = 'Selecione uma coluna abaixo:'#,
+                     #    onInitialize = I('function() { this.setValue(""); }')
+                   ) # options    
+    )# selectize
     
   })
   
@@ -472,54 +513,6 @@ shinyServer(function(input, output, session) {
                    NULL, # nome que sera mostrado na UI
                    choices = names(data),
                    selected = estratos_names,
-                   multiple = T,
-                   options = list(
-                     maxItems = 1,
-                     placeholder = 'Selecione uma coluna abaixo:'#,
-                     #    onInitialize = I('function() { this.setValue(""); }')
-                   ) # options    
-    )# selectize
-    
-  })
-  output$selec_est.vertical_2 <- renderUI({
-    
-    data <- rawData_()
-    
-    switch(input$est.vert.calc,
-           "Definir" =   h5("A estrutura vertical será calculada utilizando a variável altura, segundo o método de Souza (2002)."),
-           
-           "Inserir" =    selectizeInput("col.est.vertical",
-                                         NULL, # nome que sera mostrado na UI
-                                         choices = names(data),
-                                         # selected =  ,
-                                         multiple = T,
-                                         options = list(
-                                           maxItems = 1,
-                                           placeholder = 'Selecione uma coluna abaixo:'#,
-                                           #    onInitialize = I('function() { this.setValue(""); }')
-                                         ) # options
-           )
-    ) #switch
-    
-  })
-  output$selec_est.vertical_warning <- renderUI({
-
-  req(input$est.vert.calc == "Definir" )
-  validate(
-    need(!is.null(input$col.ht) , # ht nao e nulo? quando a resposta for nao a mensagem aparece
-                "Variável 'Altura' não definida. A estrutura horizontal não será calculada." ), errorClass = "AVISO")
-    
-    
-    
-  })
-  output$selec_est.interna  <- renderUI({
-    
-    data <- rawData_()
-    
-    selectizeInput("col.est.interna",
-                   NULL, # nome que sera mostrado na UI
-                   choices = names(data),
-                   # selected = ,
                    multiple = T,
                    options = list(
                      maxItems = 1,
@@ -949,26 +942,26 @@ shinyServer(function(input, output, session) {
   # Set names ####
   varnames <- reactive({
     
-    #req(input$col.especies,input$col.parcelas, input$col.dap,input$col.ht,input$col.vcc, input$col.vsc,input$col.area.parcela,input$col.area.total, input$col.col.estrato,  input$col.est.vertical,input$col.est.interna)
-    
     varnameslist <- list(
-      especies=input$col.especies,
-      parcelas=input$col.parcelas,
-      dap=input$col.dap,
-      cap = input$col.cap,
+      
       arvore = input$col.arvore,
       fuste = input$col.fuste,
+      parcelas=input$col.parcelas,
+      
+      especies=input$col.especies,
+      cap = input$col.cap,
+      dap=input$col.dap,
       
       ht=input$col.ht,
+      est.vertical=input$col.est.vertical,
+      est.interna=input$col.est.interna,
+      
       vcc=input$col.vcc,
      # vsc=input$col.vsc,
       area.parcela=input$col.area.parcela,
-     
       area.total=input$col.area.total,
+
       estrato=input$col.estrato,
-      est.vertical=input$col.est.vertical,
-     
-      est.interna=input$col.est.interna,
      
       NI=input$rotutuloNI,
       IC=input$int.classe,
@@ -1483,7 +1476,7 @@ shinyServer(function(input, output, session) {
     
     list(
     column(width=3,
-           h3("Configuração do gráfico:")
+           h3("Configuração do gráfico IVI:")
     ),
     column(3,
            numericInput("n_IVI_g", h4("Número de espécies no eixo y:"),10,1,n_max,1) ),
@@ -1544,6 +1537,46 @@ shinyServer(function(input, output, session) {
     
   })
 
+  # grafico estrutura vertical
+  
+  est.vert_graph <- reactive({
+    
+    dados <- arvData()
+    nm <- varnames()
+    
+    validate(
+      need(dados, "Por favor faça a análise estrutural"),
+      need(nm$est.vertical, "Por favor defina a estrutura vertical")  )
+      
+    dados %>% 
+      rename(xvar = !!rlang::sym(nm$est.vertical)  ) %>% 
+    ggplot(aes(x=as.factor(xvar) ) ) + 
+      geom_bar(stat="count", color = "black") +
+      labs(x = "Estrutura vertical", y="Número de indivíduos") +
+      ggthemes::theme_igray(base_family = "serif") +
+      theme(
+        legend.position = "bottom",
+        legend.text = element_text(size = 18),
+        legend.title = element_text(size=22, face="bold"),
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        axis.title   = element_text(size = 26,face="bold"), 
+        axis.text    = element_text(size = 22),
+        axis.line.x = element_line(color="black"),
+        axis.line.y = element_line(color="black"),
+        strip.text.x = element_text(size = 22)   ) + 
+      guides(fill = guide_legend(reverse=T))
+    
+    
+    
+  })
+  output$est.vert_plot <- renderPlot({
+    
+    est.vert_graph()
+    
+  })
+  
   # Distribuicao diametrica ####
   
   dd_list <- reactive({

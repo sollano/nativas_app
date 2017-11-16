@@ -204,3 +204,41 @@ estrutura(inv, "nome.cient", "dap", "transecto", "parc.area") %>%
     axis.line.y = element_line(color="black"),
     strip.text.x = element_text(size = 22)   ) + 
   guides(fill = guide_legend(reverse=T))
+
+# Gráfico est vertical ####
+
+g_est_vert <- estrat_vert_souza(inv, "Htot")# %>% 
+  #group_by(est.vert) %>% 
+ # summarise(Frequência = n() )
+
+g_est_vert
+
+ggplot(g_est_vert, aes(x=as.factor(est.vert) ) ) + 
+  geom_bar(stat="count", color = "black") +
+  scale_x_discrete(
+    labels= c( 
+      expression(bar(Ht) < S  ),
+      expression(S <= bar(Ht), a >= S   ), 
+      expression(bar(Ht) > S  )   )  ) + 
+  # geom_text(aes(label = scales::percent(IVI_contrib_porc) ), position = position_stack(vjust = 0.5), size = 4) + 
+  labs(x = "Estrutura vertical", y="Frequência") +
+  ggthemes::theme_igray(base_family = "serif") +
+  theme(
+    legend.position = "bottom",
+    legend.text = element_text(size = 18),
+    legend.title = element_text(size=22, face="bold"),
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(),
+    panel.border = element_blank(),
+    axis.title   = element_text(size = 26,face="bold"), 
+    axis.text    = element_text(size = 22),
+    axis.line.x = element_line(color="black"),
+    axis.line.y = element_line(color="black"),
+    strip.text.x = element_text(size = 22)   ) + 
+  guides(fill = guide_legend(reverse=T))
+
+
+
+
+
+
