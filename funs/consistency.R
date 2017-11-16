@@ -99,19 +99,19 @@ consistency <- function(df, cap, dap, ht,parcela,especie, lower=0.2, upper=10){
       ),
       especie_test = case_when(
         
-        (!!ESPECIE) %in% c("", " ", "  ")   ~ "Especie vazia",
-        stringr::str_sub(!!ESPECIE, 1)==" " ~ "Espaco vazio no inicio da especie", 
-        stringr::str_sub(!!ESPECIE,-1)==" " ~ "Espaco vazio no final da especie",
-        TRUE                                ~ "ok"
+        (!!ESPECIE) %in% c("", " ", "  ") | is.na(!!ESPECIE) ~ "Especie vazia",
+        stringr::str_sub(!!ESPECIE, 1)==" "                  ~ "Espaco vazio no inicio da especie", 
+        stringr::str_sub(!!ESPECIE,-1)==" "                  ~ "Espaco vazio no final da especie",
+        TRUE                                                 ~ "ok"
         
       ),
       
       parcela_test = case_when(
         
-        (!!sym(PARCC)) %in% c("", " ", "  ")     ~ "parcela vazia",
-        stringr::str_sub(!!sym(PARCC), 1)==" " ~ "Espaco vazio no inicio da parcela", 
-        stringr::str_sub(!!sym(PARCC),-1)==" " ~ "Espaco vazio no final da parcela",
-        TRUE                                   ~ "ok"
+        (!!sym(PARCC)) %in% c("", " ", "  ") | is.na(!!sym(PARCC)) ~ "parcela vazia",
+        stringr::str_sub(!!sym(PARCC), 1)==" "                     ~ "Espaco vazio no inicio da parcela", 
+        stringr::str_sub(!!sym(PARCC),-1)==" "                     ~ "Espaco vazio no final da parcela",
+        TRUE                                                       ~ "ok"
         
       )
       
