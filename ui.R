@@ -85,7 +85,9 @@ shinyUI(
                                   
                                   radioButtons("df_select", 
                                                "Fazer o upload de um arquivo, ou utilizar o dado de exemplo?", 
-                                               c("Fazer o upload", "Utilizar o dado de exemplo"), 
+                                               c("Fazer o upload", 
+                                                 "Utilizar o dado de exemplo em nivel de fuste",
+                                                 "Utilizar o dado de exemplo em nivel de arvore" ), 
                                                selected = "Fazer o upload"),
                                   
                                   uiOutput("upload"), # tipos de arquivos aceitos
@@ -112,57 +114,121 @@ shinyUI(
                        br(),
                        
                       #  h4("Nesta aba serão indicados os nomes das colunas que serão utilizadas nas análises em todo o app"),
+                      
+                      fluidRow(
+                        column(4,
+                               wellPanel(
+                                 h3("Árvore"),
+                                 p("Selecione o nome da variável referente à 'Árvore':"#, 
+                                   #style = "font-family: 'Source Sans Pro';"
+                                 ),
+                                 uiOutput("selec_arvore")
+                               )), # Coluna Espécie
+                        
+                        column(4,
+                               wellPanel(
+                                 h3("Fuste"),
+                                 p("Selecione o nome da variável referente à 'Fuste':"#, 
+                                   #style = "font-family: 'Source Sans Pro';"
+                                 ),
+                                 uiOutput("selec_fuste")
+                               )),
+                        
+                        column(4,
+                               wellPanel(
+                                 h3("Parcela"),
+                                 p("Selecione o nome da variável referente à 'Parcela':"#, 
+                                   #style = "font-family: 'Source Sans Pro';"
+                                 ),
+                                 uiOutput("selec_parcelas")
+                               ))
+                        
+                        
+                      ), # fluidRow 1
+                      
+                      h4("Obs: as variáveis 'Árvore' e 'Fuste' são necessárias apenas para dados em nível de fuste", 
+                         style = "text-align: center;"),
+                      
+                      fluidRow(
+                        
+                        column(4,
+                               wellPanel(
+                                 h3("Espécie"),
+                                 p("Selecione o nome da variável referente à 'Espécie':"#, 
+                                   #style = "font-family: 'Source Sans Pro';"
+                                 ),
+                                 uiOutput("selec_especies")
+                               )) # Coluna Espécie
+                        
+                        
+                      ),
+                      
                        fluidRow(
                          
                          column(4,
                                 wellPanel(
-                                  h3("Espécie"),
-                                  p("Selecione o nome da variável referente à Espécie:"#, 
+                                  h3("CAP"),
+                                  p("Selecione o nome da variável referente à 'CAP':"#, 
                                     #style = "font-family: 'Source Sans Pro';"
                                     ),
-                                  uiOutput("selec_especies")
+                                  uiOutput("selec_cap")
                                 )), # Coluna Espécie
                        
-                       column(4,
-                              wellPanel(
-                                h3("Parcela"),
-                                p("Selecione o nome da variável referente à Parcela:"#, 
-                                  #style = "font-family: 'Source Sans Pro';"
-                                ),
-                                uiOutput("selec_parcelas")
-                              )),
                        
                        column(4,
                               wellPanel(
                                 h3("Diâmetro (DAP)"),
-                                p("Selecione o nome da variável referente à DAP:"#, 
+                                p("Selecione o nome da variável referente à 'DAP':"#, 
                                   #style = "font-family: 'Source Sans Pro';"
                                 ),
                                 uiOutput("selec_dap")
-                              )) # Coluna dap
+                              )), # Coluna dap
                        
-                       ), # fluidRow 1
+                       column(4,
+                              wellPanel(
+                                h3("Altura total"),
+                                p("Selecione o nome da variável referente à 'Altura total':"#, 
+                                  #style = "font-family: 'Source Sans Pro';"
+                                ),
+                                uiOutput("selec_ht")
+                              )) # Coluna ht
+                       
+                       
+                       ), # fluidRow 2
                        
                        fluidRow(
                         
                          
-                         column(4,
-                                wellPanel(
-                                  h3("Altura total"),
-                                  p("Selecione o nome da variável referente à Altura total:"#, 
-                                    #style = "font-family: 'Source Sans Pro';"
-                                  ),
-                                  uiOutput("selec_ht")
-                                )), # Coluna ht
                          
                          column(4,
                                 wellPanel(
                                   h3("Volume com casca"),
-                                  p("Selecione o nome da variável referente à Volume com casca:"#, 
+                                  p("Selecione o nome da variável referente à 'Volume com casca':"#, 
                                     #style = "font-family: 'Source Sans Pro';"
                                   ),
                                   uiOutput("selec_vcc")
-                                )) #, # Coluna vcc
+                                )), #, # Coluna vcc
+                         
+                         
+                         column(4,
+                                wellPanel(
+                                  h3("Área da parcela"),
+                                  p("Selecione o nome da variável referente à 'Área da parcela (m²)':"#, 
+                                    #style = "font-family: 'Source Sans Pro';"
+                                  ),
+                                  uiOutput("selec_area.parcela")
+                                )), # Coluna area.parcela
+                         
+                         
+                         column(4,
+                                wellPanel(
+                                  h3("Área total"),
+                                  p("Selecione o nome da variável referente à 'Área total (ha)'"#, 
+                                    #style = "font-family: 'Source Sans Pro';"
+                                  ),
+                                  uiOutput("selec_area.total")
+                                )) # Coluna area.total
+                         
                          
                       #   column(4,
                       #          wellPanel(
@@ -175,55 +241,30 @@ shinyUI(
                          
                          
                          
-                       ),# fluidRow 2
+                       ),# fluidRow 3
                        
                      fluidRow(
                        
-                       column(4,
-                              wellPanel(
-                                h3("Área da parcela"),
-                                p("Selecione o nome da variável referente à Área da parcela (m²):"#, 
-                                  #style = "font-family: 'Source Sans Pro';"
-                                ),
-                                uiOutput("selec_area.parcela")
-                              )), # Coluna area.parcela
-                       
-                       
-                       column(4,
-                              wellPanel(
-                                h3("Área total"),
-                                p("Selecione o nome da variável referente à Área total (ha)"#, 
-                                  #style = "font-family: 'Source Sans Pro';"
-                                ),
-                                uiOutput("selec_area.total")
-                              )), # Coluna area.total
                        
                        
                        column(4,
                               wellPanel(
                                 h3("Estrato"),
-                                p("Selecione o nome da variável referente à Estrato"#, 
+                                p("Selecione o nome da variável referente à 'Estrato'"#, 
                                   #style = "font-family: 'Source Sans Pro';"
                                 ),
                                 uiOutput("selec_estrato")
-                              )) # Coluna area.total
-                       
-                       
-                     ), # fluidRow 3  
-                       
-                     
-                     fluidRow(
-                       
+                              )), # Coluna area.total
                        
                        column(4,
                               wellPanel(
                                 h3("Estrutura vertical"),
-                                p("Selecione o método de definição da Estrutura vertical"#, 
+                                p("Selecione o método de definição da 'Estrutura vertical'"#, 
                                   #style = "font-family: 'Source Sans Pro';"
                                 ),
                                 radioButtons("est.vert.calc", 
                                              "Deseja definir a posição sociológica com base na variável altura, 
-                                              ou inserir uma variável referente à posição sociológica?", 
+                                             ou inserir uma variável referente à posição sociológica?", 
                                              c("Definir", "Inserir"), 
                                              inline = T,
                                              selected = "Inserir"
@@ -236,19 +277,21 @@ shinyUI(
                        column(4,
                               wellPanel(
                                 h3("Estrutura interna"),
-                                p("Selecione o nome da variável referente à Estrutura interna"#, 
+                                p("Selecione o nome da variável referente à 'Estrutura interna'"#, 
                                   #style = "font-family: 'Source Sans Pro';"
                                 ),
                                 uiOutput("selec_est.interna")
                               )) # Coluna area.total
                        
                        
-                     ) # fluidRow 4
+                     ) # fluidRow 4  
                        
+                     
                      ) # fluidPage 
                      
                      
                      ),# tabPanel Mapeamento
+                     
                      
                      # tabPanel Preparação ####
                      tabPanel("Preparação dos dados", 
@@ -316,7 +359,22 @@ shinyUI(
                               
                               
                               
-                     ), # tabPanel filtrar dados
+                     ), # tabPanel preparacao dados
+                     # Totalização de fustes ####
+                     tabPanel("Totalização de fustes",
+                              
+                              fluidPage(
+                                
+                                h1("Totalização de fustes", style = "text-align: center;"),
+                                br(),
+                                
+                                DT::dataTableOutput("tot_fuste_tab")
+                              )
+                     ),# tabpanel Totalização de fustes
+                     
+                     
+                     
+                     
                      # navbarMenu fitossociologica ####
                      navbarMenu("Análise fitossociológica",
                                 
@@ -485,6 +543,7 @@ shinyUI(
                                               br(),
                                               
                                               # ####
+                                              
                                               fluidRow(
                                                 
                                                 column(2,
