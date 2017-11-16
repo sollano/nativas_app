@@ -1026,7 +1026,17 @@ shinyServer(function(input, output, session) {
       check_numeric(input$col.ht, data, "ht")  )
     
     #htdapratio(data, dap = input$col.dap, ht = input$col.ht) 
-    consistency(data, cap = input$col.cap, dap = input$col.dap , ht = input$col.ht, parcela = input$col.parcelas, especie = input$col.especies) 
+    suppressWarnings(
+      consistency(
+      df = data, 
+      cap = input$col.cap, 
+      dap = input$col.dap , 
+      ht = input$col.ht, 
+      parcela = input$col.parcelas, 
+      especie = input$col.especies,
+      arvore = input$col.arvore,
+      fuste = input$col.fuste
+      )) 
   })
   output$consist_warning1 <- renderUI({
     # Essa aviso ira aparcer na UI caso consit_fun() nao seja nulo.
