@@ -16,6 +16,7 @@ suppressPackageStartupMessages(library(xlsx))
 library(rJava)
 library(xlsxjars)
 library(rmarkdown)
+library(stringr)
 
 # Data e functions
 
@@ -1010,14 +1011,22 @@ shinyServer(function(input, output, session) {
 
     # Aqui a funcao nao ira rodar, caso essas condicoes sejam contrariadas
     #  req(data, is.numeric(data[[input$col.dap]]),is.numeric(data[[input$col.ht]]) )
+    
+    # Check numeric para cap ou dap
+    if(!is.null(input$col.cap) && !is.na(input$col.cap) ){
+      req(input$col.cap)
+      validate(check_numeric(input$col.cap, data, "cap"))
+    }else{
+      req(input$col.dap)
+  
+      validate(check_numeric(input$col.dap, data, "dap"))
+    }
+
     validate(
-      need(input$col.dap,""),
-      need(input$col.ht,""),
-      check_numeric(input$col.dap, data, "dap"),
       check_numeric(input$col.ht, data, "ht")  )
     
     #htdapratio(data, dap = input$col.dap, ht = input$col.ht) 
-    consistency(data, dap = input$col.dap, ht = input$col.ht, parcela = input$col.parcelas) 
+    consistency(data, cap = input$col.cap, dap = input$col.dap , ht = input$col.ht, parcela = input$col.parcelas, especie = input$col.especies) 
   })
   output$consist_warning1 <- renderUI({
     # Essa aviso ira aparcer na UI caso consit_fun() nao seja nulo.
