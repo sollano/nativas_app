@@ -582,7 +582,7 @@ shinyUI(
                                               fluidRow(
                                                 radioButtons("yi_inv",
                                                              label="Selecione a variável utilizada nas estatísticas:",
-                                                             choices = c("IndvHA", "G_HA","VCC_HA", "VSC_HA"),
+                                                             choices = c("IndvHA", "G_HA","VCC_HA"),
                                                              selected = "VCC_HA",
                                                              inline=T )
                                               ),

@@ -1949,7 +1949,7 @@ shinyServer(function(input, output, session) {
                      groups       = grupos,
                      area_total   = nm$area.total,
                      idade        = NA,
-                     VSC          = nm$vsc,
+                     VSC          = NA,
                      Hd           = NA)
     
     names(x)[names(x)=="AREA_TOTAL"] <- nm$area.total
