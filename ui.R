@@ -418,7 +418,7 @@ shinyUI(
                                          
                                          fluidPage(
                                            
-                                           h1("Índices de diversidade", style = "text-align: center;"),
+                                           h1("Índices de similaridade", style = "text-align: center;"),
                                            br(),
                                            
                                            fluidRow(
