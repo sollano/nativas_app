@@ -21,6 +21,30 @@ shinyUI(
   # Intro, taglists e error messages colors ####
   tagList(tags$style(HTML(".irs-single, .irs-bar-edge, .irs-bar{background: #00a90a}")), # this is actually .css; this changes the color for the sliders
           
+          # Timeout: depois de 20 minutos (12000000 milisegundos) fecha a aba do navegador
+          tags$script(
+            "function idleTimer() {
+  var t = setTimeout(logout, 5000);
+            window.onmousemove = resetTimer; // catches mouse movements
+            window.onmousedown = resetTimer; // catches mouse movements
+            window.onclick = resetTimer;     // catches mouse clicks
+            window.onscroll = resetTimer;    // catches scrolling
+            window.onkeypress = resetTimer;  //catches keyboard actions
+            
+            function logout() {
+            process.exit();  //close the window
+            }
+            
+            function resetTimer() {
+            clearTimeout(t);
+            t = setTimeout(logout, 12000000);  // time is in milliseconds (1000 is 1 second)
+            }
+            }
+            idleTimer();"
+            
+          ),
+          
+          
           # Cor de todas as mensagens da funcao need
           tags$head(
             tags$style(HTML("
