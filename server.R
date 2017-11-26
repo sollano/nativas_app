@@ -900,8 +900,6 @@ shinyServer(function(input, output, session) {
            "You just removed the 'ht' variable. This will prevent you from running some of the app's functions") , 
       need(! nm$vcc %in% input$col.rm_vars, 
            "You just removed the 'vcc' variable. This will prevent you from running some of the app's functions") ,
-      need(! nm$vsc %in% input$col.rm_vars, 
-           "You just removed the 'vsc' variable. This will prevent you from running some of the app's functions") ,
       need(! nm$area.parcela %in% input$col.rm_vars, 
            "You just removed the 'area.parcela' variable. This will prevent you from running some of the app's functions"),
       need(! nm$area.total %in% input$col.rm_vars, 
