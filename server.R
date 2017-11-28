@@ -42,26 +42,7 @@ source("funs/htdapratio.R"         , encoding="UTF-8")
 source("funs/consistency.R"        , encoding="UTF-8")
 source("funs/xlsx.write.list.R"    , encoding="UTF-8")
 source("funs/check_numeric.R"      , encoding="UTF-8")
-
-# Funcao para testar se uma variavel e numerica
-# Sera utilizada dentro da funcao validate
-check_numeric <- function(input, df, code){
-  
-  if(is.null(input) ){
-    
-    
-  }else if(is.na(input)){
-    
-    
-  }else if(input == ""){
-    
-  }else if(!is.null(input) && !is.numeric(df[[input]]) ){
-    
-    paste(code, "column must be numeric")
-    
-  }
-  
-}
+source("funs/notin.R"              , encoding="UTF-8")
 
 # vectors for names ####
 
@@ -558,18 +539,25 @@ shinyServer(function(input, output, session) {
           data[,input$col.rm_data_var]))
     }
     
-    selectizeInput("level.rm_data_level",
-                   label = "Selecione o(s) nivel(s) que se deseja remover:",
-                   choices = opcoes,
-                   multiple = TRUE,
-                   options = list(
-                     placeholder = 'Selecione o(s) nivel(s) abaixo',
-                     onInitialize = I('function() { this.setValue(""); }')
-                   ) # options    
+    list(
+      
+      selectizeInput("level.rm_data_level",
+                     label = "Selecione o(s) nivel(s) que se deseja remover ou manter:",
+                     choices = opcoes,
+                     multiple = TRUE,
+                     options = list(
+                       placeholder = 'Selecione o(s) nivel(s) abaixo',
+                       onInitialize = I('function() { this.setValue(""); }')
+                     ) # options    
+      ),
+      
+      radioButtons("rm_or_keep",
+                   label = "Remover, ou manter dados referentes ao nível selecionado?",
+                   c("Remover"=FALSE, "Manter"=TRUE),
+                   selected = FALSE,
+                   inline = TRUE  )
+      
     )
-    
-    
-    
   })
   output$rm_vars <- renderUI({
     
@@ -734,14 +722,13 @@ shinyServer(function(input, output, session) {
     }
     
     
-    
-    # o primeiro if sera para remover as linhas
+    # o primeiro if sera para filtrar as linhas
     
     # se o usuario nao selecionar nada, retorna o dado normal 
     # (isso faz com o que o dado original seja exibido logo que se entra na aba de filtrar),
     # caso contrario ele filtra o dado conforme o usuario seleciona as variaveis
     
-    if( is.null(input$col.rm_data_var) || input$col.rm_data_var ==""){
+    if( is.null(input$col.rm_data_var) || input$col.rm_data_var =="" || is.null(input$rm_or_keep) || input$rm_or_keep == ""){
       
       # esse if acima so foi feito dessa forma pois tentar adicionar ! nas condicoes acima
       # nao funcionou, por algum motivo.
@@ -750,13 +737,22 @@ shinyServer(function(input, output, session) {
       
     }else{
       
-      # remove linhas caso um nivel seja selecionado
-      data <- data[!data[[input$col.rm_data_var]] %in% input$level.rm_data_level,]
+      
+      
+      if(input$rm_or_keep){ # mantem se for verdadeiro
+        boolean_vec <- data[[input$col.rm_data_var]]     %in%   input$level.rm_data_level
+      }else{                # remove se for falso
+        boolean_vec <- data[[input$col.rm_data_var]]   %notin%  input$level.rm_data_level
+      }
+      
+      
+      data <- data[boolean_vec,]
       
       # data <- data %>% filter( ! .data[[input$col.rm_data_var]] %in% input$level.rm_data_level )
       
     }
     
+  
     # A linha a seguir sera para remover uma ou mais colunas
     
     # se o usuario nao selecionar nada, uma coluna vazia e definida como nula,
@@ -764,7 +760,18 @@ shinyServer(function(input, output, session) {
     # por isso nao e necessario utilizar condicionais nesse caso
     
     data[, input$col.rm_vars] <- NULL
-
+    
+    if(input$zero_to_NA){
+      
+      #ex1["HT"][ ex1["HT"] == 0 ] <- NA
+      
+      # Converter zero em NA quando a variavel tiver o seu nome definido
+      if(nrow(data)>0){
+        if(nm$dap!=""){  data[nm$dap][ data[nm$dap] == 0 ] <- NA }
+        if(nm$ht!= ""){  data[nm$ht ][ data[nm$ht ] == 0 ] <- NA }
+      }
+    }
+    
     # A seguir e feito o calculo do volume, caso o usuario nao insira uma variavel de volume e as variaveis necessarias para o calculo
     if( is.null(input$modelo_estvol) ||  is.null(nm$dap)  || is.null(input$b0_estvol) || is.null(input$b1_estvol) || is.na(input$modelo_estvol) ||  is.na(nm$dap)  || is.na(input$b0_estvol) || is.na(input$b1_estvol) || input$modelo_estvol =="" || nm$dap ==""  || input$b0_estvol == "" || input$b1_estvol == ""  ){
       
@@ -882,9 +889,16 @@ shinyServer(function(input, output, session) {
 
     # Essa parte do server ira gerar uma UI vazia, que gera avisos caso alguma condicao abaixo seja violada.
     #
-    # Os erros so poderao ser mostrados se o usuario selecionar alguma coluna para ser removido
+    
+    #Avisa quando o usuário remove todas as linhas do dado
+    validate(
+      need(nrow(rawData())>0,
+           "Base de dados vazia"),
+      errorClass = "AVISO"
+    )
+    # Os erros abaixo so poderao ser mostrados se o usuario selecionar alguma coluna para ser removido
     req(input$col.rm_vars)
-
+   
     # A seguir sao geradas uma mensagem de aviso para cada uma das variaveis que o usuario pode selecionar na aba
     # de mapeamento, caso elas tambem sejam selecionadas para serem removidas.
     # E utilizado %in% pois input$col.rm_vars pode ter mais de um nome (o usuario pode remover mais de uma variavel de uma vez)
@@ -1089,6 +1103,7 @@ shinyServer(function(input, output, session) {
     
     validate(
       need(dados, "Por favor faça o upload da base de dados"),
+      need(nrow(dados)>0, "Base de dados vazia"),
       need(input$df == "Dados em nivel de fuste", "Base de dados incompativel" ),
       need(nm$arvore,"Por favor mapeie a coluna referente a 'Árvore'  "),
       need(nm$dap,"Por favor mapeie a coluna referente a 'CAP' ou 'DAP'  ") )
@@ -1146,6 +1161,7 @@ shinyServer(function(input, output, session) {
     
     validate(
       need(dados, "Por favor faça o upload da base de dados"),
+      need(nrow(dados)>0, "Base de dados vazia"),
       need(input$df != "Dados em nivel de parcela", "Base de dados incompativel" ),
       need(nm$especies,"Por favor mapeie a coluna referente a 'especies'  ") )
     
@@ -1187,6 +1203,7 @@ shinyServer(function(input, output, session) {
     dados <- arvData()
     validate(
       need(dados, "Por favor faça o upload da base de dados"),
+      need(nrow(dados)>0, "Base de dados vazia"),
       need(input$df != "Dados em nivel de parcela", "Base de dados incompativel" ),
       need(nm$especies,"Por favor mapeie a coluna referente a 'especies'  "),
       need(nm$parcelas,"Por favor mapeie a coluna referente a 'parcelas'  ") )
@@ -1376,6 +1393,7 @@ shinyServer(function(input, output, session) {
     
     validate(
       need(dados, "Por favor faça o upload da base de dados"),
+      need(nrow(dados)>0, "Base de dados vazia"),
       need(input$df != "Dados em nivel de parcela", "Base de dados incompativel" ),
       need(nm$especies,"Por favor mapeie a coluna referente a 'especies'  "),
       need(nm$parcelas,"Por favor mapeie a coluna referente a 'parcela'  ") )
@@ -1414,6 +1432,7 @@ shinyServer(function(input, output, session) {
     
     validate(
       need(dados, "Por favor faça o upload da base de dados"),
+      need(nrow(dados)>0, "Base de dados vazia"),
       need(input$df != "Dados em nivel de parcela", "Base de dados incompativel" ),
       need(nm$especies,"Por favor selecione a coluna referente a 'especies'  "),
       need(nm$parcelas,"Por favor selecione a coluna referente a 'parcelas'  "),
@@ -1535,6 +1554,7 @@ shinyServer(function(input, output, session) {
     
     validate(
       need(dados, "Por favor faça a análise estrutural"),
+      need(nrow(dados)>0, "Base de dados vazia"),
       need(nm$est.vertical, "Por favor defina a estrutura vertical")  )
       
     dados %>% 
@@ -1575,6 +1595,7 @@ shinyServer(function(input, output, session) {
     
     validate(
       need(dados, "Por favor faça o upload da base de dados"),
+      need(nrow(dados)>0, "Base de dados vazia"),
       need(input$df != "Dados em nivel de parcela", "Base de dados incompativel" ),
       need(nm$dap,"Por favor mapeie a coluna referente a 'dap'  "),
       need(nm$parcelas,"Por favor mapeie a coluna referente a 'parcelas'  "),
@@ -1820,6 +1841,7 @@ shinyServer(function(input, output, session) {
     
     validate(
       need(dados, "Por favor faça o upload da base de dados"),
+      need(nrow(dados)>0, "Base de dados vazia"),
       need(input$df != "Dados em nivel de parcela", "Base de dados incompativel" ),
       need(nm$dap,"Por favor mapeie a coluna referente a 'dap'  "),
       need(nm$parcelas,"Por favor mapeie a coluna referente a 'parcelas'  "),
@@ -1929,6 +1951,7 @@ shinyServer(function(input, output, session) {
 
     validate(
       need(dados, "Por favor faça o upload da base de dados"),
+      need(nrow(dados)>0, "Base de dados vazia"),
       need(input$df != "Dados em nivel de parcela", "Base de dados incompativel" ),
       need(nm$dap,"Por favor mapeie a coluna referente a 'dap'  "),
       need(nm$vcc,"Por favor mapeie a coluna referente a 'volume com casca' ou estime-o na aba preparação  "),
@@ -2024,6 +2047,7 @@ shinyServer(function(input, output, session) {
     
     validate(
       need(dados, "Por favor, faça a totalização de parcelas, ou o upload de uma base de dados em nível de parcela" ),
+      need(nrow(dados)>0, "Base de dados vazia"),
       need(nm$vcc,"Por favor mapeie a coluna referente a 'volume com casca' ou estime-o na aba preparação  "),
       need(nm$area.parcela,"Por favor mapeie a coluna ou insira um valor referente a 'area.parcela'  "),
       need(nm$area.total,"Por favor mapeie a coluna ou insira um valor referente a 'area.total'  ")
@@ -2096,6 +2120,7 @@ shinyServer(function(input, output, session) {
     
     validate(
       need(dados, "Por favor, faça a totalização de parcelas, ou o upload de uma base de dados em nível de parcela" ),
+      need(nrow(dados)>0, "Base de dados vazia"),
       need(nm$vcc,"Por favor mapeie a coluna referente a 'volume com casca' ou estime-o na aba preparação  "),
       need(nm$area.parcela,"Por favor mapeie a coluna ou insira um valor referente a 'area.parcela'  "),
       need(nm$area.total,"Por favor mapeie a coluna ou insira um valor referente a 'area.total'  "),
@@ -2189,6 +2214,7 @@ shinyServer(function(input, output, session) {
     
     validate(
       need(dados, "Por favor, faça a totalização de parcelas, ou o upload de uma base de dados em nível de parcela" ),
+      need(nrow(dados)>0, "Base de dados vazia"),
       need(nm$vcc,"Por favor mapeie a coluna referente a 'volume com casca' ou estime-o na aba preparação  "),
       need(nm$area.parcela,"Por favor mapeie a coluna ou insira um valor referente a 'area.parcela'  "),
       need(nm$area.total,"Por favor mapeie a coluna ou insira um valor referente a 'area.total'  ")

@@ -333,7 +333,10 @@ shinyUI(
                                     
                                     uiOutput("selec_rotuloNI"),
                                     
-                                    h3("Remover dados"),
+                                    h3("Transformar zero em NA"),
+                                    radioButtons("zero_to_NA","Transformar zeros em variávies numéricas em NA? (recomendado)",c("Sim"=TRUE,"Nao"=FALSE), inline = TRUE),
+                                    
+                                    h3("Filtrar dados"),
                                     
                                     uiOutput("rm_data_var"),
                                     uiOutput("rm_data_level"),
