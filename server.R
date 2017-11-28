@@ -41,6 +41,7 @@ source("funs/classe_diametro.R"    , encoding="UTF-8")
 source("funs/htdapratio.R"         , encoding="UTF-8")
 source("funs/consistency.R"        , encoding="UTF-8")
 source("funs/xlsx.write.list.R"    , encoding="UTF-8")
+source("funs/check_numeric.R"      , encoding="UTF-8")
 
 # Funcao para testar se uma variavel e numerica
 # Sera utilizada dentro da funcao validate
