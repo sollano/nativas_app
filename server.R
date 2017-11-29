@@ -2298,8 +2298,8 @@ shinyServer(function(input, output, session) {
                          "BDq Meyer - Coeficientes"          ,
                          "Totalizacao de parcelas"           ,
                          "Amostragem Casual Simples"         ,
-                         "Amostragem Casual Estratificada 1" ,
-                         "Amostragem Casual Estratificada 2" ,
+                         "Amostragem Casual Estrat 1" ,
+                         "Amostragem Casual Estrat 2" ,
                          "Amostragem Sistematica"            
                        ), inline = T )
     
@@ -2371,12 +2371,12 @@ shinyServer(function(input, output, session) {
       L[["Amostragem Casual Simples"]] <- try(tabacs() , silent=T)
     }
     
-    if("Amostragem Casual Estratificada 1" %in% input$dataset ) {
-      L[["Amostragem Casual Estratificada 1"]] <- try(list_ace()[[1]], silent = T)
+    if("Amostragem Casual Estrat 1" %in% input$dataset ) {
+      L[["Amostragem Casual Estrat 1"]] <- try(list_ace()[[1]], silent = T)
     }
     
-    if("Amostragem Casual Estratificada 2" %in% input$dataset ) {
-      L[["Amostragem Casual Estratificada 2"]] <- try(list_ace()[[2]] , silent=T)
+    if("Amostragem Casual Estrat 2" %in% input$dataset ) {
+      L[["Amostragem Casual Estrat 2"]] <- try(list_ace()[[2]] , silent=T)
     }
     
     if("Amostragem Sistematica" %in% input$dataset ) {
@@ -2421,9 +2421,9 @@ shinyServer(function(input, output, session) {
 
       L[["Amostragem Casual Simples"]] <- try(tabacs() , silent=T)
 
-      L[["Amostragem Casual Estratificada 1"]] <- try(list_ace()[[1]], silent = T)
+      L[["Amostragem Casual Estrat 1"]] <- try(list_ace()[[1]], silent = T)
 
-      L[["Amostragem Casual Estratificada 2"]] <- try(list_ace()[[2]] , silent=T)
+      L[["Amostragem Casual Estrat 2"]] <- try(list_ace()[[2]] , silent=T)
 
       L[["Amostragem Sistematica"]] <- try( tabas() , silent=T)
 
