@@ -16,8 +16,8 @@ bdq.meyer = function(data, col.parcelas, col.dap, area.parcela, intervalo.classe
   
   # Estrutura diametrica
   
-  data[,"Classe"] = ceiling(data[,DBH] /  INTERVALO.CLASSE)
-  data[, "CentroClasse"] = data[,"Classe"] * INTERVALO.CLASSE - (INTERVALO.CLASSE / 2)
+  data[,"Classe"] = round(data[,DBH] /  INTERVALO.CLASSE)
+  data[, "CentroClasse"] = data[,"Classe"] * INTERVALO.CLASSE + (INTERVALO.CLASSE / 2)
   
   freq = data.frame(table(data[,"Classe"]))
   DD = data.frame(Classe = as.numeric(as.character(freq[,1])) ) # correcao fator para numerico
