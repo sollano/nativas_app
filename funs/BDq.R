@@ -16,7 +16,7 @@ bdq.meyer = function(data, col.parcelas, col.dap, area.parcela, intervalo.classe
   
   # Estrutura diametrica
   
-  data[,"Classe"] = round(data[,DBH] /  INTERVALO.CLASSE)
+  data[,"Classe"] = trunc(data[,DBH] /  INTERVALO.CLASSE)
   data[, "CentroClasse"] = data[,"Classe"] * INTERVALO.CLASSE + (INTERVALO.CLASSE / 2)
   
   freq = data.frame(table(data[,"Classe"]))

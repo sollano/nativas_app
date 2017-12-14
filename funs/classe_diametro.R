@@ -122,7 +122,7 @@ classe_diametro <- function(df, dap, parcela, area_parcela, ic = 5, dapmin = 5, 
   df_final <- df %>% 
     filter(!is.na( .data[[DAPAA]] ) ) %>% # remover NA
     mutate(
-      CC = round(( .data[[DAPAA]] )/ic) * ic + ic/2, # Calcular Centro de classe
+      CC = trunc(( .data[[DAPAA]] )/ic) * ic + ic/2, # Calcular Centro de classe
       g = pi * .data[[DAPAA]]^2 / 40000   ) %>%  # Calcular area seccional
     group_by_at(vars(ESPECIESAA, CC )) %>% # Agrupar e calcular o numero de individuos, e n de individuos por ha
     summarise(
