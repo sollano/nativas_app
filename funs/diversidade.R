@@ -73,7 +73,7 @@ diversidade = function(data, col.especies, col.parcelas, rotulo.NI = "NI", indic
     # Coeficiente de mistura de Jentsch
     QM = round(Sesp / N, 2)
     
-    tab_final <- data.frame(Shannon = H, Simpson = S, EqMaxima = Hmax, Piellou = J, Jentsch = QM)
+    tab_final <- data.frame(Shannon = H, Simpson = S, EqMaxima = Hmax, Pielou = J, Jentsch = QM)
     
     return(tab_final)
     
