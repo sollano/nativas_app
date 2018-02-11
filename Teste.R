@@ -54,6 +54,11 @@ m.similaridade(inv, "nome.cient", "transecto")
 bdq.meyer(inv, "transecto", "dap", 10000)[[1]]
 agregacao(inv, "nome.cient", "transecto")
 
+# Totalizacao de arvores ####
+
+inv <- read.csv2("examples/Inventory_exemplo_fuste.csv")
+head(arv_summary(df = inv,arvore = "NP",dap = "CAP", .groups = "Parcela", ht = ), 10)
+
 # Totalizacao de Parcelas ####
 
 # calculo do volume e add da coluna de area (em m²)
