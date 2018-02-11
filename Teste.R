@@ -55,9 +55,24 @@ bdq.meyer(inv, "transecto", "dap", 10000)[[1]]
 agregacao(inv, "nome.cient", "transecto")
 
 # Totalizacao de arvores ####
+library(dplyr)
+inv <- read.csv2("examples/Inventory_exemplo_fuste.csv") %>% mutate(area_parcela = 450, area_total = 50)
+head(inv)
+# Sem informar area
+head(arv_summary(df = inv,arvore = "NP",dap = "CAP", .groups = c("Parcela", "Especie") ), 10)
 
-inv <- read.csv2("examples/Inventory_exemplo_fuste.csv")
-head(arv_summary(df = inv,arvore = "NP",dap = "CAP", .groups = "Parcela", ht = ), 10)
+# informando area parcela numerico
+head(arv_summary(df = inv,arvore = "NP",dap = "CAP", .groups = c("Parcela", "Especie"),area_parcela = 450), 10)
+
+# informando area parcela e area total numerico
+head(arv_summary(df = inv,arvore = "NP",dap = "CAP", .groups = c("Parcela", "Especie"),area_parcela = 450, area_total = 50), 10)
+
+# informando area parcela variavel
+head(arv_summary(df = inv,arvore = "NP",dap = "CAP", .groups = c("Parcela", "Especie"),area_parcela = "area_parcela"), 10)
+
+# informando area parcela e area variavel
+head(arv_summary(df = inv,arvore = "NP",dap = "CAP", .groups = c("Parcela", "Especie"),area_parcela = 450, area_total = 50), 10)
+
 
 # Totalizacao de Parcelas ####
 
