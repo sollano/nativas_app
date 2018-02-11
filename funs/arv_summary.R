@@ -32,8 +32,8 @@ arv_summary <- function(df, arvore, dap, .groups, area_parcela, area_total, ht, 
   }
   
   # Variaveis opcionais
-  if(missing(area_parcela) || is.null(area_parcela) || is.na(area_parcela) || area_parcela==F || area_parcela==""   ){df$area_parcela_calc<-NA; area_parcela_calc <- "area_parcela_calc"}
-  if(missing(area_total) || is.null(area_total) || is.na(area_total) || area_total==F || area_total==""   ){df$area_total_calc<-NA; area_total_calc <- "area_total_calc"}
+  if(missing(area_parcela) || is.null(area_parcela) || is.na(area_parcela) || area_parcela==F || area_parcela==""   ){df$area_parcela_calc<-NA; area_parcela_calc <- "area_parcela_calc"}else{area_parcela_calc <- area_parcela}
+  if(missing(area_total) || is.null(area_total) || is.na(area_total) || area_total==F || area_total==""   ){df$area_total_calc<-NA; area_total_calc <- "area_total_calc"}else{area_total_calc <- area_total}
   
   if(missing(vol)  || is.null(vol)  || is.na(vol) || vol==F|| vol=="" ){df$vol_calc<-NA; vol_calc <- "vol_calc"}else(vol_calc <- vol)
   if(missing(ht)   || is.null(ht)  || is.na(ht) || ht==F || ht=="" ){df$ht_calc<-NA; ht_calc <- "ht_calc"}else(ht_calc <- ht)
