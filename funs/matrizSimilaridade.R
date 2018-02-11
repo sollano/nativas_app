@@ -1,11 +1,26 @@
 m.similaridade=function(data, col.especies, col.comparison, rotulo.NI = "NI", indice = "both"){
   
+  # se data nao for fornecido, nulo, ou  nao for dataframe, parar
+  if(  missing(data) || is.null(data) || is.na(data) || !is.data.frame(data) ){  
+    stop("data not set", call. = F) 
+  }
+  
+  # se col.especies nao for fornecido, for igual "", nulo, ou  nao existir no dataframe, parar
+  if(  missing(col.especies) || is.null(col.especies) || is.na(col.especies) || col.especies == "" || is.null(data[[col.especies]] ) ){  
+    stop("col.especies not set", call. = F) 
+  }
+  
+  # se col.comparison nao for fornecido, for igual "", nulo, ou  nao existir no dataframe, parar
+  if(  missing(col.comparison) || is.null(col.comparison) || is.na(col.comparison) || col.comparison == "" || is.null(data[[col.comparison]] ) ){  
+    stop("col.comparison not set", call. = F) 
+  }
+  
   # Remover NA
   data = data[!is.na(data[col.especies]),]
   data = data[!is.na(data[col.comparison]),]
   
   # converter rotulos NI (aplicativo)
-  if(is.null(rotulo.NI)){rotulo.NI <- "NI"}
+  if(is.null(rotulo.NI)||rotulo.NI==""){rotulo.NI <- "NI"}
   
   # Remover observações cuja espécie é desconhecida
   # modifiquei para aceitar multiplas entradas

@@ -1,10 +1,20 @@
 diversidade = function(data, col.especies, col.parcelas, rotulo.NI = "NI", indice){
   
+  # se data nao for fornecido, nulo, ou  nao for dataframe, parar
+  if(  missing(data) || is.null(data) || is.na(data) || !is.data.frame(data) ){  
+    stop("data not set", call. = F) 
+  }
+  
+  # se col.especies nao for fornecido, for igual "", nulo, ou  nao existir no dataframe, parar
+  if(  missing(col.especies) || is.null(col.especies) || is.na(col.especies) || col.especies == "" || is.null(data[[col.especies]] ) ){  
+    stop("col.especies not set", call. = F) 
+  }
+  
   # Remover NA
   data <- data[!is.na(data[col.especies]),]
   
   # converter rotulos NI (aplicativo)
-  if(is.null(rotulo.NI)){rotulo.NI <- "NI"}
+  if(is.null(rotulo.NI)||rotulo.NI==""){rotulo.NI <- "NI"}
   
   # Remover NI (modifiquei para aceitar multiplas)
   #semNI = data[ ! data[,col.especies] %in% rotulo.NI, col.especies]
@@ -63,7 +73,7 @@ diversidade = function(data, col.especies, col.parcelas, rotulo.NI = "NI", indic
     # Coeficiente de mistura de Jentsch
     QM = round(Sesp / N, 2)
     
-    tab_final <- data.frame(Shannon = H, Simpson = S, EqMaxima = Hmax, Piellou = J, Jentsch = QM)
+    tab_final <- data.frame(Shannon = H, Simpson = S, EqMaxima = Hmax, Pielou = J, Jentsch = QM)
     
     return(tab_final)
     
