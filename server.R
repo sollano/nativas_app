@@ -615,50 +615,56 @@ shinyServer(function(input, output, session) {
     )
     
   })
-  # Calculo de volume 
-  output$ui_estvol1 <- renderUI({
+  #UI estimar volume com casca 
+  output$ui_estvcc1 <- renderUI({
     
+    # Precisa que a tab de vcc seja selecionada
     # precisa que o usuario nao tenha selecionado o volume
-    req(is.null(input$col.vcc) || input$col.vcc =="" )
-
-    data <- rawData_()
+    req(
+      #input$est_ht_vol_tabset == "id_vcc", 
+      is.null(input$col.vcc) || input$col.vcc =="" )
     
     list(
       
-      h3("Estimaçao de Volume"),
+      h3("Estimaçao do volume com casca"),
       
-      radioButtons("modelo_estvol",
+      radioButtons("modelo_estvcc",
                    label = "Selecione o modelo para ser utilizado:",
                    choices = c(
                      "LN(VFCC) = b0 + b1 * LN(DAP) + b2 * LN(HT) + e",
-                     "VFCC = b0 + b1 * DAP + b2 * HT + e",
-                     "VFCC = b0 * DAP^b1 * HT^b2 + e",
-                     "LN(VFCC) = b0 + b1 * 1/DAP + e",
-                     "VFCC = b0 + b1 * DAP + e", 
-                     "VFCC = b0 + b1 * DAP² + e", 
+                     "VFCC = b0 + b1^DAP + b2^HT + e",
+                     "VFCC = b0 + b1 * DAP² + e",
                      "VFCC = b0 + b1 * DAP + b2 * DAP² + e",
-                     "VFCC = b0 + b1 * LN(DAP) + e"
-                   ) )      )
-      
-
+                     "LN(VFCC) = b0 + b1 * DAP + b2 * DAP² + e",
+                     "LN(VFCC) = b0 + b1 * LN(DAP) + e",
+                     "LN(VFCC) = b0 + b1 * LN(DAP² * HT) + e",
+                     "VFCC = b0 + b1 * DAP² * HT + e"
+                   ),
+                   inline=F
+      )      )
+    
+    
     
   })
-  output$ui_estvol3 <- renderUI({
+  output$ui_estvcc3 <- renderUI({
     
+    # Precisa que a tab de vcc seja selecionada
     # precisa que o usuario nao tenha selecionado o volume
-    req(is.null(input$col.vcc) || input$col.vcc =="" )
+    req(
+      #  input$est_ht_vol_tabset == "id_vcc",
+      is.null(input$col.vcc) || input$col.vcc =="" )
     
     list(
       
       numericInput( # cria uma lista de opcoes em que o usuario pode clicar
-        'b0_estvol', # Id
+        'b0_estvcc', # Id
         "Insira o valor para o b0:", # nome que sera mostrado na UI
         value = NULL, 
         step = 0.0001
       ),
       
       numericInput( # cria uma lista de opcoes em que o usuario pode clicar
-        'b1_estvol', # Id
+        'b1_estvcc', # Id
         "Insira o valor para o b1:", # nome que sera mostrado na UI
         value = NULL, 
         step = 0.0001
@@ -668,17 +674,20 @@ shinyServer(function(input, output, session) {
     )
     
   })
-  output$ui_estvol4 <- renderUI({
+  output$ui_estvcc4 <- renderUI({
     
     # precisa que o usuario nao tenha selecionado o volume
-    req(is.null(input$col.vcc) || input$col.vcc =="" )
+    # Precisa que a tab de vsc seja selecionada
     # Precisa ter b2 no modelo
-    req( grepl( "\\<b2\\>",input$modelo_estvol) ) 
+    req(
+      is.null(input$col.vcc) || input$col.vcc =="",
+      grepl( "\\<b2\\>",input$modelo_estvcc)
+    )
     
     list(
       
       numericInput( # cria uma lista de opcoes em que o usuario pode clicar
-        'b2_estvol', # Id
+        'b2_estvcc', # Id
         "Insira o valor para o b2:", # nome que sera mostrado na UI
         value = "", 
         step = 0.0001
@@ -687,7 +696,7 @@ shinyServer(function(input, output, session) {
     )
     
   })
-
+  
   # tabela
   # rawData sera o dado utilizado durante o resto do app
   # as alteracoes feitas em 'preparacao' serao salvas aqui
@@ -772,8 +781,12 @@ shinyServer(function(input, output, session) {
       }
     }
     
-    # A seguir e feito o calculo do volume, caso o usuario nao insira uma variavel de volume e as variaveis necessarias para o calculo
-    if( is.null(input$modelo_estvol) ||  is.null(nm$dap)  || is.null(input$b0_estvol) || is.null(input$b1_estvol) || is.na(input$modelo_estvol) ||  is.na(nm$dap)  || is.na(input$b0_estvol) || is.na(input$b1_estvol) || input$modelo_estvol =="" || nm$dap ==""  || input$b0_estvol == "" || input$b1_estvol == ""  ){
+    # Volume com casca 
+    
+    # A seguir e feito o calculo do volume com casca, caso o usuario nao insira uma variavel de volume e as variaveis necessarias para o calculo
+    
+    # Modelos com b1 e apenas DAP
+    if( is.null(input$modelo_estvcc) ||  is.null(nm$dap)  || is.null(input$b0_estvcc) || is.null(input$b1_estvcc) || is.na(input$modelo_estvcc) ||  is.na(nm$dap)  || is.na(input$b0_estvcc) || is.na(input$b1_estvcc) || input$modelo_estvcc =="" || nm$dap ==""  || input$b0_estvcc == "" || input$b1_estvcc == ""  ){
       
       # esse if acima so foi feito dessa forma pois tentar adicionar ! nas condicoes acima
       # nao funcionou, por algum motivo.
@@ -781,52 +794,71 @@ shinyServer(function(input, output, session) {
       # e o resultado esperado dentro do else.
     }else{
       
-      if(input$modelo_estvol == "LN(VFCC) = b0 + b1 * 1/DAP + e"){
-        data$VOL <- exp( input$b0_estvol + 1/data[[nm$dap]] * input$b1_estvol )
-        data <- data %>% select(VOL, everything())
+      # Kopezi-Geharhardt
+      if(input$modelo_estvcc == "VFCC = b0 + b1 * DAP² + e"){
+        data$VCC <- input$b0_estvcc + input$b1_estvcc*data[[nm$dap]]^2
+        data <- data %>% select(VCC, everything())
       }
       
-      if(input$modelo_estvol == "VFCC = b0 + b1 * DAP + e"){
-        data$VOL <- input$b0_estvol + data[[nm$dap]] * input$b1_estvol
-        data <- data %>% select(VOL, everything())
+      # Husch
+      if(input$modelo_estvcc == "LN(VFCC) = b0 + b1 * LN(DAP) + e"){
+        data$VCC <- exp( input$b0_estvcc + input$b1_estvcc*log(data[[nm$dap]]) )
+        data <- data %>% select(VCC, everything())
       }
-      
-      if(input$modelo_estvol == "VFCC = b0 + b1 * DAP² + e"){
-        data$VOL <- input$b0_estvol + data[[nm$dap]]^2 * input$b1_estvol
-        data <- data %>% select(VOL, everything())
-      }
-      
-      if(input$modelo_estvol == "VFCC = b0 + b1 * DAP + b2 * DAP² + e"){
-        data$VOL <- input$b0_estvol + data[[nm$dap]] * input$b1_estvol + data[[nm$dap]]^2 * input$b2_estvol
-        data <- data %>% select(VOL, everything())
-      }
-      
-      if(input$modelo_estvol == "VFCC = b0 + b1 * LN(DAP) + e"){
-        data$VOL <- input$b0_estvol + log(data[[nm$dap]]) * input$b1_estvol
-        data <- data %>% select(VOL, everything())
-        
-      }
-      
-      suppressWarnings(
-      # modelos com b2 e ht precisam de mais uma condicao
-      if( is.null(input$modelo_estvol) ||  is.null(input$col.ht)  |  is.na(input$col.ht) || is.na(input$b2_estvol) || input$col.ht ==""  || input$b2_estvol == "" ){
-        
-      }else if(input$modelo_estvol == "LN(VFCC) = b0 + b1 * LN(DAP) + b2 * LN(HT) + e"){
-        data$VOL <- exp( input$b0_estvol + log(data[[nm$dap]]) * input$b1_estvol + log(data[[input$col.ht]]) * input$b2_estvol )
-        data <- data %>% select(VOL, everything())
-        
-      }else  if(input$modelo_estvol == "VFCC = b0 + b1 * DAP + b2 * HT + e"){
-        data$VOL <- input$b0_estvol + data[[nm$dap]] * input$b1_estvol + data[[input$col.ht]] * input$b2_estvol
-        data <- data %>% select(VOL, everything())
-      }else if(input$modelo_estvol == "VFCC = b0 * DAP^b1 * HT^b2 + e"){
-        data$VOL <- input$b0_estvol * data[[nm$dap]] ^ input$b1_estvol * data[[input$col.ht]] ^ input$b2_estvol
-        data <- data %>% select(VOL, everything())
-      }
-      )
-      
-      #transformar zeros do volume em NA
-      if(is.null(data$VOL)){}else{data$VOL <- na_if(data$VOL, 0) }
     }
+    
+    # Modelos com b1 b2 e apenas DAP
+    if( is.null(input$modelo_estvcc) ||  is.null(nm$dap)  || is.null(input$b0_estvcc) || is.null(input$b1_estvcc) || is.null(input$b2_estvcc) || is.na(input$modelo_estvcc) ||  is.na(nm$dap)  || is.na(input$b0_estvcc) || is.na(input$b1_estvcc) || is.na(input$b2_estvcc) || input$modelo_estvcc =="" || nm$dap ==""  || input$b0_estvcc == "" || input$b1_estvcc == "" || input$b2_estvcc == "" ){
+      
+    }else{
+      
+      # Hohenadl-Krenn
+      if(input$modelo_estvcc == "VFCC = b0 + b1 * DAP + b2 * DAP² + e"){
+        data$VCC <- input$b0_estvcc + input$b1_estvcc*data[[nm$dap]] + input$b2_estvcc*data[[nm$dap]]^2 
+        data <- data %>% select(VCC, everything())
+      }
+      # ?????
+      if(input$modelo_estvcc == "LN(VFCC) = b0 + b1 * DAP + b2 * DAP² + e"){
+        data$VCC <- exp(input$b0_estvcc + input$b1_estvcc*data[[nm$dap]] + input$b2_estvcc*data[[nm$dap]]^2)
+        data <- data %>% select(VCC, everything())
+      }
+    }
+    
+    # Modelos com b1, DAP e HT
+    if( is.null(input$modelo_estvcc) ||  is.null(nm$dap)  || is.null(input$b0_estvcc) || is.null(input$b1_estvcc) ||  is.null(input$col.ht) || is.na(input$modelo_estvcc) ||  is.na(nm$dap)  || is.na(input$b0_estvcc) || is.na(input$b1_estvcc) ||  is.na(input$col.ht) || input$modelo_estvcc =="" || nm$dap =="" || input$b0_estvcc == "" || input$b1_estvcc == ""  ){
+      
+    }else{
+      
+      # Spurr logaritimico
+      if(input$modelo_estvcc == "LN(VFCC) = b0 + b1 * LN(DAP² * HT) + e"){
+        data$VCC <- exp(input$b0_estvcc + input$b1_estvcc*log( (data[[nm$dap]]^2)*data[[input$col.ht]]  )  )
+        data <- data %>% select(VCC, everything())
+      }
+      # Spurr
+      if(input$modelo_estvcc == "VFCC = b0 + b1 * DAP² * HT + e"){
+        data$VCC <- input$b0_estvcc + input$b1_estvcc*(data[[nm$dap]]^2)*data[[input$col.ht]]  
+        data <- data %>% select(VCC, everything())
+      }
+    }
+    
+    # Modelos com b1, b2, DAP e HT
+    if( is.null(input$modelo_estvcc) ||  is.null(nm$dap)  || is.null(input$b0_estvcc) || is.null(input$b1_estvcc) || is.null(input$b2_estvcc) ||  is.null(input$col.ht) || is.na(input$modelo_estvcc) ||  is.na(nm$dap)  || is.na(input$b0_estvcc) || is.na(input$b1_estvcc) || is.na(input$b2_estvcc) || is.na(input$col.ht) || input$modelo_estvcc =="" || nm$dap ==""  || input$b0_estvcc == "" || input$b1_estvcc == "" || input$b2_estvcc == "" || input$col.ht =="" ){
+      
+    }else{
+      
+      # Schumacher e Hall logaritimico
+      if(input$modelo_estvcc == "LN(VFCC) = b0 + b1 * LN(DAP) + b2 * LN(HT) + e"){
+        data$VCC <- exp(input$b0_estvcc + input$b1_estvcc*log(data[[nm$dap]]) + input$b2_estvcc*log(data[[input$col.ht]])  )
+        data <- data %>% select(VCC, everything())
+      }
+      # Schumacher e Hall
+      if(input$modelo_estvcc == "VFCC = b0 + b1^DAP + b2^HT + e"){
+        data$VCC <- input$b0_estvcc + input$b1_estvcc^data[[nm$dap]] + input$b2_estvcc^data[[input$col.ht]]    
+        data <- data %>% select(VCC, everything())
+      }
+    }
+    
+    
     
     # A seguir e feito o calculo da estrutura vertical, caso o usuario nao tenha inserido uma variavel referente a mesma, e selecione que desja calcular
     if(!is.null(input$est.vert.calc) && !is.na(input$est.vert.calc) && input$est.vert.calc=="Definir" && !is.null(input$col.ht) && !is.na(input$col.ht) ){
@@ -960,10 +992,10 @@ shinyServer(function(input, output, session) {
     if(is.null(input$num.area.parcela)|| is.na(input$num.area.parcela) ||input$num.area.parcela==""){}else{varnameslist$area.parcela <- input$num.area.parcela  }
     if(is.null(input$num.area.total) || is.na(input$num.area.total) ||input$num.area.total==""){}else{varnameslist$area.total <- input$num.area.total  }
     
-    # Se o usuario inserir valores de coeficientes, definir o nome de vcc como VOL,
+    # Se o usuario inserir valores de coeficientes, definir o nome de vcc como VCC
     # pois este sera calculado na aba preparacao
-    if( !is.null(input$b0_estvol) && !is.na(input$b0_estvol) && !is.null(input$b1_estvol) && !is.na(input$b1_estvol)  ){
-      varnameslist$vcc <- "VOL"
+    if( !is.null(input$b0_estvcc) && !is.na(input$b0_estvcc) && !is.null(input$b1_estvcc) && !is.na(input$b1_estvcc)  ){
+      varnameslist$vcc <- "VCC"
       }
     # se est vertical nao for nulo, altura nao for nula e o usuario quiser definir a est vertical, alterar o nome para est.vert
     # pois esta sera definida na aba preparacao
@@ -1112,7 +1144,7 @@ shinyServer(function(input, output, session) {
       arvore = nm$arvore,
       dap = nm$dap,
       ht = nm$ht,
-      vol = nm$vcc,
+      vcc = nm$vcc,
       .groups = c(nm$estrato, nm$parcelas, nm$especies, nm$est.vertical,nm$est.interna),
       area_parcela = nm$area.parcela,
       area_total = nm$area.total )

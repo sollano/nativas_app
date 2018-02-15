@@ -343,9 +343,9 @@ shinyUI(
                                     uiOutput("rm_vars"),
                                     uiOutput("selec_area_parcela_num"),
                                     uiOutput("selec_area_total_num"),
-                                    uiOutput("ui_estvol1"),
-                                    uiOutput("ui_estvol3"),
-                                    uiOutput("ui_estvol4"),
+                                    uiOutput("ui_estvcc1"),
+                                    uiOutput("ui_estvcc3"),
+                                    uiOutput("ui_estvcc4"),
                                     uiOutput("checkbox_calc.est.vert"),
                                     uiOutput("consist_warning1")
                                     
