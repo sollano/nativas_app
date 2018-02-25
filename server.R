@@ -15,7 +15,7 @@ library(openxlsx)
 library(rmarkdown)
 library(stringr)
 
-# Data e functions
+# Data e functions ####
 
 ex_fuste <- read.csv2("examples/Inventory_exemplo_fuste.csv",fileEncoding="UTF-8")
 ex_arvore <- read.csv("examples/Inventory_exemplo_arvore.csv",fileEncoding="UTF-8")
@@ -2469,7 +2469,6 @@ shinyServer(function(input, output, session) {
   output$downloadData <- downloadHandler(
     filename = function(){"tabelas_app_nativas.xlsx"},
     
-    #content = function(file){xlsx.write.list(file, list_of_df_to_download() )}
     content = function(file){suppressWarnings(openxlsx::write.xlsx( list_of_df_to_download(), file ))}
     
   )
@@ -2477,7 +2476,6 @@ shinyServer(function(input, output, session) {
   output$downloadAllData <- downloadHandler(
     filename = function(){"tabelas_app_nativas.xlsx"},
     
-    #content = function(file){xlsx.write.list(file, list_of_df_all() )}
     content = function(file){ suppressWarnings(openxlsx::write.xlsx( list_of_df_all(), file )) }
     
   )
