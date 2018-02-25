@@ -12,9 +12,7 @@ library(lazyeval)
 library(ggplot2)
 library(ggdendro)
 library(ggthemes)
-suppressPackageStartupMessages(library(xlsx))
-library(rJava)
-library(xlsxjars)
+library(openxlsx)
 library(rmarkdown)
 
 shinyUI(
