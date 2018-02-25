@@ -24,6 +24,7 @@ ex_fuste <- read.csv2("examples/Inventory_exemplo_fuste.csv",fileEncoding="UTF-8
 ex_arvore <- read.csv("examples/Inventory_exemplo_arvore.csv",fileEncoding="UTF-8")
 #ex <- read.csv("examples/Inventory_exemplo_2.csv",fileEncoding="UTF-8")
 
+source("funs/check_names.R"        , encoding="UTF-8")
 source("funs/diversidade.R"        , encoding="UTF-8")
 source("funs/pareadoSimilaridade.R", encoding="UTF-8")
 source("funs/matrizSimilaridade.R" , encoding="UTF-8")

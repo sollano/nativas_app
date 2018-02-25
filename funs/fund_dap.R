@@ -20,8 +20,8 @@ fund_dap <- function(df, dap, .sep){
     stop("'dap' must be a character containing a variable name", call.=F)
   }else if(length(dap)!=1){
     stop("Length of 'dap' must be 1", call.=F)
-  }else if(forestr::check_names(df, dap)==F){
-    stop(forestr::check_names(df, dap, boolean=F), call.=F)
+  }else if(check_names(df, dap)==F){
+    stop(check_names(df, dap, boolean=F), call.=F)
   }
   
   # Se sep nao for character,ou nao for de tamanho 1, parar
