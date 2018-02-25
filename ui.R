@@ -119,7 +119,7 @@ shinyUI(
                                                choices = c("Dados em nivel de fuste",
                                                            "Dados em nivel de arvore",
                                                            "Dados em nivel de parcela"),
-                                               selected = "Dados em nivel de fuste"),
+                                               selected = "Dados em nivel de arvore"),
 
                                   uiOutput("upload"), # tipos de arquivos aceitos
                                   hr(),
