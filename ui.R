@@ -1,4 +1,3 @@
-options(java.parameters = "-Xss2048k",shiny.maxRequestSize=25*1024^2)
 library(shiny)
 suppressPackageStartupMessages(library(DT))
 #library(plotly)
