@@ -1624,7 +1624,7 @@ shinyServer(function(input, output, session) {
     
     nm <- varnames()
     dados <- rawData()
-    
+
     validate(
       need(dados, "Por favor faça o upload da base de dados"),
       need(nrow(dados)>0, "Base de dados vazia"),
@@ -1665,7 +1665,7 @@ shinyServer(function(input, output, session) {
                                              ic = nm$IC, 
                                              dapmin = nm$diam.min, 
                                              especies = nm$especies, 
-                                             volume = NA,
+                                            # volume = NA,
                                              rotulo.NI = nm$NI,
                                              cc_to_column = T,
                                              cctc_ha = T,
@@ -1693,7 +1693,7 @@ shinyServer(function(input, output, session) {
                                                            ic = nm$IC, 
                                                            dapmin = nm$diam.min, 
                                                            especies = nm$especies, 
-                                                           volume = NA,
+                                                          # volume = NA,
                                                            rotulo.NI = nm$NI,
                                                            cc_to_column = T,
                                                            G_to_cc = T,
@@ -2000,7 +2000,7 @@ shinyServer(function(input, output, session) {
                      HT           = nm$ht,
                      VCC          = nm$vcc,
                      area_parcela = nm$area.parcela,
-                     groups       = grupos,
+                     .groups      = grupos,
                      area_total   = nm$area.total,
                      idade        = NA,
                      VSC          = NA,
@@ -2098,9 +2098,9 @@ shinyServer(function(input, output, session) {
                  area_parcela   = nm$area.parcela,
                  area_total     = nm$area.total, 
                  #      idade          = nm$idade,
-                 grupos         = grupos_name, 
+                 .groups        = grupos_name, 
                  alpha          = input$alpha_inv, 
-                 Erro           = input$erro_inv, 
+                 erro           = input$erro_inv, 
                  casas_decimais = input$cd_inv, 
                  pop            = input$pop_inv, 
                  tidy           = TRUE)
@@ -2163,10 +2163,10 @@ shinyServer(function(input, output, session) {
              Yi             = input$yi_inv,
              area_parcela   = nm$area.parcela, 
              area_estrato   = nm$area.total, 
-             grupos         = nm$estrato, 
+             .groups        = nm$estrato, 
              # idade          = nm$idade, 
              alpha          = input$alpha_inv, 
-             Erro           = input$erro_inv, 
+             erro           = input$erro_inv, 
              casas_decimais = input$cd_inv, 
              pop            = input$pop_inv, 
              tidy           = TRUE)
@@ -2267,9 +2267,9 @@ shinyServer(function(input, output, session) {
                   area_parcela   = nm$area.parcela,
                   area_total     = nm$area.total, 
                   # idade          = nm$idade,
-                  grupos         = grupos_name, 
+                  .groups        = grupos_name, 
                   alpha          = input$alpha_inv, 
-                  Erro           = input$erro_inv, 
+                  erro           = input$erro_inv, 
                   casas_decimais = input$cd_inv, 
                   tidy           = TRUE )
     
