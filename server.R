@@ -2415,7 +2415,10 @@ shinyServer(function(input, output, session) {
     if("Amostragem Sistematica" %in% input$dataset ) {
       L[["Amostragem Sistematica"]] <- try( tabas() , silent=T)
     }
-
+    
+    # Remover dataframes que geraram errol
+    L <- L[!sapply(L, is,"try-error")]
+    
     L
      
   })
@@ -2456,25 +2459,30 @@ shinyServer(function(input, output, session) {
 
       L[["Amostragem Casual Estrat 1"]] <- try(list_ace()[[1]], silent = T)
 
-      L[["Amostragem Casual Estrat 2"]] <- try(list_ace()[[2]] , silent=T)
+      L[["Amostragem Casual Estrat 2"]] <- try(list_ace()[[2]] , silent=T) 
 
       L[["Amostragem Sistematica"]] <- try( tabas() , silent=T)
 
+      # Remover dataframes que geraram errol
+      L <- L[!sapply(L, is,"try-error")]
+      
+      print(L)
     L
-    
-  })
 
+  })
   output$downloadData <- downloadHandler(
     filename = function(){"tabelas_app_nativas.xlsx"},
     
-    content = function(file){xlsx.write.list(file, list_of_df_to_download() )}
+    #content = function(file){xlsx.write.list(file, list_of_df_to_download() )}
+    content = function(file){suppressWarnings(openxlsx::write.xlsx( list_of_df_to_download(), file ))}
     
   )
   
   output$downloadAllData <- downloadHandler(
     filename = function(){"tabelas_app_nativas.xlsx"},
     
-    content = function(file){xlsx.write.list(file, list_of_df_all() )}
+    #content = function(file){xlsx.write.list(file, list_of_df_all() )}
+    content = function(file){ suppressWarnings(openxlsx::write.xlsx( list_of_df_all(), file )) }
     
   )
   
