@@ -12,6 +12,9 @@ check_names <- function(df, var_names, boolean=T){
   # Parar se var_names nao for character
   if(!is.character(var_names)){stop("var_names must be a character", call.=F)}
   
+  # Retirar espaco vazio dos nomes
+  var_names <- var_names[var_names!=""]
+  
   # Verificar se cada elemento de var_names(primeiro sapply) 
   # eh um nome de df(funcao q usa o segundo sapply)
   # se for ele ira receber um unico valor de TRUE, por causa da funcao any

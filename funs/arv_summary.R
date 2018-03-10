@@ -52,7 +52,7 @@ arv_summary <- function(df, arvore, dap, .groups, area_parcela, area_total, ht, 
     # Transformar o objeto em simbolo, para que dplyr entenda
     # e procure o nome das variaveis dentro dos objetos
   }else{
-    .groups_syms <- rlang::syms(.groups)
+    .groups_syms <- rlang::syms(.groups[.groups!=""])
   }
   
   # se area_parcela nao for fornecido, nao for numerico nem character, ou nao existir no dataframe,ou nao for de tamanho 1, criar variavel vazia
