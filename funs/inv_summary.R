@@ -155,7 +155,7 @@ inv_summary <- function(df, DAP, HT, VCC, area_parcela, .groups, area_total,idad
   # novo nome = nome antigo
   
   x %>% 
-    dplyr::group_by(!!!.groups_syms) %>% 
+    dplyr::group_by(!!!.groups_syms,add=T) %>% 
     dplyr::mutate(AS = pi * (!!DAP_sym)^2 / 40000 ) %>% 
     dplyr::summarise(
       IDADE        = round( mean(as.numeric( (!!idade_sym) ), na.rm=T) ),

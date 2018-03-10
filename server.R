@@ -2007,7 +2007,8 @@ shinyServer(function(input, output, session) {
                      area_total   = nm$area.total,
                      idade        = NA,
                      VSC          = NA,
-                     Hd           = NA)
+                     Hd           = NA) %>% 
+      dplyr::ungroup()
     
     names(x)[names(x)=="AREA_TOTAL"] <- nm$area.total
     names(x)[names(x)=="AREA_PARCELA"] <- nm$area.parcela
