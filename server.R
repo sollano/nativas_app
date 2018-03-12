@@ -41,6 +41,7 @@ source("funs/consistency.R"        , encoding="UTF-8")
 source("funs/xlsx.write.list.R"    , encoding="UTF-8")
 source("funs/check_numeric.R"      , encoding="UTF-8")
 source("funs/notin.R"              , encoding="UTF-8")
+source("funs/hdjoin.R"             , encoding="UTF-8")
 
 # vectors for names ####
 
