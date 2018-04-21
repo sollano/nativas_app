@@ -729,8 +729,11 @@ shinyServer(function(input, output, session) {
       data$DAP <- data[[nm$cap]]/pi
     }
     
+    # O if a seguir sera para definir o dap minimo
+    data <- data %>% dplyr::filter(!!rlang::sym(nm$dap) >= nm$diam.min)
+    #data <- data[data[nm$dap]>=nm$diam.min, ]
     
-    # o primeiro if sera para filtrar as linhas
+    # o proximo if sera para filtrar as linhas
     
     # se o usuario nao selecionar nada, retorna o dado normal 
     # (isso faz com o que o dado original seja exibido logo que se entra na aba de filtrar),
