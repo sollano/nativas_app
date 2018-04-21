@@ -1994,6 +1994,8 @@ shinyServer(function(input, output, session) {
       need(nm$area.total,"Por favor mapeie a coluna ou insira um valor referente a 'area.total'  ")
     )
     
+    # Verificar se caso o usuario escolha volume como variavel para o inventario
+    # esta deve ser mapaeada anteriormente
     check_yi <- function( yi ){
       if(is.null(input$yi_inv)){
         
@@ -2100,7 +2102,7 @@ shinyServer(function(input, output, session) {
     validate(
       need(dados, "Por favor, faça a totalização de parcelas, ou o upload de uma base de dados em nível de parcela" ),
       need(nrow(dados)>0, "Base de dados vazia"),
-      need(nm$vcc,"Por favor mapeie a coluna referente a 'volume com casca' ou estime-o na aba preparação  "),
+      #need(nm$vcc,"Por favor mapeie a coluna referente a 'volume com casca' ou estime-o na aba preparação  "),
       need(nm$area.parcela,"Por favor mapeie a coluna ou insira um valor referente a 'area.parcela'  "),
       need(nm$area.total,"Por favor mapeie a coluna ou insira um valor referente a 'area.total'  ")
     )
@@ -2173,7 +2175,7 @@ shinyServer(function(input, output, session) {
     validate(
       need(dados, "Por favor, faça a totalização de parcelas, ou o upload de uma base de dados em nível de parcela" ),
       need(nrow(dados)>0, "Base de dados vazia"),
-      need(nm$vcc,"Por favor mapeie a coluna referente a 'volume com casca' ou estime-o na aba preparação  "),
+      #need(nm$vcc,"Por favor mapeie a coluna referente a 'volume com casca' ou estime-o na aba preparação  "),
       need(nm$area.parcela,"Por favor mapeie a coluna ou insira um valor referente a 'area.parcela'  "),
       need(nm$area.total,"Por favor mapeie a coluna ou insira um valor referente a 'area.total'  "),
       need(nm$estrato,"Por favor mapeie a coluna referente a 'Estrato' ")
@@ -2267,7 +2269,7 @@ shinyServer(function(input, output, session) {
     validate(
       need(dados, "Por favor, faça a totalização de parcelas, ou o upload de uma base de dados em nível de parcela" ),
       need(nrow(dados)>0, "Base de dados vazia"),
-      need(nm$vcc,"Por favor mapeie a coluna referente a 'volume com casca' ou estime-o na aba preparação  "),
+      #need(nm$vcc,"Por favor mapeie a coluna referente a 'volume com casca' ou estime-o na aba preparação  "),
       need(nm$area.parcela,"Por favor mapeie a coluna ou insira um valor referente a 'area.parcela'  "),
       need(nm$area.total,"Por favor mapeie a coluna ou insira um valor referente a 'area.total'  ")
     )
