@@ -1979,7 +1979,7 @@ shinyServer(function(input, output, session) {
   
   # totalizacao de parcelas ####
   
-  tot_parcData <- reactive({
+  tot_parcData <- reactive({  
     
     nm <- varnames()
     dados <- arvData()
@@ -1989,11 +1989,27 @@ shinyServer(function(input, output, session) {
       need(nrow(dados)>0, "Base de dados vazia"),
       need(input$df != "Dados em nivel de parcela", "Base de dados incompativel" ),
       need(nm$dap,"Por favor mapeie a coluna referente a 'dap'  "),
-      need(nm$vcc,"Por favor mapeie a coluna referente a 'volume com casca' ou estime-o na aba preparação  "),
       need(nm$parcelas,"Por favor mapeie a coluna referente a 'parcelas'  "),
       need(nm$area.parcela,"Por favor mapeie a coluna ou insira um valor referente a 'area.parcela'  "),
       need(nm$area.total,"Por favor mapeie a coluna ou insira um valor referente a 'area.total'  ")
     )
+    
+    check_yi <- function( yi ){
+      if(is.null(input$yi_inv)){
+        
+      }else if(is.na(input$yi_inv)){
+        
+      }else  if(is.null(yi)){
+        
+      }else if(is.na(yi)){
+        
+      }else if(yi=="" & input$yi_inv=="VCC_HA"){
+        paste(yi, "must be defined if 'VCC_HA' is chosen as Yi")
+      }
+      
+    }
+    
+    validate(check_yi(nm$vcc))
     
     # Se o usuario inseir uma variavel de Estrato, considera-la na hora dos calculos
     if(nm$estrato =="" ){grupos<-nm$parcela}else{grupos <- c(nm$estrato, nm$parcela)}
@@ -2018,7 +2034,7 @@ shinyServer(function(input, output, session) {
     
     x
     
-  })
+  }) 
   output$tot_parc_tab <- renderDataTable({ # renderizamos uma DT::DataTable
     
     data <- tot_parcData() 
