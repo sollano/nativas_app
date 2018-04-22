@@ -730,7 +730,7 @@ shinyServer(function(input, output, session) {
     }
     
     # O if a seguir sera para definir o dap minimo
-    #data <- data %>% dplyr::filter(!!rlang::sym(nm$dap) >= nm$diam.min)
+    #data <- data %>% dplyr::filter((!!rlang::sym(nm$dap)) >= nm$diam.min)
     data <- data[data[nm$dap]>=nm$diam.min, ]
     
     # o proximo if sera para filtrar as linhas
