@@ -42,6 +42,8 @@ source("funs/xlsx.write.list.R"    , encoding="UTF-8")
 source("funs/check_numeric.R"      , encoding="UTF-8")
 source("funs/notin.R"              , encoding="UTF-8")
 source("funs/hdjoin.R"             , encoding="UTF-8")
+source("funs/check_dap_min.R"      , encoding="UTF-8")
+source("funs/check_yi.R"           , encoding="UTF-8")
 
 # vectors for names ####
 
@@ -729,7 +731,14 @@ shinyServer(function(input, output, session) {
       data$DAP <- data[[nm$cap]]/pi
     }
     
-    # O if a seguir sera para definir o dap minimo
+    # Primeiro verificamos se o dap minimo iserido pelo usuario
+    # nao ultrapassa os limites do dap fornecido
+    min.val <- min(data[[nm$dap]],na.rm=T)
+    max.val <- max(data[[nm$dap]],na.rm=T)
+    
+    validate(check_dap_min(nm$diam.min,min.val,max.val)) 
+    
+    # caso nao ultrapasse, filtrar
     #data <- data %>% dplyr::filter((!!rlang::sym(nm$dap)) >= nm$diam.min)
     data <- data[data[nm$dap]>=nm$diam.min, ]
     
@@ -2000,22 +2009,7 @@ shinyServer(function(input, output, session) {
     
     # Verificar se caso o usuario escolha volume como variavel para o inventario
     # esta deve ser mapaeada anteriormente
-    check_yi <- function( yi ){
-      if(is.null(input$yi_inv)){
-        
-      }else if(is.na(input$yi_inv)){
-        
-      }else  if(is.null(yi)){
-        
-      }else if(is.na(yi)){
-        
-      }else if(yi=="" & input$yi_inv=="VCC_HA"){
-        paste(yi, "must be defined if 'VCC_HA' is chosen as Yi")
-      }
-      
-    }
-    
-    validate(check_yi(nm$vcc))
+    validate(check_yi(nm$vcc, input$yi_inv))
     
     # Se o usuario inseir uma variavel de Estrato, considera-la na hora dos calculos
     if(nm$estrato =="" ){grupos<-nm$parcela}else{grupos <- c(nm$estrato, nm$parcela)}
