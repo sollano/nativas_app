@@ -739,7 +739,9 @@ shinyServer(function(input, output, session) {
     
     # caso nao ultrapasse, filtrar
     #data <- data %>% dplyr::filter((!!rlang::sym(nm$dap)) >= nm$diam.min)
-    data <- data[data[nm$dap]>=nm$diam.min, ]
+    if(!is.na(nm$diam.min)){
+      data <- data[data[nm$dap]>=nm$diam.min, ] 
+    }
     
     # o proximo if sera para filtrar as linhas
     
