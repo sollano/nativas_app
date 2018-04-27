@@ -2027,12 +2027,6 @@ shinyServer(function(input, output, session) {
                      Hd           = NA) %>% 
       dplyr::ungroup()
     
-    names(x)[names(x)=="AREA_TOTAL"] <- nm$area.total
-    names(x)[names(x)=="AREA_PARCELA"] <- nm$area.parcela
-    names(x)[names(x)=="DAP"] <- nm$dap
-    names(x)[names(x)=="HT"] <- nm$ht
-
-    
     x
     
   }) 
