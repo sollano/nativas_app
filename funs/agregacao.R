@@ -1,4 +1,4 @@
-agregacao = function(data, col.especies, col.parcelas, rotulo.NI = "NI"){
+agregacao = function(data, col.especies, col.parcelas, rotulo.NI = ""){
   SPECIES = col.especies
   PLOTS = col.parcelas
   NI = rotulo.NI  
@@ -7,7 +7,7 @@ agregacao = function(data, col.especies, col.parcelas, rotulo.NI = "NI"){
   data = data[!is.na(data[SPECIES]),]
   
   # converter rotulos NI (aplicativo)
-  if(is.null(NI)||NI==""){NI <- "NI"}
+  if(is.null(NI)||NI==""){NI <- ""}
 
   # Remover NI
   # modifiquei para aceitar multiplas entradas

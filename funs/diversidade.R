@@ -1,4 +1,4 @@
-diversidade = function(data, col.especies, col.parcelas, rotulo.NI = "NI", indice){
+diversidade = function(data, col.especies, col.parcelas, rotulo.NI = "", indice){
   
   # se data nao for fornecido, nulo, ou  nao for dataframe, parar
   if(  missing(data) || is.null(data) || is.na(data) || !is.data.frame(data) ){  
@@ -14,7 +14,7 @@ diversidade = function(data, col.especies, col.parcelas, rotulo.NI = "NI", indic
   data <- data[!is.na(data[col.especies]),]
   
   # converter rotulos NI (aplicativo)
-  if(is.null(rotulo.NI)||rotulo.NI==""){rotulo.NI <- "NI"}
+  if(is.null(rotulo.NI)||rotulo.NI==""){rotulo.NI <- ""}
   
   # Remover NI (modifiquei para aceitar multiplas)
   #semNI = data[ ! data[,col.especies] %in% rotulo.NI, col.especies]

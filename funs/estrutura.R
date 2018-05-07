@@ -1,4 +1,4 @@
-estrutura = function(data, col.especies, col.dap, col.parcelas, area.parcela, est.vertical = NA, est.interno = NA, nao.identificada = "NI"){
+estrutura = function(data, col.especies, col.dap, col.parcelas, area.parcela, est.vertical = NA, est.interno = NA, nao.identificada = ""){
     
   # se data nao for fornecido, nulo, ou  nao for dataframe, parar
   if(  missing(data) || is.null(data) || is.na(data) || !is.data.frame(data) ){  
@@ -41,7 +41,7 @@ estrutura = function(data, col.especies, col.dap, col.parcelas, area.parcela, es
     est.interno = NA }
     
   if(missing(nao.identificada)||is.null(nao.identificada)||nao.identificada==F||nao.identificada==""){
-    nao.identificada = "NI" }
+    nao.identificada = "" }
     
   # Se pos.vertical for a variavel HT (numerica)
   if(is.numeric(data[[est.vertical]])){
@@ -64,7 +64,7 @@ estrutura = function(data, col.especies, col.dap, col.parcelas, area.parcela, es
   data[,SPECIES] <- as.factor(data[,SPECIES])
   
   # converter rotulos NI (aplicativo)
-  if(is.null(NI)){NI <- "NI"}
+  if(is.null(NI)){NI <- ""}
   
   # Ajustar formato categórico
   

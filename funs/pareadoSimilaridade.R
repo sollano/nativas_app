@@ -1,7 +1,7 @@
-p.similaridade=function(x, y, rotuloNI = "NI", indice = "both"){
+p.similaridade=function(x, y, rotuloNI = "", indice = "both"){
   
   # converter rotulos NI (aplicativo)
-  if(is.null(rotuloNI)||rotuloNI==""){rotuloNI <- "NI"}
+  if(is.null(rotuloNI)||rotuloNI==""){rotuloNI <- ""}
   
   # Remover observações cuja espécie é desconhecida
   # modifiquei para aceitar multiplas entradas
