@@ -72,7 +72,7 @@ shinyUI(
           
           
           
-          navbarPage("App Inventário de Nativas 2.0.3",
+          navbarPage("App Inventário de Nativas 2.0.2",
                      
                      theme = "green_yeti2.css",
                      # theme = "green.css", # seleciona um tema contido na pasta www
@@ -606,8 +606,8 @@ shinyUI(
                                               fluidRow(
                                                 radioButtons("yi_inv",
                                                              label="Selecione a variável utilizada nas estatísticas:",
-                                                             choices = c("Indv", "G","VCC"),
-                                                             selected = "VCC",
+                                                             choices = c("IndvHA", "G_HA","VCC_HA"),
+                                                             selected = "VCC_HA",
                                                              inline=T )
                                               ),
                                           fluidRow(   
