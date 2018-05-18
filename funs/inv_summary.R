@@ -34,8 +34,8 @@ inv_summary <- function(df, DAP, HT, VCC, area_parcela, .groups, area_total,idad
     stop("'HT' must be a character containing a variable name", call.=F)
   }else if(length(HT)!=1){
     stop("Length of 'HT' must be 1", call.=F)
-  }else if(forestr::check_names(df, HT)==F){
-    stop(forestr::check_names(df, HT, boolean=F), call.=F)
+  }else if(check_names(df, HT)==F){
+    stop(check_names(df, HT, boolean=F), call.=F)
   }
 
   # se VCC nao for fornecido, for igual "", nulo ou NA, criar variavel vazia 
