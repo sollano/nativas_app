@@ -17,7 +17,7 @@ Com este app, é possível realizar análises fitossociológicas, calcular índi
 
 (BRAGA; GORGENS; OLIVEIRA, 2017)
 
-BRAGA, S. R.; GORGENS, E. B; OLIVEIRA, M. L. R. DE. Inventário de Nativas: Aplicativo shiny para processamento de inventário de florestas nativas, 2017. Disponível em: <https://sollano.shinyapps.io/nativas_app/>.
+BRAGA, S. R.; GORGENS, E. B; OLIVEIRA, M. L. R. DE. Inventário de Nativas: Aplicativo shiny para processamento de inventário de florestas nativas, 2017. Disponível em: <http://gorgens.wixsite.com/treelab>.
 
 #### Referências:
 
