@@ -75,7 +75,7 @@ hdjoin <- function(df, HT, DAP, OBS, dom, .groups){
   
   HT_sym <- rlang::sym( HT )
   
-  if(missing(OBS) || missing(DAP) ){
+  if(missing(OBS) || is.null(OBS) || is.na(OBS) || OBS=="" || missing(DAP) || is.null(DAP) || is.na(DAP) || DAP == "" ){
     
     if( missing(.groups) ){
       suppressMessages(   # remove mensagens do dplyr

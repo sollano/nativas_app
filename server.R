@@ -226,8 +226,6 @@ shinyServer(function(input, output, session) {
   # Mapeamento ####
   
   # ui
-  
-  
   output$selec_arvore       <- renderUI({
     
     data <- rawData_()
@@ -477,7 +475,7 @@ shinyServer(function(input, output, session) {
                    selected = estratos_names,
                    multiple = T,
                    options = list(
-                     maxItems = 1,
+                     maxItems = 10,
                      placeholder = 'Selecione uma coluna abaixo:'#,
                      #    onInitialize = I('function() { this.setValue(""); }')
                    ) # options    
@@ -2015,7 +2013,7 @@ shinyServer(function(input, output, session) {
     validate(check_yi(nm$vcc, input$yi_inv))
     
     # Se o usuario inseir uma variavel de Estrato, considera-la na hora dos calculos
-    if(nm$estrato =="" ){grupos<-nm$parcela}else{grupos <- c(nm$estrato, nm$parcela)}
+    if( any(nm$estrato =="") ){grupos<-nm$parcela}else{grupos <- c(nm$estrato, nm$parcela)}
     
     x <- inv_summary(df           = dados, 
                      DAP          = nm$dap, 
