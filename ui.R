@@ -72,7 +72,7 @@ shinyUI(
           
           
           # Version ####
-          navbarPage("App Inventário de Nativas 2.0.6",
+          navbarPage("App Inventário de Nativas 2.0.7",
           #         ####           
                      theme = "green_yeti2.css",
                      # theme = "green.css", # seleciona um tema contido na pasta www
@@ -156,7 +156,7 @@ shinyUI(
 
                         column(4,
                                wellPanel(
-                                 h3("Parcela"),
+                                 h3("Parcela*"),
                                  p("Selecione o nome da variável referente à 'Parcela':"#, 
                                    #style = "font-family: 'Source Sans Pro';"
                                  ),
@@ -165,7 +165,7 @@ shinyUI(
                         
                         column(4,
                                wellPanel(
-                                 h3("Espécie"),
+                                 h3("Espécie*"),
                                  p("Selecione o nome da variável referente à 'Espécie':"#, 
                                    #style = "font-family: 'Source Sans Pro';"
                                  ),
@@ -179,7 +179,7 @@ shinyUI(
                         
                         column(4,
                                wellPanel(
-                                 h3("Circunferência (CAP)"),
+                                 h3("Circunferência (CAP)*"),
                                  p("Selecione o nome da variável referente à 'CAP':"#, 
                                    #style = "font-family: 'Source Sans Pro';"
                                  ),
@@ -189,7 +189,7 @@ shinyUI(
                         
                         column(4,
                                wellPanel(
-                                 h3("Diâmetro (DAP)"),
+                                 h3("Diâmetro (DAP)*"),
                                  p("Selecione o nome da variável referente à 'DAP':"#, 
                                    #style = "font-family: 'Source Sans Pro';"
                                  ),
