@@ -174,6 +174,9 @@ inv_summary <- function(df, DAP, HT, VCC, area_parcela, .groups, area_total,idad
   #function to check if columns have all 0
   allzero <- function(x){all(x==0|is.na(x))}
   
+  # convert NA to something
+  NA_to <- function(x,y){ x[is.na(x)] <- y;return(x)}
+  
   x %>% 
     dplyr::group_by(!!!.groups_syms,add=T) %>% 
     dplyr::mutate(AS = pi * (!!DAP_sym)^2 / 40000 ) %>% 
