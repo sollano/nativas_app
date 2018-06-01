@@ -44,6 +44,8 @@ source("funs/notin.R"              , encoding="UTF-8")
 source("funs/hdjoin.R"             , encoding="UTF-8")
 source("funs/check_dap_min.R"      , encoding="UTF-8")
 source("funs/check_yi.R"           , encoding="UTF-8")
+source("funs/alt.filter.keep.R"    , encoding="UTF-8")
+source("funs/alt.filter.rm.R"      , encoding="UTF-8")
 
 # vectors for names ####
 
@@ -485,7 +487,7 @@ shinyServer(function(input, output, session) {
 
   # Preparação ####
   # ui
-  output$selec_rotuloNI     <- renderUI({
+  output$selec_rotuloNI <- renderUI({
     
     validate(need(input$col.especies != "","") )
     
@@ -553,7 +555,7 @@ shinyServer(function(input, output, session) {
       radioButtons("rm_or_keep",
                    label = "Remover, ou manter dados referentes ao nível selecionado?",
                    c("Remover"=FALSE, "Manter"=TRUE),
-                   selected = FALSE,
+                   selected = TRUE,
                    inline = TRUE  )
       
     )
@@ -735,16 +737,17 @@ shinyServer(function(input, output, session) {
     max.val <- max(data[[nm$dap]],na.rm=T)
     
     validate(check_dap_min(nm$diam.min,max.val)) 
-    
+
     # caso nao ultrapasse, filtrar
     #data <- data %>% dplyr::filter((!!rlang::sym(nm$dap)) >= nm$diam.min)
     if(!is.na(nm$diam.min)){
-      data <- data[data[nm$dap]>=nm$diam.min, ] 
+      data <- data[which(data[[nm$dap]]>=nm$diam.min), ] # which para evitar erros caso tenha algum NA
+      #data <- data %>% dplyr::filter((!!rlang::sym(nm$dap)) >= nm$diam.min)
      }
     
     }
     # o proximo if sera para filtrar as linhas
-    
+
     # se o usuario nao selecionar nada, retorna o dado normal 
     # (isso faz com o que o dado original seja exibido logo que se entra na aba de filtrar),
     # caso contrario ele filtra o dado conforme o usuario seleciona as variaveis
@@ -758,16 +761,19 @@ shinyServer(function(input, output, session) {
       
     }else{
       
+      if( any(nm$estrato =="") ){grupos<-nm$parcela}else{grupos <- c(nm$estrato, nm$parcela)}
       
       
       if(input$rm_or_keep){ # mantem se for verdadeiro
-        boolean_vec <- data[[input$col.rm_data_var]]     %in%   input$level.rm_data_level
+        #boolean_vec <- data[[input$col.rm_data_var]]     %in%   input$level.rm_data_level
+        data <- alt.filter.keep(df = data,var = input$col.rm_data_var, levelstokeep = input$level.rm_data_level, .groups = grupos)
       }else{                # remove se for falso
-        boolean_vec <- data[[input$col.rm_data_var]]   %notin%  input$level.rm_data_level
+        #boolean_vec <- data[[input$col.rm_data_var]]   %notin%  input$level.rm_data_level
+        data <- alt.filter.rm(df = data,var = input$col.rm_data_var, levelstorm = input$level.rm_data_level, .groups = grupos)
       }
       
       
-      data <- data[boolean_vec,]
+      #data <- data[boolean_vec,]
       
       # data <- data %>% filter( ! .data[[input$col.rm_data_var]] %in% input$level.rm_data_level )
       
@@ -879,7 +885,6 @@ shinyServer(function(input, output, session) {
       
     }
     
-    
     # O if a seguir sera para remover linhas inconsistentes selecionadas pelo usuario
     
     # se o usuario nao selecionar nada, nada acontece
@@ -904,7 +909,6 @@ shinyServer(function(input, output, session) {
     
     data <- as.data.frame(data)
     
-    data
     
   })
  # render
@@ -2038,7 +2042,8 @@ shinyServer(function(input, output, session) {
               options = list(initComplete = JS(
                 "function(settings, json) {",
                 "$(this.api().table().header()).css({'background-color': '#00a90a', 'color': '#fff'});",
-                "}")
+                "}"),
+                pageLength = 25
               )   
     ) # Criamos uma DT::datatable com base no objeto
     
