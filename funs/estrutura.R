@@ -1,7 +1,7 @@
 estrutura = function(data, col.especies, col.dap, col.parcelas, area.parcela, est.vertical = NA, est.interno = NA, nao.identificada = ""){
     
   # se data nao for fornecido, nulo, ou  nao for dataframe, parar
-  if(  missing(data) || is.null(data) || is.na(data) || !is.data.frame(data) ){  
+  if(  missing(data) || all(is.null(data)) || all(is.na(data)) || !is.data.frame(data) ){  
     stop("data not set", call. = F) 
   }
   

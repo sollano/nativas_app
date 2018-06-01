@@ -63,7 +63,7 @@ as_diffs <- function(df, Yi, area_parcela, area_total,  idade, .groups, alpha = 
   `%>%` <- dplyr::`%>%`
   
   # se df nao for fornecido, nulo, ou  nao for dataframe, parar
-  if(  missing(df) ){  
+  if(  missing(df) || all(is.null(df)) || all(is.na(df)) ){  
     stop("df not set", call. = F) 
   }else if(!is.data.frame(df)){
     stop("df must be a dataframe", call.=F)
