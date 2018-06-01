@@ -761,6 +761,7 @@ shinyServer(function(input, output, session) {
       
     }else{
       
+      # Criar os grupos
       if( any(nm$estrato =="") ){grupos<-nm$parcela}else{grupos <- c(nm$estrato, nm$parcela)}
       
       

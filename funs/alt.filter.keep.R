@@ -77,8 +77,7 @@ alt.filter.keep <- function(df, var,levelstokeep, .groups, varstokeep){
   
   d2 <- df %>% dplyr::filter((!!var_sym) %in% levelstokeep)
   
-  dplyr::left_join(d1,d2, by=.groups)
-  
+  gg <- .groups
   
   }else{
   
@@ -89,9 +88,14 @@ alt.filter.keep <- function(df, var,levelstokeep, .groups, varstokeep){
     
     d2 <- df %>% dplyr::filter((!!var_sym) %in% levelstokeep)
     
-    dplyr::left_join(d1,d2, by=c(.groups,varstokeep))
+    gg <- c(.groups,varstokeep)
+    
     
   }
 
-  
+  if(var %in% .groups){ # Se var for igual a um dos grupos, utilizar right join
+    dplyr::right_join(d1,d2, by=gg)
+  }else{
+    dplyr::left_join(d1,d2, by=gg)
+  }
 }

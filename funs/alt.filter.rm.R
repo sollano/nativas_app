@@ -78,7 +78,7 @@ alt.filter.rm <- function(df, var,levelstorm, .groups, varstokeep){
     
     d2 <- df %>% dplyr::filter( ! (!!var_sym) %in% levelstorm)
     
-    dplyr::left_join(d1,d2, by=.groups)
+    gg <- .groups
     
     
   }else{
@@ -90,9 +90,14 @@ alt.filter.rm <- function(df, var,levelstorm, .groups, varstokeep){
     
     d2 <- df %>% dplyr::filter( ! (!!var_sym) %in% levelstorm)
     
-    dplyr::left_join(d1,d2, by=c(.groups,varstokeep))
+    gg <- c(.groups,varstokeep)
     
   }
   
+  if(var %in% .groups){ # Se var for igual a um dos grupos, utilizar right join
+    dplyr::right_join(d1,d2, by=gg)
+  }else{
+    dplyr::left_join(d1,d2, by=gg)
+  }
   
 }
