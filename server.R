@@ -216,7 +216,8 @@ shinyServer(function(input, output, session) {
                 initComplete = JS(
                   "function(settings, json) {",
                   "$(this.api().table().header()).css({'background-color': '#00a90a', 'color': '#fff'});",
-                  "}")
+                  "}"),
+                pageLength = 25
               )
     ) # Criamos uma DT::datatable com base no objeto
     
@@ -926,7 +927,8 @@ shinyServer(function(input, output, session) {
                 initComplete = JS(
                   "function(settings, json) {",
                   "$(this.api().table().header()).css({'background-color': '#00a90a', 'color': '#fff'});",
-                  "}")
+                  "}"),
+                pageLength = 25
               )
     ) # Criamos uma DT::datatable com base no objeto
     
