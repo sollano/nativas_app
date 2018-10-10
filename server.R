@@ -448,7 +448,7 @@ shinyServer(function(input, output, session) {
     req(input$est.vert.calc == "Definir" )
     validate(
       need(!is.null(input$col.ht) , # ht nao e nulo? quando a resposta for nao a mensagem aparece
-           "Variável 'Altura' não definida. A estrutura horizontal não será calculada." ), errorClass = "AVISO")
+           "Variável 'Altura' não definida. A estrutura vertical não será calculada." ), errorClass = "AVISO")
     
     
     

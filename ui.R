@@ -72,7 +72,7 @@ shinyUI(
           
           
           # Version ####
-          navbarPage("App Inventário de Nativas 2.0.8",
+          navbarPage("App Inventário de Nativas 2.0.9",
           #         ####           
                      theme = "green_yeti2.css",
                      # theme = "green.css", # seleciona um tema contido na pasta www
@@ -567,7 +567,7 @@ shinyUI(
                                                                    label = "Selecione o nível de significância:", 
                                                                    min = 0.01, 
                                                                    max = 0.10, 
-                                                                   value = 0.05,
+                                                                   value = 0.10,
                                                                    step = 0.01)
                                                 ),
                                                 
