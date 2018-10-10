@@ -323,10 +323,10 @@ shinyUI(
                                   sidebarPanel(
                                     
                                     h3("Intervalo de classe"),
-                                    numericInput("int.classe", "Insira o intervalo de classe:", 10, 1, 50, 0.5),
+                                    numericInput("int.classe", "Insira o intervalo de classe:", 5, 1, 50, 0.5),
                                     
                                     h3("Diâmetro mínimo"),
-                                    numericInput("diam.min", "Insira o diâmetro mínimo:", 10, 1, 100, 1),
+                                    numericInput("diam.min", "Insira o diâmetro mínimo:", 1, 1, 100, 1),
                                     
                                     uiOutput("selec_rotuloNI"),
                                     
