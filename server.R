@@ -2118,6 +2118,10 @@ shinyServer(function(input, output, session) {
       grupos_name <- nm$estrato
     }
     
+    if(input$df=="Dados em nivel de parcela"){
+      dados <- dados %>% dplyr::rename(VCC = !!(rlang::sym(nm$vcc)) )
+    }
+    
     x <-     acs(df             = dados,
                  Yi             = input$yi_inv,
                  area_parcela   = nm$area.parcela,
@@ -2183,6 +2187,10 @@ shinyServer(function(input, output, session) {
       need(nm$area.total,"Por favor mapeie a coluna ou insira um valor referente a 'area.total'  "),
       need(nm$estrato,"Por favor mapeie a coluna referente a 'Estrato' ")
     )
+    
+    if(input$df=="Dados em nivel de parcela"){
+      dados <- dados %>% dplyr::rename(VCC = !!(rlang::sym(nm$vcc)) )
+    }
     
     x <- ace(df             = dados, 
              Yi             = input$yi_inv,
@@ -2286,6 +2294,10 @@ shinyServer(function(input, output, session) {
     }
     
     dados <- invData()
+    
+    if(input$df=="Dados em nivel de parcela"){
+      dados <- dados %>% dplyr::rename(VCC = !!(rlang::sym(nm$vcc)) )
+    }
     
     x <- as_diffs(df             = dados, 
                   Yi             = input$yi_inv,
