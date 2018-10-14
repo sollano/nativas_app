@@ -1895,7 +1895,7 @@ shinyServer(function(input, output, session) {
   # Tabelas BDq
   BDq_list <- reactive({
     nm <- varnames()
-    dados <- arvData()
+    dados <- rawData()
     
     validate(
       need(dados, "Por favor faça o upload da base de dados"),
@@ -2005,7 +2005,7 @@ shinyServer(function(input, output, session) {
   tot_parcData <- reactive({  
     
     nm <- varnames()
-    dados <- arvData()
+    dados <- rawData()
 
     validate(
       need(dados, "Por favor faça o upload da base de dados"),
