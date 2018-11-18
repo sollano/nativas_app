@@ -72,7 +72,7 @@ shinyUI(
           
           
           # Version ####
-          navbarPage("App Inventário de Nativas 2.0.9",
+          navbarPage("App Inventário de Nativas 2.1.0",
           #         ####           
                      theme = "green_yeti2.css",
                      # theme = "green.css", # seleciona um tema contido na pasta www
@@ -343,8 +343,7 @@ shinyUI(
                                     uiOutput("ui_estvcc1"),
                                     uiOutput("ui_estvcc3"),
                                     uiOutput("ui_estvcc4"),
-                                    uiOutput("checkbox_calc.est.vert"),
-                                    uiOutput("consist_warning1")
+                                    uiOutput("checkbox_calc.est.vert")
                                     
                                     
                                     
@@ -357,7 +356,18 @@ shinyUI(
                                              hr(),
                                              tableOutput("teste")
                                              ),
-                                    tabPanel("Dados inconsistentes",
+                                    tabPanel("Consistência dos dados",
+                                             
+                                             radioButtons(
+                                               "run_consist",
+                                               h3("Deseja verificar a consistência dos dados?"),
+                                               choices = c("Sim"=TRUE,"Nao"=FALSE),
+                                               selected=FALSE,
+                                               inline = TRUE,
+                                               width = "200%"),
+                                             p("Obs: A consistência requer que a variável DAP esteja mapeada. Recomenda-se mapear também a variável Altura."),
+                                             
+                                             uiOutput("consist_warning1"),
                                              uiOutput("consist_warning2"),
                                              uiOutput("consist_table_help"),
                                              uiOutput("consist_choice"),
