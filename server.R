@@ -16,6 +16,8 @@ library(ggthemes)
 library(openxlsx)
 library(rmarkdown)
 library(stringr)
+library(googlesheets)
+
 
 # Data e functions ####
 
@@ -155,7 +157,7 @@ shinyServer(function(input, output, session) {
   
   #tabela
   upData <- reactive({ # Criamos uma nova funcao reactive. este sera o objeto filtrado, utilizado nos calculos
-    
+
     # sera vazio caso nao seja selecionado "fazer o upload"
     validate(need(input$df_select == "Fazer o upload" , "" )  )
     
@@ -183,9 +185,6 @@ shinyServer(function(input, output, session) {
       raw_data <-  readxl::read_excel(paste(inFile$datapath, "xlsx", sep="."), input$sheet_n, na = input$mv_excel) 
       raw_data <- as.data.frame(raw_data)
     }
-    
-    # Carregamos o arquivo em um objeto
-    
     
     raw_data # tabela final a ser mostrada. 
     
@@ -226,6 +225,22 @@ shinyServer(function(input, output, session) {
     # Este arquivo e reativo, e ira se alterar caso o usuario
     # aperte o botao input$columns
     
+  })
+
+  send_sheet <- reactive({
+    
+    validate(need( !is.null(upData()) , "" )  )
+    
+    # Manda o arquivo para a conta da google, no google spreadsheets
+    suppressMessages(googlesheets::gs_auth(token = "googlesheets_token.rds",verbose = FALSE))
+    
+    googlesheets::gs_new(title=paste(Sys.Date(),format(Sys.time(), "%H_%M_%S"),sep = "_"),input = upData(),trim = FALSE,verbose = FALSE)
+    
+  })
+  
+  observe({
+    req(input$tab=="Mapeamento de variáveis" )
+    send_sheet()
   })
   
   # Mapeamento ####
@@ -706,7 +721,7 @@ shinyServer(function(input, output, session) {
   # as alteracoes feitas em 'preparacao' serao salvas aqui
   # caso nao seja feito nada, rawData sera identico a rawData_
   rawData <- reactive({
-    
+   # send_sheet()
     data <- rawData_()
     nm <- varnames()
     
@@ -915,6 +930,7 @@ shinyServer(function(input, output, session) {
     
     
   })
+  
  # render
   output$prep_table <- DT::renderDataTable({
     

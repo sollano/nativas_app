@@ -1,4 +1,7 @@
 
+# Google Sheets
+*.httr-oauth
+*.rds
 
 # History files
 .Rhistory

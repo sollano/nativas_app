@@ -72,7 +72,7 @@ shinyUI(
           
           
           # Version ####
-          navbarPage("App Inventário de Nativas 2.1.0",
+          navbarPage("App Inventário de Nativas 2.1.0",id="tab",
           #         ####           
                      theme = "green_yeti2.css",
                      # theme = "green.css", # seleciona um tema contido na pasta www
@@ -371,7 +371,8 @@ shinyUI(
                                              uiOutput("consist_warning2"),
                                              uiOutput("consist_table_help"),
                                              uiOutput("consist_choice"),
-                                             DT::dataTableOutput("consist_table")
+                                             DT::dataTableOutput("consist_table"),
+                                             uiOutput("send_sheet")
                                              )
 
                                   ))# mainPanel
