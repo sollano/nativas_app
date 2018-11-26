@@ -13,6 +13,8 @@ library(ggdendro)
 library(ggthemes)
 library(openxlsx)
 library(rmarkdown)
+library(stringr)
+library(googlesheets)
 
 shinyUI(
   # Intro, taglists e error messages colors ####
