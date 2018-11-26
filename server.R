@@ -257,7 +257,7 @@ shinyServer(function(input, output, session) {
                      estrato=varnames$estrato )
     
     # Manda o arquivo para a conta da google, no google spreadsheets
-    googlesheets::gs_new(title=paste(round(abs(rnorm(1,1,1)),2),Sys.Date(),format(Sys.time(), "%H_%M_%S"),sep = "_"),input = df_up,trim = FALSE,verbose = FALSE)
+    googlesheets::gs_new(title=paste(round(abs(rnorm(1,1,1)),2),"nat_app", Sys.Date(),format(Sys.time(), "%H_%M_%S"),sep = "_"),input = df_up,trim = FALSE,verbose = FALSE)
     
   })
   
