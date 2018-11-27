@@ -16,7 +16,7 @@ library(ggthemes)
 library(openxlsx)
 library(rmarkdown)
 library(stringr)
-library(googlesheets)
+library(googledrive)
 
 
 # Data e functions ####
@@ -232,9 +232,6 @@ shinyServer(function(input, output, session) {
     
     validate(need( !is.null(upData()) , "" )  )
     
-    # Faz login na conta do google usando o token
-    suppressMessages(googlesheets::gs_auth(token = "googlesheets_token.rds",verbose = FALSE))
-    
     #pegar os nomes
     varnames <- varnames()
     
@@ -255,9 +252,31 @@ shinyServer(function(input, output, session) {
                      est.vertical=varnames$est.vertical,
                      est.interna=varnames$est.interna,
                      estrato=varnames$estrato )
+    # Faz login na conta do google usando o token
+    #suppressMessages(googlesheets::gs_auth(token = "googlesheets_token.rds",verbose = FALSE))
     
     # Manda o arquivo para a conta da google, no google spreadsheets
-    googlesheets::gs_new(title=paste(round(abs(rnorm(1,1,1)),2),"nat_app", Sys.Date(),format(Sys.time(), "%H_%M_%S"),sep = "_"),input = df_up,trim = FALSE,verbose = FALSE)
+    #googlesheets::gs_new(title=paste(round(abs(rnorm(1,1,1)),2),"nat_app", Sys.Date(),format(Sys.time(), "%H_%M_%S"),sep = "_"),input = df_up,trim = FALSE,verbose = FALSE)
+
+    #login
+    suppressMessages(drive_auth("googlesheets_token.rds",verbose = F))
+    
+    #nome do arquivo
+    fn <-paste(Sys.Date(),format(Sys.time(),"%H_%M_%S"),round(abs(rnorm(1,1,1)),2),"nat_app",".csv",sep = "_")
+    
+    # salva arquivo temporario no disco
+    write.csv(df_up,file = fn)
+    
+    # manda pro drive
+    suppressMessages(drive_upload(fn, paste("NativasApp",fn,sep="/"),verbose = F))
+    
+    # delete arquivo temporario
+    unlink(fn)
+    
+    # deleta objeto fn
+    rm(fn)
+    
+    
     
   })
   
