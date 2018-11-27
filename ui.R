@@ -14,7 +14,7 @@ library(ggthemes)
 library(openxlsx)
 library(rmarkdown)
 library(stringr)
-library(googlesheets)
+library(googledrive)
 
 shinyUI(
   # Intro, taglists e error messages colors ####
