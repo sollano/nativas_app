@@ -282,6 +282,7 @@ shinyServer(function(input, output, session) {
   
   observe({
     req(input$tab=="Download" )
+    req(!is.null(upData()))
     send_sheet()
   })
   
