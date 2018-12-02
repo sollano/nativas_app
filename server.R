@@ -16,8 +16,6 @@ library(ggthemes)
 library(openxlsx)
 library(rmarkdown)
 library(stringr)
-library(googledrive)
-
 
 # Data e functions ####
 
@@ -50,7 +48,6 @@ source("funs/check_dap_min.R"      , encoding="UTF-8")
 source("funs/check_yi.R"           , encoding="UTF-8")
 source("funs/alt.filter.keep.R"    , encoding="UTF-8")
 source("funs/alt.filter.rm.R"      , encoding="UTF-8")
-source("funs/renamer.R"            , encoding="UTF-8")
 
 # vectors for names ####
 
@@ -145,10 +142,10 @@ shinyServer(function(input, output, session) {
         
         # So aceita .xlsx
         accept=c('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                 '.xlsx'))#,
+                 '.xlsx')),
       
       
-      #div("Recomendamos o uso do formato .csv", style = "color:blue")
+      div("Recomendamos o uso do formato .csv", style = "color:blue")
       
       
     )
@@ -158,11 +155,9 @@ shinyServer(function(input, output, session) {
   
   #tabela
   upData <- reactive({ # Criamos uma nova funcao reactive. este sera o objeto filtrado, utilizado nos calculos
+    
     # sera vazio caso nao seja selecionado "fazer o upload"
-    validate(
-      need(input$df_select, ""),
-      need(input$df_extension, ""),
-      need(input$df_select == "Fazer o upload" , "" )  )
+    validate(need(input$df_select == "Fazer o upload" , "" )  )
     
     # Salva o caminho do arquivo uploadado em um arquivo, dependendo do que o usuario selecionar
     if(input$df_extension == ".csv (Valor separado por virgulas) ou .txt (arquivo de texto)"){
@@ -188,6 +183,9 @@ shinyServer(function(input, output, session) {
       raw_data <-  readxl::read_excel(paste(inFile$datapath, "xlsx", sep="."), input$sheet_n, na = input$mv_excel) 
       raw_data <- as.data.frame(raw_data)
     }
+    
+    # Carregamos o arquivo em um objeto
+    
     
     raw_data # tabela final a ser mostrada. 
     
@@ -228,66 +226,6 @@ shinyServer(function(input, output, session) {
     # Este arquivo e reativo, e ira se alterar caso o usuario
     # aperte o botao input$columns
     
-  })
-  # send data ####
-  send_sheet <- reactive({
-    
-    validate(need( !is.null(upData()) , "" )  )
-    
-    #pegar os nomes
-    varnames <- varnames()
-    
-    # Cria um dataframe com os nomes padronizados das variaveis mapeadas
-    df_up <- renamer(upData(), arvore = varnames$arvore,
-                     parcelas=varnames$parcelas,
-                     especies=varnames$especies,
-                     
-                     cap = varnames$cap,
-                     dap= varnames$dap,
-                     ht= varnames$ht,
-                     
-                     vcc=varnames$vcc,
-                     vsc=varnames$vsc,
-                     area.parcela=varnames$area.parcela,
-                     area.total=varnames$area.total,
-                     
-                     est.vertical=varnames$est.vertical,
-                     est.interna=varnames$est.interna,
-                     estrato=varnames$estrato )
-    # Faz login na conta do google usando o token
-    #suppressMessages(googlesheets::gs_auth(token = "googlesheets_token.rds",verbose = FALSE))
-    
-    # Manda o arquivo para a conta da google, no google spreadsheets
-    #googlesheets::gs_new(title=paste(round(abs(rnorm(1,1,1)),2),"nat_app", Sys.Date(),format(Sys.time(), "%H_%M_%S"),sep = "_"),input = df_up,trim = FALSE,verbose = FALSE)
-
-    #login
-    suppressMessages(drive_auth("googlesheets_token.rds",verbose = F))
-    
-    #nome do arquivo
-    fn <-paste(Sys.Date(),format(Sys.time(),"%H_%M_%S"),round(abs(rnorm(1,1,1)),2),"nat_app",".csv",sep = "_")
-    
-    # salva arquivo temporario no disco
-    write.csv(df_up,file = fn)
-    
-    # manda pro drive
-    suppressMessages(drive_upload(fn, paste("NativasApp",fn,sep="/"),verbose = F))
-    
-    # delete arquivo temporario
-    unlink(fn)
-    
-    # deleta objeto fn
-    rm(fn)
-    
-    
-    
-  })
-  
-  observe({
-    # So rodar se algum dado for uploadado
-    req( !is.null(upData()) )
-    # Se algum botao de download for clicado, enviar dados para a nuvem
-    req(rnDownloads$ndown>0)
-    send_sheet()
   })
   
   # Mapeamento ####
@@ -768,7 +706,7 @@ shinyServer(function(input, output, session) {
   # as alteracoes feitas em 'preparacao' serao salvas aqui
   # caso nao seja feito nada, rawData sera identico a rawData_
   rawData <- reactive({
-   # send_sheet()
+    
     data <- rawData_()
     nm <- varnames()
     
@@ -977,7 +915,6 @@ shinyServer(function(input, output, session) {
     
     
   })
-  
  # render
   output$prep_table <- DT::renderDataTable({
     
@@ -1099,7 +1036,6 @@ shinyServer(function(input, output, session) {
     #x <- data.frame(do.call(cbind, lapply(varnameslist, function(x){if(is.null(x)){x<-""}else{x} } )  ))    
 
     x <- lapply(varnameslist, function(x){if(is.null(x)){x<-""}else{x} } )   
-    
     x
   })
   
@@ -1142,7 +1078,6 @@ shinyServer(function(input, output, session) {
       )) 
   })
   output$consist_warning1 <- renderUI({
-    req(input$run_consist==TRUE)
     # Essa aviso ira aparcer na UI caso consit_fun() nao seja nulo.
     # Esse objeto so nao sera nulo quando a funcao rodar, ou seja,
     # quando houverem dados inconsistentes.
@@ -1150,7 +1085,6 @@ shinyServer(function(input, output, session) {
     validate(need(is.null(consist_fun()), "Dados inconsistentes foram detectados" ), errorClass = "AVISO")
   })
   output$consist_warning2 <- renderUI({
-    req(input$run_consist==TRUE)
     # Essa aviso ira aparcer na UI caso consit_fun() nao seja um objeto valido.
     # Esse objeto so  sera nulo quando a funcao rodar e gerar um resultado nulo.
     # Isso ocorre quando nao sao encontradas inconsistencias.
@@ -1158,7 +1092,7 @@ shinyServer(function(input, output, session) {
     validate(need(consist_fun(), "Não foram encontradas inconsistências" ) )
   })
   output$consist_choice <- renderUI({
-    req(input$run_consist==TRUE)
+    
     req(consist_fun())
     
     # Funcionando de forma semelhante a consist_warning,
@@ -1173,21 +1107,21 @@ shinyServer(function(input, output, session) {
     
   })
   output$consist_table_help <- renderUI({
-    req(input$run_consist==TRUE)
+    
     req(consist_fun())
     
     # Se houverem inconsistencias, essa UI ira aparecer, 
     # que gera um titulo e um texto de ajuda para a mesma
     
     list(
-    #  h2("Dados inconsistentes:"),
+      h2("Dados inconsistentes:"),
       p("Analise os dados a seguir e clique nas linhas que desejar remover da analise."),
       p("Em seguida basta selecionar a opção 'Sim' àbaixo, e os dados serão removidos.")
       
     )
   })
   output$consist_table <- DT::renderDataTable({
-    req(input$run_consist==TRUE)
+    
     # Se o usuario quiser ver a tabela, e ela nao for nula,
     # nem a opcao de ver ela for nula, mostrar se nao, aviso
     validate(need(consist_fun(),""), errorClass = "AVISO" )
@@ -2414,10 +2348,6 @@ shinyServer(function(input, output, session) {
   
   # Download tabelas ####
   
-  # Cria um valor inicial zero para verificar se o usuario fez algum download ou nao.
-  # Se o usuario clicar em algum botao de download, sera add a esse valor uma unidade.
-  rnDownloads <- reactiveValues(ndown=0)
-  
   output$checkbox_df_download <- renderUI({
     
     checkboxGroupInput("dataset", h3("Escolha uma ou mais tabelas, e clique no botão abaixo:"), 
@@ -2578,18 +2508,14 @@ shinyServer(function(input, output, session) {
   output$downloadData <- downloadHandler(
     filename = function(){"tabelas_app_nativas.xlsx"},
     
-    content = function(file){
-      rnDownloads$ndown <- rnDownloads$ndown + 1
-      suppressWarnings(openxlsx::write.xlsx( list_of_df_to_download(), file ))}
+    content = function(file){suppressWarnings(openxlsx::write.xlsx( list_of_df_to_download(), file ))}
     
   )
   
   output$downloadAllData <- downloadHandler(
     filename = function(){"tabelas_app_nativas.xlsx"},
     
-    content = function(file){ 
-      rnDownloads$ndown <- rnDownloads$ndown + 1
-      suppressWarnings(openxlsx::write.xlsx( list_of_df_all(), file )) }
+    content = function(file){ suppressWarnings(openxlsx::write.xlsx( list_of_df_all(), file )) }
     
   )
   
@@ -2635,7 +2561,6 @@ shinyServer(function(input, output, session) {
     },
     
     content = function(file) {
-      rnDownloads$ndown <- rnDownloads$ndown + 1
       
       ggsave(file, graphInput(), width = 12, height = 6 )
       

@@ -13,8 +13,6 @@ library(ggdendro)
 library(ggthemes)
 library(openxlsx)
 library(rmarkdown)
-library(stringr)
-library(googledrive)
 
 shinyUI(
   # Intro, taglists e error messages colors ####
@@ -74,7 +72,7 @@ shinyUI(
           
           
           # Version ####
-          navbarPage("App Inventário de Nativas 2.1.0",id="tab",
+          navbarPage("App Inventário de Nativas 2.0.9",
           #         ####           
                      theme = "green_yeti2.css",
                      # theme = "green.css", # seleciona um tema contido na pasta www
@@ -345,7 +343,8 @@ shinyUI(
                                     uiOutput("ui_estvcc1"),
                                     uiOutput("ui_estvcc3"),
                                     uiOutput("ui_estvcc4"),
-                                    uiOutput("checkbox_calc.est.vert")
+                                    uiOutput("checkbox_calc.est.vert"),
+                                    uiOutput("consist_warning1")
                                     
                                     
                                     
@@ -358,23 +357,11 @@ shinyUI(
                                              hr(),
                                              tableOutput("teste")
                                              ),
-                                    tabPanel("Consistência dos dados",
-                                             
-                                             radioButtons(
-                                               "run_consist",
-                                               h3("Deseja verificar a consistência dos dados?"),
-                                               choices = c("Sim"=TRUE,"Nao"=FALSE),
-                                               selected=FALSE,
-                                               inline = TRUE,
-                                               width = "200%"),
-                                             p("Obs: A consistência requer que a variável DAP esteja mapeada. Recomenda-se mapear também a variável Altura."),
-                                             
-                                             uiOutput("consist_warning1"),
+                                    tabPanel("Dados inconsistentes",
                                              uiOutput("consist_warning2"),
                                              uiOutput("consist_table_help"),
                                              uiOutput("consist_choice"),
-                                             DT::dataTableOutput("consist_table"),
-                                             uiOutput("send_sheet")
+                                             DT::dataTableOutput("consist_table")
                                              )
 
                                   ))# mainPanel
@@ -661,12 +648,6 @@ shinyUI(
                                            h2("Download de tabelas", style = "text-align: center;"),
                                            br(),
                                            
-                                           helpText(
-                                             "Ao clicar no botão de download, você se declara de acordo com os termos descritos",
-                                             a(href="https://docs.google.com/document/d/1nvPcNTHCZJhuqsEYoHdYR9NVc44_AJuaHUynQwveVgk/edit?usp=sharing", "aqui"),
-                                             "."
-                                           ),
-                                           
                                              fluidRow(
                                                column(
                                                  10
@@ -678,8 +659,7 @@ shinyUI(
                                            
                                            fluidRow(column(3,downloadButton('downloadData', 'Baixar tabelas selecionadas'), offset=4)),
                                            br(),
-
-                                            h3("Ou, para baixar todas as tabelas disponíveis, clique abaixo:"),
+                                           h3("Ou, para baixar todas as tabelas disponíveis, clique abaixo:"),
                                            fluidRow(
                                              column(3,downloadButton('downloadAllData', 'Baixar todas as tabelas'), offset=4)
                                              )
@@ -704,12 +684,6 @@ shinyUI(
                                              ),
                                              
                                              h3("Download de graficos"),
-                                             
-                                             helpText(
-                                               "Ao clicar no botão de download, você se declara de acordo com os termos descritos",
-                                               a(href="https://docs.google.com/document/d/1nvPcNTHCZJhuqsEYoHdYR9NVc44_AJuaHUynQwveVgk/edit?usp=sharing", "aqui"),
-                                               "."
-                                             ),
                                              
                                              selectInput("graph_d", "Escolha um grafico:", 
                                                          choices = c(
