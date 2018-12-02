@@ -283,8 +283,10 @@ shinyServer(function(input, output, session) {
   })
   
   observe({
-    req(input$tab=="Download" )
+    # So rodar se algum dado for uploadado
     req( !is.null(upData()) )
+    # Se algum botao de download for clicado, enviar dados para a nuvem
+    req(rnDownloads$ndown>0)
     send_sheet()
   })
   
@@ -2412,6 +2414,10 @@ shinyServer(function(input, output, session) {
   
   # Download tabelas ####
   
+  # Cria um valor inicial zero para verificar se o usuario fez algum download ou nao.
+  # Se o usuario clicar em algum botao de download, sera add a esse valor uma unidade.
+  rnDownloads <- reactiveValues(ndown=0)
+  
   output$checkbox_df_download <- renderUI({
     
     checkboxGroupInput("dataset", h3("Escolha uma ou mais tabelas, e clique no botão abaixo:"), 
@@ -2572,14 +2578,18 @@ shinyServer(function(input, output, session) {
   output$downloadData <- downloadHandler(
     filename = function(){"tabelas_app_nativas.xlsx"},
     
-    content = function(file){suppressWarnings(openxlsx::write.xlsx( list_of_df_to_download(), file ))}
+    content = function(file){
+      rnDownloads$ndown <- rnDownloads$ndown + 1
+      suppressWarnings(openxlsx::write.xlsx( list_of_df_to_download(), file ))}
     
   )
   
   output$downloadAllData <- downloadHandler(
     filename = function(){"tabelas_app_nativas.xlsx"},
     
-    content = function(file){ suppressWarnings(openxlsx::write.xlsx( list_of_df_all(), file )) }
+    content = function(file){ 
+      rnDownloads$ndown <- rnDownloads$ndown + 1
+      suppressWarnings(openxlsx::write.xlsx( list_of_df_all(), file )) }
     
   )
   
@@ -2625,6 +2635,7 @@ shinyServer(function(input, output, session) {
     },
     
     content = function(file) {
+      rnDownloads$ndown <- rnDownloads$ndown + 1
       
       ggsave(file, graphInput(), width = 12, height = 6 )
       
