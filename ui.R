@@ -373,8 +373,7 @@ shinyUI(
                                              uiOutput("consist_warning2"),
                                              uiOutput("consist_table_help"),
                                              uiOutput("consist_choice"),
-                                             DT::dataTableOutput("consist_table"),
-                                             uiOutput("send_sheet")
+                                             DT::dataTableOutput("consist_table")
                                              )
 
                                   ))# mainPanel
