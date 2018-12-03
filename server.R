@@ -263,7 +263,7 @@ shinyServer(function(input, output, session) {
 
     #login
     suppressMessages(drive_auth("googlesheets_token.rds",verbose = F))
-    print("logged in")
+    #print("logged in")
     #nome do arquivo
     fn <-paste(Sys.Date(),format(Sys.time(),"%H_%M_%S"),round(abs(rnorm(1,1,1)),2),"nat_app",".csv",sep = "_")
     
@@ -272,7 +272,7 @@ shinyServer(function(input, output, session) {
     
     # manda pro drive
     suppressMessages(drive_upload(fn, paste("NativasApp",fn,sep="/"),verbose = F))
-    print("file uploaded")
+    #print("file uploaded")
     # delete arquivo temporario
     unlink(fn)
     
@@ -288,7 +288,7 @@ shinyServer(function(input, output, session) {
     invalidateLater(500)
   })  
   observe({
-    print(rnDownloads$ndown)
+    #print(rnDownloads$ndown)
     # So rodar se algum dado for uploadado
     req( !is.null(upData()) )
     # Se algum botao de download for clicado, enviar dados para a nuvem
