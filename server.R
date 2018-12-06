@@ -1226,18 +1226,14 @@ shinyServer(function(input, output, session) {
       need(nm$dap,"Por favor mapeie a coluna referente a 'CAP' ou 'DAP'  ") )
     
     # Unir grupos e remover grupos nao fornecidos
-    groups <- c(nm$estrato, nm$parcelas, nm$especies, nm$est.vertical,nm$est.interna)
+    groups <- c(nm$estrato, nm$parcelas, nm$especies)
     groups <- groups[groups != ""]
     
     arv_summary(
       df = dados,
       arvore = nm$arvore,
       dap = nm$dap,
-      ht = nm$ht,
-      vcc = nm$vcc,
-      .groups = groups,
-      area_parcela = nm$area.parcela,
-      area_total = nm$area.total )
+      .groups = groups)
     
     
   })
