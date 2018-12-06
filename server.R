@@ -810,11 +810,9 @@ shinyServer(function(input, output, session) {
     validate(check_dap_min(nm$diam.min,max.val)) 
 
     # caso nao ultrapasse, filtrar
-    #data <- data %>% dplyr::filter((!!rlang::sym(nm$dap)) >= nm$diam.min)
     if(!is.na(nm$diam.min)){
-      data <- data[which(data[[nm$dap]]>=nm$diam.min), ] # which para evitar erros caso tenha algum NA
-      #data <- data %>% dplyr::filter((!!rlang::sym(nm$dap)) >= nm$diam.min)
-     }
+      data <- data %>% dplyr::filter(is.na(.data[[nm$dap]]) | .data[[nm$dap]] >= nm$diam.min)
+    }
     
     }
     # o proximo if sera para filtrar as linhas
@@ -860,7 +858,7 @@ shinyServer(function(input, output, session) {
     
     data[, input$col.rm_vars] <- NULL
     
-      # Converter zero em NA quando dado tiver mais de 1 linha
+      # Converter zero em NA em dados numericos quando dado tiver mais de 1 linha
       if(nrow(data)>0){
         data <- data %>% dplyr::mutate_if(is.numeric, funs(dplyr::na_if(.,0)) ) 
       }
