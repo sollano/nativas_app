@@ -324,19 +324,19 @@ shinyUI(
                                   
                                   sidebarPanel(
                                     
-                                    h3("Intervalo de classe"),
-                                    numericInput("int.classe", "Insira o intervalo de classe:", 5, 1, 50, 0.5),
-                                    
-                                    h3("Diâmetro mínimo"),
-                                    numericInput("diam.min", "Insira o diâmetro mínimo:", 0, 0, 100, 1),
-                                    
                                     uiOutput("selec_area_parcela_num"),
                                     uiOutput("selec_area_total_num"),
                                     uiOutput("ui_estvcc1"),
                                     uiOutput("ui_estvcc3"),
                                     uiOutput("ui_estvcc4"),
                                     uiOutput("checkbox_calc.est.vert"),
-
+                                    
+                                    h3("Diâmetro mínimo"),
+                                    numericInput("diam.min", "Insira o diâmetro mínimo:", 0, 0, 100, 1),
+                                    
+                                    h3("Intervalo de classe"),
+                                    numericInput("int.classe", "Insira o intervalo de classe:", 5, 1, 50, 0.5),
+                                    
                                     uiOutput("selec_rotuloNI"),
 
                                     h3("Filtrar dados"),
