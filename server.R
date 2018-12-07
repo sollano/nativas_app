@@ -458,7 +458,7 @@ shinyServer(function(input, output, session) {
     data <- rawData_()
     
     selectizeInput("col.area.total",
-                   "Pode ser informada como valor numérico na aba 'Preparação'dos dados", # nome que sera mostrado na UI
+                   strong("Áreas dos estratos devem ser inseridas aqui"), # nome que sera mostrado na UI
                    choices = names(data),
                    selected = area_total_names,
                    multiple = T,

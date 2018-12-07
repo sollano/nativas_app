@@ -74,7 +74,7 @@ shinyUI(
           
           
           # Version ####
-          navbarPage("App Inventário de Nativas 2.1.1",id="tab",
+          navbarPage("App Inventário de Nativas 2.1.3",id="tab",
           #         ####           
                      theme = "green_yeti2.css",
                      # theme = "green.css", # seleciona um tema contido na pasta www
