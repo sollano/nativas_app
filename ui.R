@@ -330,19 +330,20 @@ shinyUI(
                                     h3("Diâmetro mínimo"),
                                     numericInput("diam.min", "Insira o diâmetro mínimo:", 0, 0, 100, 1),
                                     
+                                    uiOutput("selec_area_parcela_num"),
+                                    uiOutput("selec_area_total_num"),
+                                    uiOutput("ui_estvcc1"),
+                                    uiOutput("ui_estvcc3"),
+                                    uiOutput("ui_estvcc4"),
+                                    uiOutput("checkbox_calc.est.vert"),
+
                                     uiOutput("selec_rotuloNI"),
 
                                     h3("Filtrar dados"),
                                     
                                     uiOutput("rm_data_var"),
                                     uiOutput("rm_data_level"),
-                                    uiOutput("rm_vars"),
-                                    uiOutput("selec_area_parcela_num"),
-                                    uiOutput("selec_area_total_num"),
-                                    uiOutput("ui_estvcc1"),
-                                    uiOutput("ui_estvcc3"),
-                                    uiOutput("ui_estvcc4"),
-                                    uiOutput("checkbox_calc.est.vert")
+                                    uiOutput("rm_vars")
                                     
                                     
                                     
