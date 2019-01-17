@@ -412,8 +412,8 @@ shinyUI(
                                            fluidRow(
                                              column(5,
                                                     radioButtons("rb_div",
-                                                                 h3("Calcular diversidade por parcela?"),
-                                                                 c("Sim","Nao"),
+                                                                 h3("Calcular diversidade por grupo?"),
+                                                                 c("Nao", "Parcela", "Estrato"),
                                                                  "Nao",
                                                                  TRUE),
                                                     offset = 7
@@ -432,23 +432,28 @@ shinyUI(
                                            br(),
                                            
                                            fluidRow(
+                                             column(width=2,
+                                                    radioButtons("rb_sim",
+                                                                 h4("Similaridade entre:"),
+                                                                 c("Parcela", "Estrato"),
+                                                                 "Parcela",
+                                                                 TRUE) ),
                                              
-                                             column(width=4,
-                                                    h3("Configuração dos gráficos:")
-                                             ),
+                                             column(width=3,
+                                                    h3("Configuração dos gráficos:") ),
                                              
                                              column(width=5,
                                                     radioButtons("rb_msim_graph", 
-                                                                 "Selecione o método de classificação:", 
+                                                                 h4("Método de classificação:"), 
                                                                  c("Vizinho mais próximo"  = "single", 
                                                                    "Vizinho mais distante" = "complete", 
                                                                    "Distância euclidiana"  = "average"), 
                                                                  selected = "complete", inline = T)  ), 
                                              
                                              
-                                             column(width=3,
+                                             column(width=2,
                                                     sliderInput("slider_msim_graph", 
-                                                                label = "Selecione o número de clusters:", 
+                                                                label = h4("Número de grupos:"), 
                                                                 min = 1, 
                                                                 max = 10, 
                                                                 value = 3,
@@ -537,7 +542,7 @@ shinyUI(
                                   br(),
                                   fluidRow(column(width=5,
                                                   sliderInput("i.licourtBDq", 
-                                                              label = "Selecione um valor de quociente de Licourt:", 
+                                                              label = "Valor do quociente de Licourt inicial:", 
                                                               min = 0, 
                                                               max = 5, 
                                                               value = 1.3,
@@ -574,7 +579,7 @@ shinyUI(
                                                 
                                                 column(2,
                                                        sliderInput("alpha_inv", 
-                                                                   label = "Selecione o nível de significância:", 
+                                                                   label = "Nível de significância:", 
                                                                    min = 0.01, 
                                                                    max = 0.10, 
                                                                    value = 0.10,
@@ -582,7 +587,7 @@ shinyUI(
                                                 ),
                                                 
                                                 column( 2,  sliderInput("erro_inv", 
-                                                                        label = "Selecione o erro admitido (%):", 
+                                                                        label = "Erro admitido (%):", 
                                                                         min = 1, 
                                                                         max = 20, 
                                                                         value = 10,
@@ -590,7 +595,7 @@ shinyUI(
                                                 
                                                 column(2,
                                                        sliderInput("cd_inv", 
-                                                                   label = "Selecione o nº de casas decimais:", 
+                                                                   label = "Número de casas decimais:", 
                                                                    min = 0, 
                                                                    max = 10, 
                                                                    value = 4,
@@ -600,7 +605,7 @@ shinyUI(
                                                 column(2,
                                                        radioButtons(
                                                          inputId='pop_inv', # Id
-                                                         label='Considerar a população infinita ou finita?', # nome que sera mostrado na UI
+                                                         label='População:', # nome que sera mostrado na UI
                                                          choices=c(Infinita="inf", Finita="fin"), # opcoes e seus nomes
                                                          selected="inf",
                                                          inline = T)
@@ -615,7 +620,7 @@ shinyUI(
                                               
                                               fluidRow(
                                                 radioButtons("yi_inv",
-                                                             label="Selecione a variável utilizada nas estatísticas:",
+                                                             label="Variável utilizada nas estatísticas:",
                                                              choices = c("Indv", "G","VCC"),
                                                              selected = "VCC",
                                                              inline=T )

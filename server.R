@@ -1285,11 +1285,17 @@ shinyServer(function(input, output, session) {
     
     # Se o usuario nao quiser realizar a anlise por parcela, o elemento parcelas da lista sera nulo,
     # mesmo que o usuario tenha mapeado a variavel parcela na aba de mapeamento.
-     if(input$rb_div=="Nao"){nm$parcelas=NULL}
+     if(input$rb_div=="Nao"){
+       grupo=NULL
+       }else if(input$rb_div=="Parcela"){
+         grupo=nm$parcelas
+       }else if(input$rb_div=="Estrato"){
+         grupo=nm$estrato
+       }
     
       x <- diversidade(data             = dados, 
                        col.especies     = nm$especies, 
-                       col.parcelas     = nm$parcelas, 
+                       col.parcelas     = grupo, 
                        rotulo.NI        = nm$NI  ) # %>% 
       #gather("Índice", "Resultado") # transpor tabela
       x 
@@ -1326,9 +1332,16 @@ shinyServer(function(input, output, session) {
       need(nm$especies,"Por favor mapeie a coluna referente a 'especies'  "),
       need(nm$parcelas,"Por favor mapeie a coluna referente a 'parcelas'  ") )
     
+    if(input$rb_sim=="Parcela"){
+      grupo=nm$parcelas
+    }else if(input$rb_sim=="Estrato"){
+      grupo=nm$estrato
+    }
+    
+    
     x <- m.similaridade(data             = dados, 
                         col.especies     = nm$especies,
-                        col.comparison   = nm$parcelas,
+                        col.comparison   = grupo,
                         rotulo.NI        = nm$NI  )
     
     x 
