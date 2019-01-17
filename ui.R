@@ -8,11 +8,13 @@ library(tibble)
 library(tidyr)
 suppressPackageStartupMessages(library(dplyr))
 library(lazyeval)
-library(ggplot2)
+suppressPackageStartupMessages(library(ggplot2))
 library(ggdendro)
 library(ggthemes)
 library(openxlsx)
 library(rmarkdown)
+library(stringr)
+library(googledrive)
 
 shinyUI(
   # Intro, taglists e error messages colors ####
@@ -72,7 +74,7 @@ shinyUI(
           
           
           # Version ####
-          navbarPage("App Inventário de Nativas 2.0.9",
+          navbarPage("App Inventário de Nativas 2.1.4",id="tab",
           #         ####           
                      theme = "green_yeti2.css",
                      # theme = "green.css", # seleciona um tema contido na pasta www
@@ -322,29 +324,26 @@ shinyUI(
                                   
                                   sidebarPanel(
                                     
-                                    h3("Intervalo de classe"),
-                                    numericInput("int.classe", "Insira o intervalo de classe:", 5, 1, 50, 0.5),
-                                    
-                                    h3("Diâmetro mínimo"),
-                                    numericInput("diam.min", "Insira o diâmetro mínimo:", 1, 1, 100, 1),
-                                    
-                                    uiOutput("selec_rotuloNI"),
-                                    
-                                    h3("Transformar zero em NA"),
-                                    radioButtons("zero_to_NA","Transformar zeros em variávies numéricas em NA? (recomendado)",c("Sim"=TRUE,"Nao"=FALSE), inline = TRUE),
-                                    
-                                    h3("Filtrar dados"),
-                                    
-                                    uiOutput("rm_data_var"),
-                                    uiOutput("rm_data_level"),
-                                    uiOutput("rm_vars"),
                                     uiOutput("selec_area_parcela_num"),
                                     uiOutput("selec_area_total_num"),
                                     uiOutput("ui_estvcc1"),
                                     uiOutput("ui_estvcc3"),
                                     uiOutput("ui_estvcc4"),
                                     uiOutput("checkbox_calc.est.vert"),
-                                    uiOutput("consist_warning1")
+                                    
+                                    h3("Diâmetro mínimo"),
+                                    numericInput("diam.min", "Insira o diâmetro mínimo:", 0, 0, 100, 1),
+                                    
+                                    h3("Intervalo de classe"),
+                                    numericInput("int.classe", "Insira o intervalo de classe:", 5, 1, 50, 0.5),
+                                    
+                                    uiOutput("selec_rotuloNI"),
+
+                                    h3("Filtrar dados"),
+                                    
+                                    uiOutput("rm_data_var"),
+                                    uiOutput("rm_data_level"),
+                                    uiOutput("rm_vars")
                                     
                                     
                                     
@@ -357,7 +356,18 @@ shinyUI(
                                              hr(),
                                              tableOutput("teste")
                                              ),
-                                    tabPanel("Dados inconsistentes",
+                                    tabPanel("Consistência dos dados",
+                                             
+                                             radioButtons(
+                                               "run_consist",
+                                               h3("Deseja verificar a consistência dos dados?"),
+                                               choices = c("Sim"=TRUE,"Nao"=FALSE),
+                                               selected=FALSE,
+                                               inline = TRUE,
+                                               width = "200%"),
+                                             p("Obs: A consistência requer que a variável DAP esteja mapeada. Recomenda-se mapear também a variável Altura."),
+                                             
+                                             uiOutput("consist_warning1"),
                                              uiOutput("consist_warning2"),
                                              uiOutput("consist_table_help"),
                                              uiOutput("consist_choice"),
@@ -402,8 +412,8 @@ shinyUI(
                                            fluidRow(
                                              column(5,
                                                     radioButtons("rb_div",
-                                                                 h3("Calcular diversidade por parcela?"),
-                                                                 c("Sim","Nao"),
+                                                                 h3("Calcular diversidade por grupo?"),
+                                                                 c("Nao", "Parcela", "Estrato"),
                                                                  "Nao",
                                                                  TRUE),
                                                     offset = 7
@@ -422,23 +432,28 @@ shinyUI(
                                            br(),
                                            
                                            fluidRow(
+                                             column(width=2,
+                                                    radioButtons("rb_sim",
+                                                                 h4("Similaridade entre:"),
+                                                                 c("Parcela", "Estrato"),
+                                                                 "Parcela",
+                                                                 TRUE) ),
                                              
-                                             column(width=4,
-                                                    h3("Configuração dos gráficos:")
-                                             ),
+                                             column(width=3,
+                                                    h3("Configuração dos gráficos:") ),
                                              
                                              column(width=5,
                                                     radioButtons("rb_msim_graph", 
-                                                                 "Selecione o método de classificação:", 
+                                                                 h4("Método de classificação:"), 
                                                                  c("Vizinho mais próximo"  = "single", 
                                                                    "Vizinho mais distante" = "complete", 
                                                                    "Distância euclidiana"  = "average"), 
                                                                  selected = "complete", inline = T)  ), 
                                              
                                              
-                                             column(width=3,
+                                             column(width=2,
                                                     sliderInput("slider_msim_graph", 
-                                                                label = "Selecione o número de clusters:", 
+                                                                label = h4("Número de grupos:"), 
                                                                 min = 1, 
                                                                 max = 10, 
                                                                 value = 3,
@@ -527,7 +542,7 @@ shinyUI(
                                   br(),
                                   fluidRow(column(width=5,
                                                   sliderInput("i.licourtBDq", 
-                                                              label = "Selecione um valor de quociente de Licourt:", 
+                                                              label = "Valor do quociente de Licourt inicial:", 
                                                               min = 0, 
                                                               max = 5, 
                                                               value = 1.3,
@@ -564,7 +579,7 @@ shinyUI(
                                                 
                                                 column(2,
                                                        sliderInput("alpha_inv", 
-                                                                   label = "Selecione o nível de significância:", 
+                                                                   label = "Nível de significância:", 
                                                                    min = 0.01, 
                                                                    max = 0.10, 
                                                                    value = 0.10,
@@ -572,7 +587,7 @@ shinyUI(
                                                 ),
                                                 
                                                 column( 2,  sliderInput("erro_inv", 
-                                                                        label = "Selecione o erro admitido (%):", 
+                                                                        label = "Erro admitido (%):", 
                                                                         min = 1, 
                                                                         max = 20, 
                                                                         value = 10,
@@ -580,7 +595,7 @@ shinyUI(
                                                 
                                                 column(2,
                                                        sliderInput("cd_inv", 
-                                                                   label = "Selecione o nº de casas decimais:", 
+                                                                   label = "Número de casas decimais:", 
                                                                    min = 0, 
                                                                    max = 10, 
                                                                    value = 4,
@@ -590,7 +605,7 @@ shinyUI(
                                                 column(2,
                                                        radioButtons(
                                                          inputId='pop_inv', # Id
-                                                         label='Considerar a população infinita ou finita?', # nome que sera mostrado na UI
+                                                         label='População:', # nome que sera mostrado na UI
                                                          choices=c(Infinita="inf", Finita="fin"), # opcoes e seus nomes
                                                          selected="inf",
                                                          inline = T)
@@ -605,7 +620,7 @@ shinyUI(
                                               
                                               fluidRow(
                                                 radioButtons("yi_inv",
-                                                             label="Selecione a variável utilizada nas estatísticas:",
+                                                             label="Variável utilizada nas estatísticas:",
                                                              choices = c("Indv", "G","VCC"),
                                                              selected = "VCC",
                                                              inline=T )
@@ -648,6 +663,12 @@ shinyUI(
                                            h2("Download de tabelas", style = "text-align: center;"),
                                            br(),
                                            
+                                           helpText(
+                                             "Ao clicar no botão de download, você se declara de acordo com os termos descritos",
+                                             a(href="https://docs.google.com/document/d/1nvPcNTHCZJhuqsEYoHdYR9NVc44_AJuaHUynQwveVgk/edit?usp=sharing", "aqui"),
+                                             "."
+                                           ),
+                                           
                                              fluidRow(
                                                column(
                                                  10
@@ -659,7 +680,8 @@ shinyUI(
                                            
                                            fluidRow(column(3,downloadButton('downloadData', 'Baixar tabelas selecionadas'), offset=4)),
                                            br(),
-                                           h3("Ou, para baixar todas as tabelas disponíveis, clique abaixo:"),
+
+                                            h3("Ou, para baixar todas as tabelas disponíveis, clique abaixo:"),
                                            fluidRow(
                                              column(3,downloadButton('downloadAllData', 'Baixar todas as tabelas'), offset=4)
                                              )
@@ -684,6 +706,12 @@ shinyUI(
                                              ),
                                              
                                              h3("Download de graficos"),
+                                             
+                                             helpText(
+                                               "Ao clicar no botão de download, você se declara de acordo com os termos descritos",
+                                               a(href="https://docs.google.com/document/d/1nvPcNTHCZJhuqsEYoHdYR9NVc44_AJuaHUynQwveVgk/edit?usp=sharing", "aqui"),
+                                               "."
+                                             ),
                                              
                                              selectInput("graph_d", "Escolha um grafico:", 
                                                          choices = c(
