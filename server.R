@@ -1236,8 +1236,6 @@ shinyServer(function(input, output, session) {
       dados[[nm$cap]] <- NULL
     }
     
-    print(dados)
-    
     tree_summarise(
       df           = dados,
       tree         = nm$arvore,
