@@ -36,7 +36,7 @@ source("funs/acs.R"                , encoding="UTF-8")
 source("funs/ace.R"                , encoding="UTF-8")
 source("funs/as_diffs.R"           , encoding="UTF-8")
 source("funs/inv_summary.R"        , encoding="UTF-8")
-source("funs/arv_summary.R"        , encoding="UTF-8")
+source("funs/tree_summarise.R"     , encoding="UTF-8")
 source("funs/round_df.R"           , encoding="UTF-8")
 source("funs/estrat_vert_souza.R"  , encoding="UTF-8")
 source("funs/classe_diametro.R"    , encoding="UTF-8")
@@ -1229,11 +1229,23 @@ shinyServer(function(input, output, session) {
     groups <- c(nm$estrato, nm$parcelas, nm$especies)
     groups <- groups[groups != ""]
     
-    arv_summary(
-      df = dados,
-      arvore = nm$arvore,
-      dap = nm$dap,
-      .groups = groups)
+    # O if a seguir sera para remover o CAP, caso o usuario tenha informado o CAP
+    # Isso pq o dap ja estara calculado, e ele que sera usado nos calculos.
+    # Se o CAP nao for removido, sera mantido, e pode causar confusao para os usuarios.
+    if(!is.null(input$col.cap) && !is.na(input$col.cap) ){
+      dados[[nm$cap]] <- NULL
+    }
+    
+    print(dados)
+    
+    tree_summarise(
+      df           = dados,
+      tree         = nm$arvore,
+      dbh          = nm$dap,
+      .groups      = groups,
+      vwb          = input$col.vcc
+    )
+  
     
     
   })
