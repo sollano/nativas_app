@@ -1,5 +1,5 @@
+options(shiny.sanitize.errors = FALSE)
 options(shiny.maxRequestSize=30*1024^2) 
-
 library(shiny)
 suppressPackageStartupMessages(library(DT))
 #library(plotly)
