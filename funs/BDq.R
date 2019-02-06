@@ -16,12 +16,14 @@ bdq.meyer = function(data, col.parcelas, col.dap, area.parcela, intervalo.classe
   
   # Estrutura diametrica
   
+  if(DBH.MIN%%INTERVALO.CLASSE==0) crtion <- 0 else crtion <- DBH.MIN%%INTERVALO.CLASSE - INTERVALO.CLASSE
+  
   data[,"Classe"] = trunc(data[,DBH] /  INTERVALO.CLASSE)
   data[, "CentroClasse"] = data[,"Classe"] * INTERVALO.CLASSE + (INTERVALO.CLASSE / 2)
   
   freq = data.frame(table(data[,"Classe"]))
   DD = data.frame(Classe = as.numeric(as.character(freq[,1])) ) # correcao fator para numerico
-  DD$CentroClasse = DD$Classe * INTERVALO.CLASSE - (INTERVALO.CLASSE / 2)
+  DD$CentroClasse = (DD$Classe * INTERVALO.CLASSE - (INTERVALO.CLASSE / 2)) + crtion
   DD$NumIndv = freq[,2]
   # Alterei aqui para a area poder ser inserida em m2
   DD$IndvHectare = round(DD$NumIndv / ((AREA.PLOT/10000) * nplots), 1)
