@@ -1241,7 +1241,7 @@ shinyServer(function(input, output, session) {
       tree         = nm$arvore,
       dbh          = nm$dap,
       .groups      = groups,
-      vwb          = input$col.vcc
+      vwb          = nm$vcc
     )
   
     
