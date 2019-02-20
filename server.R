@@ -244,8 +244,6 @@ shinyServer(function(input, output, session) {
     fingerprint <- input$fingerprint
     ipid <- input$ipid
     
-    print(ipid)
-    
     suppressMessages(gs_auth("googlesheets_token.rds",verbose = F))
     
     # pega informacoes com base no ip
