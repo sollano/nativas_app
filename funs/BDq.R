@@ -7,7 +7,7 @@ bdq.meyer = function(data, col.parcelas, col.dap, area.parcela, intervalo.classe
   # alterei aqui para areaplot poder ser uma coluna do data frame
   if(is.numeric(area.parcela) ){AREA.PLOT = area.parcela}else(AREA.PLOT = mean(data[,area.parcela],na.rm = T ) )
   LICOURT = i.licourt
-  
+
   # Remover NA
   data = data[!is.na(data[DBH]),]
   
@@ -15,23 +15,12 @@ bdq.meyer = function(data, col.parcelas, col.dap, area.parcela, intervalo.classe
   nplots = length(unique(data[,PLOTS]))
   
   # Estrutura diametrica
-  
-  if(DBH.MIN%%INTERVALO.CLASSE==0) crtion <- 0 else crtion <- DBH.MIN%%INTERVALO.CLASSE - INTERVALO.CLASSE
-  
-  data[,"Classe"] = trunc(data[,DBH] /  INTERVALO.CLASSE)
-  data[, "CentroClasse"] = data[,"Classe"] * INTERVALO.CLASSE + (INTERVALO.CLASSE / 2)
-  
-  freq = data.frame(table(data[,"Classe"]))
-  DD = data.frame(Classe = as.numeric(as.character(freq[,1])) ) # correcao fator para numerico
-  DD$CentroClasse = (DD$Classe * INTERVALO.CLASSE - (INTERVALO.CLASSE / 2)) + crtion
-  DD$NumIndv = freq[,2]
-  # Alterei aqui para a area poder ser inserida em m2
-  DD$IndvHectare = round(DD$NumIndv / ((AREA.PLOT/10000) * nplots), 1)
-  DD = DD[DD$CentroClasse >= DBH.MIN,]
-  DD = DD[DD$IndvHectare > 0,]
-  rm(freq)
-  
+
   # Meyer
+  
+  DD <- classe_diametro(data, DBH,PLOTS,area.parcela, INTERVALO.CLASSE,DBH.MIN) %>% 
+    dplyr::select(CentroClasse=CC,NumIndv,IndvHectare=IndvHA)
+
   meyer = lm(log(DD$IndvHectare) ~ DD$CentroClasse)
   DD$Meyer = round(exp(predict(meyer)), 0)
   

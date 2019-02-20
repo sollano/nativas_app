@@ -159,7 +159,7 @@ classe_diametro <- function(df, dap, parcela, area_parcela, ic = 5, dapmin = 5, 
     dplyr::group_by(!!!especies_sym, CC ) %>% # Agrupar e calcular o numero de individuos, e n de individuos por ha
     dplyr::summarise(
       NumIndv=n(),
-      IndvHA = round( NumIndv / (area_parcela_num/10000 * npar ),  1 ),
+      IndvHA = round( NumIndv / (area_parcela_num/10000 * npar ),  2 ),
       G = sum(g),
       G_ha = sum(g) / (area_parcela_num/10000 * npar ),
       volume = sum( !!volume_sym, na.rm = T  ),
