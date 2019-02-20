@@ -256,7 +256,7 @@ shinyServer(function(input, output, session) {
         hora=format(Sys.time(), "%X") ) %>% 
       select(ip,data, hora, everything())
     
-    gs_add_row(gs_title("app_nativas_log",verbose=FALSE), 
+    gs_add_row(gs_title("app_logs",verbose=FALSE), 
                ws = 1,
                input = result,
                verbose = FALSE)
