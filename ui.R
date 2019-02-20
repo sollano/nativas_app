@@ -16,6 +16,8 @@ library(openxlsx)
 library(rmarkdown)
 library(stringr)
 library(googledrive)
+library(googlesheets)
+library(rgeolocate)
 
 inputUserid <- function(inputId, value='') {
   #   print(paste(inputId, "=", value))
@@ -94,7 +96,7 @@ shinyUI(
           
           
           # Version ####
-          navbarPage("App Inventário de Nativas 2.1.5",id="tab",
+          navbarPage("App Inventário de Nativas 2.1.6",id="tab",
           #         ####           
                      theme = "green_yeti2.css",
                      # theme = "green.css", # seleciona um tema contido na pasta www
