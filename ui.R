@@ -113,8 +113,7 @@ shinyUI(
                                
                                fluidRow(
                                  column(5,
-                                        includeMarkdown("about.md"),
-                                        textOutput("testtext")
+                                        includeMarkdown("about.md")
                                  ),
                                  column(6,
                                         img(contentType = "image/jpg",

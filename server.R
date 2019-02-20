@@ -17,6 +17,8 @@ library(openxlsx)
 library(rmarkdown)
 library(stringr)
 library(googledrive)
+library(googlesheets)
+library(rgeolocate)
 
 
 # Data e functions ####
@@ -232,17 +234,33 @@ shinyServer(function(input, output, session) {
   })
   
   # logging ####
-  
-  observe({
-    fingerprint <- input$fingerprint
-    ipid <- input$ipid
-    #print(fingerprint)
-    #print(ipid)
+  # once=TRUE resolve o problema de postar duas vezes
+  observeEvent(input$fingerprint,once=TRUE,eventExpr={
+    
+    suppressMessages(gs_auth("googlesheets_token.rds",verbose = F))
+    
+    # pega informacoes com base no ip
+    result <- rgeolocate::ip_api(input$ipid)
+    #result <- rgeolocate::ip_api("186.244.182.177")
+    
+    # add informacoes
+    result <- result %>% 
+      mutate(
+        ip = input$ipid,
+        hash = input$fingerprint,
+        data = format(Sys.time(), "%d/%m/%Y"),
+        dia = format(Sys.time(), "%d"),
+        mes = format(Sys.time(), "%B"),
+        ano = format(Sys.time(), "%Y"),
+        hora=format(Sys.time(), "%X") ) %>% 
+      select(ip,data, hora, everything())
+    
+    gs_add_row(gs_title("app_nativas_log",verbose=FALSE), 
+               ws = 1,
+               input = result,
+               verbose = FALSE)
+    
   })
-  
-  output$testtext <- renderText(paste("     fingerprint: ", input$fingerprint, "     ip: ", input$ipid))
-  
-  
   
   # ####
   
