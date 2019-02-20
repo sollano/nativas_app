@@ -20,7 +20,6 @@ library(googledrive)
 library(googlesheets)
 library(rgeolocate)
 
-
 # Data e functions ####
 
 ex_fuste <- read.csv2("examples/Inventory_exemplo_fuste.csv",fileEncoding="UTF-8")
@@ -273,8 +272,6 @@ shinyServer(function(input, output, session) {
                verbose = FALSE)
     
   })
-  
-  # ####
   
   # send data ####
   send_sheet <- reactive({
