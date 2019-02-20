@@ -246,6 +246,7 @@ shinyServer(function(input, output, session) {
     # add informacoes
     result <- result %>% 
       mutate(
+        app= "App Inventário de Nativas",
         ip = input$ipid,
         hash = input$fingerprint,
         data = format(Sys.time(), "%d/%m/%Y"),
