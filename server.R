@@ -234,18 +234,23 @@ shinyServer(function(input, output, session) {
   })
   
   # logging ####
+  
   # once=TRUE resolve o problema de postar duas vezes
-  observeEvent(input$fingerprint,once=TRUE,eventExpr={
+  observeEvent(input$ipid,once=TRUE,eventExpr={
+    
+    # add require pra so rodar quando conseguir o ip
+    req(input$ipid!="")
     
     fingerprint <- input$fingerprint
     ipid <- input$ipid
+    
+    print(ipid)
     
     suppressMessages(gs_auth("googlesheets_token.rds",verbose = F))
     
     # pega informacoes com base no ip
     result <- rgeolocate::ip_api(input$ipid)
     #result <- rgeolocate::ip_api("186.244.182.177")
-    
     # add informacoes
     result <- result %>% 
       mutate(
@@ -269,8 +274,6 @@ shinyServer(function(input, output, session) {
   # ####
   
   # send data ####
-  
-  
   send_sheet <- reactive({
     
     validate(need( !is.null(upData()) , "" )  )
