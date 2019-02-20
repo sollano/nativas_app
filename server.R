@@ -249,18 +249,23 @@ shinyServer(function(input, output, session) {
     # pega informacoes com base no ip
     result <- rgeolocate::ip_api(input$ipid)
     #result <- rgeolocate::ip_api("186.244.182.177")
+    
+    # converter data pro nosso timezone
+    systime <- lubridate::with_tz(Sys.time(), tzone = "America/Sao_Paulo")
+    
     # add informacoes
+
     result <- result %>% 
       mutate(
         app= "App Inventário de Nativas",
         ip = input$ipid,
         hash = input$fingerprint,
-        data = format(Sys.time(), "%d/%m/%Y"),
-        dia = format(Sys.time(), "%d"),
-        mes = format(Sys.time(), "%B"),
-        ano = format(Sys.time(), "%Y"),
-        hora=format(Sys.time(), "%X") ) %>% 
-      select(app,ip,data, hora, everything())
+        data = format(systime, "%d/%m/%Y"),
+        dia = format(systime, "%d"),
+        mes = format(systime, "%B"),
+        ano = format(systime, "%Y"),
+        hora=format(systime, "%X") ) %>% 
+      select(app,ip,data,hora,region_name,region_code,country_code,isp,latitude,longitude,organisation,timezone,zip_code,status,hash,dia,mes,ano)
     
     gs_add_row(gs_title("app_logs",verbose=FALSE), 
                ws = 1,
