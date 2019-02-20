@@ -251,7 +251,7 @@ shinyServer(function(input, output, session) {
     #result <- rgeolocate::ip_api("186.244.182.177")
     
     # converter data pro nosso timezone
-    systime <- lubridate::with_tz(Sys.time(), tzone = "America/Sao_Paulo")
+    systime <- lubridate::with_tz(Sys.time(), tzone = result$timezone)
     
     # add informacoes
 
