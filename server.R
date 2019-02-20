@@ -237,6 +237,9 @@ shinyServer(function(input, output, session) {
   # once=TRUE resolve o problema de postar duas vezes
   observeEvent(input$fingerprint,once=TRUE,eventExpr={
     
+    fingerprint <- input$fingerprint
+    ipid <- input$ipid
+    
     suppressMessages(gs_auth("googlesheets_token.rds",verbose = F))
     
     # pega informacoes com base no ip
