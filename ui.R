@@ -17,6 +17,25 @@ library(rmarkdown)
 library(stringr)
 library(googledrive)
 
+inputUserid <- function(inputId, value='') {
+  #   print(paste(inputId, "=", value))
+  tagList(
+    singleton(tags$head(tags$script(src = "js/md5.js", type='text/javascript'))),
+    singleton(tags$head(tags$script(src = "js/shinyBindings.js", type='text/javascript'))),
+    tags$body(onload="setvalues()"),
+    tags$input(id = inputId, class = "userid", value=as.character(value), type="text", style="display:none;")
+  )
+}
+
+inputIp <- function(inputId, value=''){
+  tagList(
+    singleton(tags$head(tags$script(src = "js/md5.js", type='text/javascript'))),
+    singleton(tags$head(tags$script(src = "js/shinyBindings.js", type='text/javascript'))),
+    tags$body(onload="setvalues()"),
+    tags$input(id = inputId, class = "ipaddr", value=as.character(value), type="text", style="display:none;")
+  )
+}
+
 shinyUI(
   # Intro, taglists e error messages colors ####
   tagList(tags$style(HTML(".irs-single, .irs-bar-edge, .irs-bar{background: #00a90a}")), # this is actually .css; this changes the color for the sliders
@@ -81,11 +100,21 @@ shinyUI(
                      # theme = "green.css", # seleciona um tema contido na pasta www
                      # theme = shinythemes::shinytheme("paper"), # seleciona um tema utilizando pacote
                      
-                     # Painel Intro ####          
+                     # Painel Intro ####   
+          
+          
                      tabPanel( "Intro" ,
+                               
+                               # logging ####
+                               inputIp("ipid"),
+                               inputUserid("fingerprint"),
+                               # ####
+                               
+                               
                                fluidRow(
                                  column(5,
-                                        includeMarkdown("about.md")
+                                        includeMarkdown("about.md"),
+                                        textOutput("testtext")
                                  ),
                                  column(6,
                                         img(contentType = "image/jpg",
@@ -104,6 +133,7 @@ shinyUI(
                               sidebarLayout(
                                 
                                 sidebarPanel(
+                                  
                                   
                                   h3("Dados"),
                                   

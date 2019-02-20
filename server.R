@@ -230,7 +230,25 @@ shinyServer(function(input, output, session) {
     # aperte o botao input$columns
     
   })
+  
+  # logging ####
+  
+  observe({
+    fingerprint <- input$fingerprint
+    ipid <- input$ipid
+    #print(fingerprint)
+    #print(ipid)
+  })
+  
+  output$testtext <- renderText(paste("     fingerprint: ", input$fingerprint, "     ip: ", input$ipid))
+  
+  
+  
+  # ####
+  
   # send data ####
+  
+  
   send_sheet <- reactive({
     
     validate(need( !is.null(upData()) , "" )  )
