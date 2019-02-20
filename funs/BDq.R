@@ -15,11 +15,11 @@ bdq.meyer = function(data, col.parcelas, col.dap, area.parcela, intervalo.classe
   nplots = length(unique(data[,PLOTS]))
   
   # Estrutura diametrica
-
-  # Meyer
   
   DD <- classe_diametro(data, DBH,PLOTS,area.parcela, INTERVALO.CLASSE,DBH.MIN) %>% 
     dplyr::select(CentroClasse=CC,NumIndv,IndvHectare=IndvHA)
+  
+  # Meyer
 
   meyer = lm(log(DD$IndvHectare) ~ DD$CentroClasse)
   DD$Meyer = round(exp(predict(meyer)), 0)
