@@ -246,9 +246,10 @@ shinyServer(function(input, output, session) {
     #print(fingerprint)
     suppressMessages(gs_auth("googlesheets_token.rds",verbose = F))
     
-    # pega informacoes com base no ip
+    # pega informacoes com base no ip e salva em um df
     result <- rgeolocate::ip_api(input$ipid)
     #result <- rgeolocate::ip_api("186.244.182.177")
+    print(result)
     
     # converter data pro timezone correto
     systime <- lubridate::with_tz(Sys.time(), tzone = result$timezone)
@@ -265,7 +266,7 @@ shinyServer(function(input, output, session) {
         mes = format(systime, "%B"),
         ano = format(systime, "%Y"),
         hora=format(systime, "%X") ) %>% 
-      select(app,ip,data,hora,region_name,region_code,country_code,isp,latitude,longitude,organisation,timezone,zip_code,status,hash,dia,mes,ano)
+      select(app,ip,data,hora,region_name,region_code,country_code,isp,latitude,longitude,organisation,timezone,zip_code,status,hash,dia,mes,ano, city_name)
     
     gs_add_row(gs_title("app_logs",verbose=FALSE), 
                ws = 1,
