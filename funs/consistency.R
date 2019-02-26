@@ -101,14 +101,13 @@ consistency <- function(df, cap, dap, ht,parcela,especie,arvore,fuste, lower=0.2
       DAP_test = case_when(
         dap <= dap_mean_minus_3_sd ~ "DAP menor que media + 3 sd",
         dap >  dap_mean_plus_3_sd  ~ "DAP maior que media + 3 sd",
-        !is.na(dap ) &dap < 1.3    ~ "Dap menor que 1,3",
         TRUE                       ~ "ok"
       ),
       
       HT_test = case_when(
+        is.na( dap ) & is.numeric( ht ) ~ "Arvore com altura e sem dap",
         ht <= ht_mean_minus_3_sd        ~ "Altura menor que media - 3 sd",
         ht >  ht_mean_plus_3_sd         ~ "Altura maior que media + 3 sd",
-        is.na( dap ) & is.numeric( ht ) ~ "Arvore com altura e sem dap",
         TRUE                            ~ "ok"
       ),
       
