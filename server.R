@@ -19,6 +19,7 @@ library(stringr)
 library(googledrive)
 library(googlesheets)
 library(rgeolocate)
+library(shinyalert)
 
 # Data e functions ####
 
@@ -71,7 +72,7 @@ idade_names <- c("IDADE", "Idade","idade")
 VSC_names <- c("VSC","Vsc", "vsc")
 HD_names <- c("HD", "Hd", "hd", "ALTURA_DOMINANTE", "ALT_DOM")
 grupos_names <- c(c("TALHAO", "PARCELA"), c("area.code", "transect"), c("codigo", "transecto"), "parcela", "PARCELA", "transect", "cod.parcela", "Cod.parcela", "COD.PARCELA")
-estratos_names <- c("TALHAO", "Talhao", "talhao","COD_TALHAO","Cod_Talhao","cod_talhao", "COD.TALHAO", "Cod.Talhao","cod.talhao", "area.code", "Area.Code","AREA.CODE", "area_code","Area_Code","AREA_CODE")
+estratos_names <- c("TALHAO", "Talhao", "talhao","COD_TALHAO","Cod_Talhao","cod_talhao", "COD.TALHAO", "Cod.Talhao","cod.talhao", "area.code", "Area.Code","AREA.CODE", "area_code","Area_Code","AREA_CODE","estrato", "Estrato", "ESTRATO")
 
 # Server ####
 
@@ -249,7 +250,7 @@ shinyServer(function(input, output, session) {
     # pega informacoes com base no ip e salva em um df
     result <- rgeolocate::ip_api(input$ipid)
     #result <- rgeolocate::ip_api("186.244.182.177")
-    print(result)
+    #print(result)
     
     # converter data pro timezone correto
     systime <- lubridate::with_tz(Sys.time(), tzone = result$timezone)
@@ -2476,9 +2477,34 @@ shinyServer(function(input, output, session) {
   
   # Download tabelas ####
   
+  
+
   # Cria um valor inicial zero para verificar se o usuario fez algum download ou nao.
   # Se o usuario clicar em algum botao de download, sera add a esse valor uma unidade.
   rnDownloads <- reactiveValues(ndown=0)
+  
+  # Codigo para criar um poppup (modal)
+  
+  # Iremos observar o botao de download.
+  # Como shiny nao permite que observemos o botao de download diretamente,
+  #iremos observar o objeto rnDownloads, que tera seu valor alterado sempre que um download for feito.
+  
+  # a funcao de javascript abaixo direciona o usuario ao link de doacao, caso ele clique em ok
+  
+  #print(rnDownloads$ndown)
+  
+  observeEvent(rnDownloads$ndown, {
+    # Show a modal when the button is pressed
+    shinyalert::shinyalert("Obrigado!", 
+                           "Se esse app lhe foi útil, por favor considere fazer uma doação para nos ajudar a manter esse projeto no ar!",
+                           type = "success",
+                           closeOnEsc = TRUE,
+                           callbackJS = "function(x) { if (x > 0) { window.open('https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=JVF7VGRMANRC6&source=url') ; } }",
+                           closeOnClickOutside = FALSE,
+                           showCancelButton = TRUE,
+                           cancelButtonText = ":(",
+                           confirmButtonText = "Doar!") }, ignoreInit = TRUE)
+  
   
   output$checkbox_df_download <- renderUI({
     

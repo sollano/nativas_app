@@ -18,6 +18,7 @@ library(stringr)
 library(googledrive)
 library(googlesheets)
 library(rgeolocate)
+library(shinyalert)
 
 inputUserid <- function(inputId, value='') {
   #   print(paste(inputId, "=", value))
@@ -96,7 +97,7 @@ shinyUI(
           
           
           # Version ####
-          navbarPage("App Inventário de Nativas 2.1.6",id="tab",
+          navbarPage("App Inventário de Nativas 2.1.7",id="tab",
           #         ####           
                      theme = "green_yeti2.css",
                      # theme = "green.css", # seleciona um tema contido na pasta www
@@ -701,6 +702,8 @@ shinyUI(
                                              "."
                                            ),
                                            
+
+
                                              fluidRow(
                                                column(
                                                  10
@@ -710,6 +713,9 @@ shinyUI(
                                                       ),
                                            br(),
                                            
+                                           shinyalert::useShinyalert(),
+                                           
+
                                            fluidRow(column(3,downloadButton('downloadData', 'Baixar tabelas selecionadas'), offset=4)),
                                            br(),
 
