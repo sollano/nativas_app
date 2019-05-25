@@ -53,6 +53,7 @@ source("funs/check_yi.R"           , encoding="UTF-8")
 source("funs/alt.filter.keep.R"    , encoding="UTF-8")
 source("funs/alt.filter.rm.R"      , encoding="UTF-8")
 source("funs/renamer.R"            , encoding="UTF-8")
+source("funs/selecter.R"           , encoding="UTF-8")
 
 # vectors for names ####
 
@@ -906,7 +907,7 @@ shinyServer(function(input, output, session) {
     
       # Converter zero em NA em dados numericos quando dado tiver mais de 1 linha
       if(nrow(data)>0){
-        data <- data %>% dplyr::mutate_if(is.numeric, funs(dplyr::na_if(.,0)) ) 
+        data <- data %>% dplyr::mutate_if(is.numeric, list(~dplyr::na_if(.,0)) ) 
       }
 
     # Volume com casca 
@@ -1019,6 +1020,24 @@ shinyServer(function(input, output, session) {
     
     data <- as.data.frame(data)
     
+    # Cria um dataframe com os nomes padronizados das variaveis mapeadas
+    data <- selecter(data, arvore = nm$arvore,
+                     parcelas=nm$parcelas,
+                     especies=nm$especies,
+                     
+                     cap = nm$cap,
+                     dap= nm$dap,
+                     ht= nm$ht,
+                     
+                     vcc=nm$vcc,
+                     vsc=nm$vsc,
+                     area.parcela=nm$area.parcela,
+                     area.total=nm$area.total,
+                     
+                     est.vertical=nm$est.vertical,
+                     est.interna=nm$est.interna,
+                     estrato=nm$estrato )
+    data
     
   })
   
