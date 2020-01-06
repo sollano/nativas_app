@@ -3,8 +3,8 @@
 ### Ajude o nosso projeto a se manter no ar!
 
 <div style="text-align:justify">
-Esse projeto foi criado com o intuito de ajudar a comunidade florestal. Para continuarmos a mantê-lo de forma gratuita a todos,
-precisamos de doações para cobrir os custos do servidor que mantêm esse aplicativo no ar. Sua contribução é de grande ajuda.
+O projeto foi criado com o intuito de ajudar a comunidade florestal. Para continuarmos a mantê-lo de forma gratuita a todos,
+precisamos de doações para cobrir os custos do servidor que mantêm o app disponível. Sua contribução é de grande ajuda.
 </div>
 
 
