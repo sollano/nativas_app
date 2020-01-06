@@ -10,6 +10,18 @@ precisamos de doações para cobrir os custos do servidor que mantêm o app disp
 
 ## Apoiadores do Mês 
 
+<div><p style="float:left;"><a href="https://www.linkedin.com/in/marcio-manfrenato-80032ba6/"><img src="www/marciomanfrenato.jpg" width="100" height="100"/></a></p>
+  
+<p><font size="5">  Marcio Manfrenato</font></p>
+    
+<p><font size="4"> R$ 150,00 </font></p>
+      
+<p><font size="4"><a href="https://www.linkedin.com/in/marcio-manfrenato-80032ba6/">LinkedIn</a></font></p>
+        
+</div>
+        
+<div style="clear: left;"></div>
+
 <div><p style="float:left;"><a href="https://www.linkedin.com/in/fernanda-luiza-silva-de-oliveira-0a3bbb43/"><img src="www/fernandaoliveira.jfif" width="100" height="100"/></a></p>
   
 <p><font size="5">  Fernanda Luiza Silva de Oliveira</font></p>
@@ -67,10 +79,10 @@ Com este app, é possível realizar análises fitossociológicas, calcular índi
 
 
 Conheça nossos outros projetos:
-[App Inventário Florestal](http://34.234.76.169/shiny/inventario_app/),
-[App Cubagem](http://34.234.76.169/shiny/cubagem_app/),
-[App Economia Florestal](http://34.234.76.169/shiny/forest_economy_app/),
-[App F de Graybill](http://34.234.76.169/shiny/graybill_app/),
+[App Inventário Florestal](http://52.87.251.141/shiny/inventario_app/),
+[App Cubagem](http://52.87.251.141/shiny/cubagem_app/),
+[App Economia Florestal](http://52.87.251.141/shiny/forest_economy_app/),
+[App F de Graybill](http://52.87.251.141/shiny/graybill_app/),
 [R package: forestmangr](https://github.com/sollano/forestmangr#readme)
 
 #### Desenvolvido por:
