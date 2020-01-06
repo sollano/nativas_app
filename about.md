@@ -1,6 +1,6 @@
 # App Inventário de Nativas
 
-### Ajude esse projeto a se manter no ar!
+### Ajude o nosso projeto a se manter no ar!
 
 <div style="text-align:justify">
 Esse projeto foi criado com o intuito de ajudar a comunidade florestal. Para continuarmos a mantê-lo de forma gratuita a todos,
