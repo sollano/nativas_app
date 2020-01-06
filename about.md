@@ -1,18 +1,53 @@
-
 # App Inventário de Nativas
 
-<div style="text-align:justify">
-Informações necessárias ao manejo e planejamento de povoamentos, que normalmente são referentes ao volume de madeira e/ou outra variável dendrométrica, no sentido qualitativo e quantitativo, são obtidas por meio do inventário florestal. Entretanto, o processamento dos mesmos geralmente é feito utilizando softwares pagos. Este app foi criado com o intuito de facilitar este processo, de forma prática e gratuita, sem a necessidade de se manipular planilhas ou instalar softwares. Utilizando a linguagem R em conjunto com o pacote Shiny, temos uma ferramenta poderosa, que pode ser utilizada direto do navegador, por profissionais da área, estudantes e entusiastas que desejam processar um inventário.
-Com este app, é possível realizar análises fitossociológicas, calcular índices de diversidade, além do processamento de inventário florestal, utilizando os métodos: Amostragem Casual Simples, Amostragem Estratificada, e Amostragem Sistemática.
-</div>
-
-## Ajude esse projeto a se manter no ar!
+### Ajude esse projeto a se manter no ar!
 
 <div style="text-align:justify">
 Esse projeto foi criado com o intuito de ajudar a comunidade florestal. Para continuarmos a mantê-lo de forma gratuita a todos,
 precisamos de doações para cobrir os custos do servidor que mantêm esse aplicativo no ar. Sua contribução é de grande ajuda.
-Para doar, basta clicar no botão abaixo:
 </div>
+
+
+## Apoiadores do Mês 
+
+<div><p style="float:left;"><a href="https://www.linkedin.com/in/fernanda-luiza-silva-de-oliveira-0a3bbb43/"><img src="www/fernandaoliveira.jfif" width="100" height="100"/></a></p>
+  
+<p><font size="5">  Fernanda Luiza Silva de Oliveira</font></p>
+    
+<p><font size="4"> R$ 80,00</font></p>
+      
+<p><font size="4"><a href="https://www.linkedin.com/in/fernanda-luiza-silva-de-oliveira-0a3bbb43/">LinkedIn</a></font></p>
+        
+</div>
+        
+<div style="clear: left;"></div>
+
+
+<div><p style="float:left;"><a href="https://www.linkedin.com/in/jorge-luiz-b-mainart-15442866/M"><img src="www/jorgemainart.jfif" width="100" height="100"/></a></p>
+  
+<p><font size="5">  Jorge Luiz B. Mainart</font></p>
+    
+<p><font size="4"> R$ 75,00</font></p>
+      
+<p><font size="4"><a href="https://www.linkedin.com/in/jorge-luiz-b-mainart-15442866/">LinkedIn</a></font></p>
+        
+</div>
+        
+<div style="clear: left;"></div>
+
+<div><p style="float:left;"><a href="https://www.linkedin.com/in/karize-patriota-80927258/"><img src="www/karizepatriota.jfif" width="100" height="100"/></a></p>
+  
+<p><font size="5">  Karize Patriota</font></p>
+    
+<p><font size="4"> R$ 50,00</font></p>
+      
+<p><font size="4"><a href="https://www.linkedin.com/in/karize-patriota-80927258/">LinkedIn</a></font></p>
+        
+</div>
+        
+<div style="clear: left;"></div>
+
+<p><font size="3">  Para contribuir com o nosso projeto, basta clicar no botão abaixo!</font></p>
 
 <div style="text-align:center">
 <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
@@ -23,6 +58,14 @@ Para doar, basta clicar no botão abaixo:
 </form>
 </div>
 
+## Sobre:
+<div style="text-align:justify">
+Informações necessárias ao manejo e planejamento de povoamentos, que normalmente são referentes ao volume de madeira e/ou outra variável dendrométrica, no sentido qualitativo e quantitativo, são obtidas por meio do inventário florestal. Entretanto, o processamento dos mesmos geralmente é feito utilizando softwares pagos. Este app foi criado com o intuito de facilitar este processo, de forma prática e gratuita, sem a necessidade de se manipular planilhas ou instalar softwares. Utilizando a linguagem R em conjunto com o pacote Shiny, temos uma ferramenta poderosa, que pode ser utilizada direto do navegador, por profissionais da área, estudantes e entusiastas que desejam processar um inventário.
+Com este app, é possível realizar análises fitossociológicas, calcular índices de diversidade, além do processamento de inventário florestal, utilizando os métodos: Amostragem Casual Simples, Amostragem Estratificada, e Amostragem Sistemática.
+</div>
+
+
+
 Conheça nossos outros projetos:
 [App Inventário Florestal](http://34.234.76.169/shiny/inventario_app/),
 [App Cubagem](http://34.234.76.169/shiny/cubagem_app/),
@@ -30,9 +73,9 @@ Conheça nossos outros projetos:
 [App F de Graybill](http://34.234.76.169/shiny/graybill_app/),
 [R package: forestmangr](https://github.com/sollano/forestmangr#readme)
 
-#### Script criado por:
+#### Desenvolvido por:
 
-[Sollano Rabelo Braga](http://lattes.cnpq.br/7271838547135276 "Curriculum Lattes"), [Eric Bastos Gorgens](http://lattes.cnpq.br/2266409430041146 "Curriculum Lattes") &
+[Sollano Rabelo Braga](https://www.linkedin.com/in/sollano/ "LinkedIn"), [Eric Bastos Gorgens](http://lattes.cnpq.br/2266409430041146 "Curriculum Lattes") &
 [Marcio Leles R. de Oliveira](http://lattes.cnpq.br/1808132114787261 "Curriculum Lattes")
 
 #### Para citar e referenciar este app, utilize:

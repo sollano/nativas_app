@@ -1019,7 +1019,7 @@ shinyServer(function(input, output, session) {
     }
     
     data <- as.data.frame(data)
-    
+    #print(data)
     # Cria um dataframe com os nomes padronizados das variaveis mapeadas
     data <- selecter(data, arvore = nm$arvore,
                      parcelas=nm$parcelas,
