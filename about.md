@@ -11,25 +11,22 @@ precisamos de doações para cobrir os custos do servidor que mantêm o app disp
 ## Apoiadores do Mês 
 
 <div><p style="float:left;">
+
+<p><font size="5"><a href="https://www.linkedin.com/in/marcio-manfrenato-80032ba6/">Marcio Manfrenato</a></font></p>
   
-<p><font size="5">  Marcio Manfrenato</font></p>
-    
 <p><font size="4"> R$ 150,00 </font></p>
       
-<p><font size="4"><a href="https://www.linkedin.com/in/marcio-manfrenato-80032ba6/">LinkedIn</a></font></p>
         
 </div>
         
 <div style="clear: left;"></div>
 
 <div><p style="float:left;">
-  
-<p><font size="5">  Fernanda Luiza Silva de Oliveira</font></p>
-    
+ 
+<p><font size="5"><a href="https://www.linkedin.com/in/fernanda-luiza-silva-de-oliveira-0a3bbb43/">Fernanda Luiza Silva de Oliveira</a></font></p>
+        
 <p><font size="4"> R$ 80,00</font></p>
       
-<p><font size="4"><a href="https://www.linkedin.com/in/fernanda-luiza-silva-de-oliveira-0a3bbb43/">LinkedIn</a></font></p>
-        
 </div>
         
 <div style="clear: left;"></div>
@@ -37,24 +34,20 @@ precisamos de doações para cobrir os custos do servidor que mantêm o app disp
 
 <div><p style="float:left;">
   
-<p><font size="5">  Jorge Luiz B. Mainart</font></p>
+<p><font size="5"><a href="https://www.linkedin.com/in/jorge-luiz-b-mainart-15442866/">Jorge Luiz B. Mainart</a></font></p>
     
 <p><font size="4"> R$ 75,00</font></p>
       
-<p><font size="4"><a href="https://www.linkedin.com/in/jorge-luiz-b-mainart-15442866/">LinkedIn</a></font></p>
-        
 </div>
         
 <div style="clear: left;"></div>
 
 <div><p style="float:left;">
   
-<p><font size="5">  Karize Patriota</font></p>
-    
+<p><font size="5"><a href="https://www.linkedin.com/in/karize-patriota-80927258/">Karize Patriota</a></font></p>
+  
 <p><font size="4"> R$ 50,00</font></p>
       
-<p><font size="4"><a href="https://www.linkedin.com/in/karize-patriota-80927258/">LinkedIn</a></font></p>
-        
 </div>
         
 <div style="clear: left;"></div>
@@ -69,6 +62,7 @@ precisamos de doações para cobrir os custos do servidor que mantêm o app disp
 <img alt="" border="0" src="https://www.paypal.com/pt_BR/i/scr/pixel.gif" width="1" height="1" />
 </form>
 </div>
+
 
 ## Sobre:
 <div style="text-align:justify">
