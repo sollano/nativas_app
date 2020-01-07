@@ -10,7 +10,7 @@ precisamos de doações para cobrir os custos do servidor que mantêm o app disp
 
 ## Apoiadores do Mês 
 
-<div><p style="float:left;"><a href="https://www.linkedin.com/in/marcio-manfrenato-80032ba6/"><img src="www/marciomanfrenato.jpg" width="100" height="100"/></a></p>
+<div><p style="float:left;">
   
 <p><font size="5">  Marcio Manfrenato</font></p>
     
@@ -22,7 +22,7 @@ precisamos de doações para cobrir os custos do servidor que mantêm o app disp
         
 <div style="clear: left;"></div>
 
-<div><p style="float:left;"><a href="https://www.linkedin.com/in/fernanda-luiza-silva-de-oliveira-0a3bbb43/"><img src="www/fernandaoliveira.jfif" width="100" height="100"/></a></p>
+<div><p style="float:left;">
   
 <p><font size="5">  Fernanda Luiza Silva de Oliveira</font></p>
     
@@ -35,7 +35,7 @@ precisamos de doações para cobrir os custos do servidor que mantêm o app disp
 <div style="clear: left;"></div>
 
 
-<div><p style="float:left;"><a href="https://www.linkedin.com/in/jorge-luiz-b-mainart-15442866/M"><img src="www/jorgemainart.jfif" width="100" height="100"/></a></p>
+<div><p style="float:left;">
   
 <p><font size="5">  Jorge Luiz B. Mainart</font></p>
     
@@ -47,7 +47,7 @@ precisamos de doações para cobrir os custos do servidor que mantêm o app disp
         
 <div style="clear: left;"></div>
 
-<div><p style="float:left;"><a href="https://www.linkedin.com/in/karize-patriota-80927258/"><img src="www/karizepatriota.jfif" width="100" height="100"/></a></p>
+<div><p style="float:left;">
   
 <p><font size="5">  Karize Patriota</font></p>
     
