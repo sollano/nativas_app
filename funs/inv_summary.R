@@ -174,7 +174,9 @@ inv_summary <- function(df, DAP, HT, VCC, area_parcela, .groups, area_total,idad
   allzero <- function(x){all(x==0|is.na(x))}
   
   # convert NA to something
-  NA_to <- function(x,y){ x[is.na(x)] <- y;return(x)}
+  #NA_to <- function(x,y){ x[is.na(x)] <- y;return(x)}
+  # juste use tidyr::replace_na()
+  
   
   x %>% 
     dplyr::group_by(!!!.groups_syms,add=T) %>% 
@@ -197,7 +199,7 @@ inv_summary <- function(df, DAP, HT, VCC, area_parcela, .groups, area_total,idad
       VSC_HA       = VSC * 10000/ (!!area_parcela_sym)  ) %>% #sumarise 
     dplyr::na_if(0) %>% # substitui 0 por NA
     dplyr::select_if(Negate(allzero)) %>%  # remove variaveis que nao foram informadas (argumentos opicionais nao inseridos viram NA)
-    NA_to(NA) %>% 
+   # NA_to(NA) %>% 
    # mutate_at(vars(Indv, IndvHA), funs(ifelse(is.na(.),0,. )) ) %>% 
     round_df(casas_decimais)
 }
