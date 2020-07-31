@@ -21,6 +21,31 @@ library(googlesheets)
 library(rgeolocate)
 library(shinyalert)
 
+#library(DT)
+library(digest)
+library(shinyjs)
+library(shinyforms)
+
+# shinyforms
+questions <- list(
+  list(id = "name", type = "text", title = "Name", mandatory = TRUE),
+  list(id = "age", type = "numeric", title = "Age"),
+  list(id = "favourite_pkg", type = "text", title = "Favourite R package"),
+  list(id = "terms", type = "checkbox", title = "I agree to the terms")
+)
+
+formInfo <- list(
+  id = "basicinfo",
+  questions = questions,
+  storage = list(
+    # Right now, only flat file storage is supported
+    type = STORAGE_TYPES$FLATFILE,
+    # The path where responses are stored
+    path = "responses"
+  )
+)
+
+
 # Data e functions ####
 
 ex_fuste <- read.csv2("examples/Inventory_exemplo_fuste.csv",fileEncoding="UTF-8")
@@ -2496,6 +2521,17 @@ shinyServer(function(input, output, session) {
   
   # Download tabelas ####
   
+ # print(input$tab)
+  
+  observeEvent(input$tab,{
+    tabname <- input$tab
+    if(tabname=="downloadtab"){
+    toggleModal(session, 'formbs', toggle = "open")
+  }  
+  })
+  
+  
+  
   
 
   # Cria um valor inicial zero para verificar se o usuario fez algum download ou nao.
@@ -2505,15 +2541,18 @@ shinyServer(function(input, output, session) {
   # Codigo para criar um poppup (modal)
   
   # Iremos observar o botao de download.
-  # Como shiny nao permite que observemos o botao de download diretamente,
+  # Como shiny nao permite que observemos o botao de do wnload diretamente,
   #iremos observar o objeto rnDownloads, que tera seu valor alterado sempre que um download for feito.
   
   # a funcao de javascript abaixo direciona o usuario ao link de doacao, caso ele clique em ok
   
   #print(rnDownloads$ndown)
   
+  shinyforms::formServer(formInfo)
+  
   observeEvent(rnDownloads$ndown, {
-    # Show a modal when the button is pressed
+    
+    
     shinyalert::shinyalert("Obrigado!", 
                            "Se esse app lhe foi útil, por favor considere fazer uma doação para nos ajudar a manter esse projeto no ar!",
                            type = "success",
@@ -2523,6 +2562,7 @@ shinyServer(function(input, output, session) {
                            showCancelButton = TRUE,
                            cancelButtonText = ":(",
                            confirmButtonText = "Doar!") }, ignoreInit = TRUE)
+    
   
   
   output$checkbox_df_download <- renderUI({

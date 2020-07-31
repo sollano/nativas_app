@@ -19,6 +19,28 @@ library(googledrive)
 library(googlesheets)
 library(rgeolocate)
 library(shinyalert)
+library(shinyBS)
+library(shinyforms)
+
+# shinyforms
+questions <- list(
+  list(id = "name", type = "text", title = "Name", mandatory = TRUE),
+  list(id = "age", type = "numeric", title = "Age"),
+  list(id = "favourite_pkg", type = "text", title = "Favourite R package"),
+  list(id = "terms", type = "checkbox", title = "I agree to the terms")
+)
+
+formInfo <- list(
+  id = "basicinfo",
+  questions = questions,
+  storage = list(
+    # Right now, only flat file storage is supported
+    type = STORAGE_TYPES$FLATFILE,
+    # The path where responses are stored
+    path = "responses"
+  )
+)
+
 
 inputUserid <- function(inputId, value='') {
   #   print(paste(inputId, "=", value))
@@ -678,9 +700,13 @@ shinyUI(
                      ),  # navbarMenu Quantificacao end ####
                      
                      # navbarMenu  Download ####
-                     tabPanel("Download",
+                     tabPanel("Download",value="downloadtab",
                                 # Painel Download Tabelas ####
-                                
+                              
+                              shinyBS::bsModal(id="formbs","Por favor preencha essas informações antes de fazer o download",
+                                               trigger= 'downloadtab',size="large",
+                                               #uiOutput("form")
+                                               shinyforms::formUI(formInfo) ),
                               fluidPage(
                                 
                                 
@@ -712,7 +738,8 @@ shinyUI(
                                                
                                                       ),
                                            br(),
-                                           
+    
+                                          
                                            shinyalert::useShinyalert(),
                                            
 
