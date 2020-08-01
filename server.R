@@ -2524,15 +2524,26 @@ shinyServer(function(input, output, session) {
  # print(input$tab)
   
   
-  
-  
-  # Abre o pop=up quando se clica na aba de download (aqui observa-se o tabpanel)
+  # Criar um valor reativo que tem +1 toda vez que alguem clica na aba de downloads
+  # para isso observamos os nomes das tabelas
+  downtab <- reactiveValues(downtab=0)
   observeEvent(input$tab,{
     tabname <- input$tab
     if(tabname=="downloadtab"){
-    toggleModal(session, 'formbs', toggle = "open")
-  }  
+      downtab$downtab <- downtab$downtab+1
+    }
+    #print(downtab$downtab)
+    })
+  
+  # Abre o pop=up quando se clica na aba de download
+  # vanis observar o valor reativo criado anteriormente. Esse codigo roda apenas uma vez (once=TRUE),
+  # e ignora o valor inicial(ignoreInit=TRUE). Quando o download for 1, o modal abre, ou seja, quando
+  # a aba download for clicada pela primeira vez 
+  observeEvent(downtab$downtab,ignoreInit=TRUE,once=TRUE,{
+    if(downtab$downtab==1){
+      toggleModal(session, 'formbs', toggle = "open") }
   })
+  
   
   # desabilitar o botao de enviar se os campos nao forem preenchidos
   observe({
@@ -2550,13 +2561,25 @@ shinyServer(function(input, output, session) {
   })
   
   
-  # fecha o pop-up quando o formulario e enviado (observamos o botao de enviar)
+  # atualizar planilha com informações e fechar o pop-up quando o formulario e enviado (observamos o botao de enviar)
   observeEvent(input$button_enviar,{
     formenviar <- input$button_enviar
     if(formenviar>0){
+      #data frame pra preencher planilha. nomes das colunas tem que ser iguais ao da planilha
+      resp <- data.frame(nome=input$name,email=input$email,profissao=input$prof,aplicacao=input$motiv)
+      
+      gs_auth("googlesheets_token.rds",verbose = FALSE)
+      
+      gs_add_row(gs_title("form_usecase",verbose=TRUE), 
+                 ws = 1,
+                 input = resp,
+                 verbose = TRUE)
       toggleModal(session, 'formbs', toggle = "close")
+      
     }
   }) 
+  
+  
   
   
 
@@ -2574,8 +2597,7 @@ shinyServer(function(input, output, session) {
   
   #print(rnDownloads$ndown)
   
-  shinyforms::formServer(formInfo)
-  
+
   observeEvent(rnDownloads$ndown, {
     
     
