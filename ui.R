@@ -120,7 +120,7 @@ shinyUI(
           
           
           # Version ####
-          navbarPage("App Inventário de Nativas 2.2.1",id="tab",
+          navbarPage("App Inventário de Nativas 2.3.0",id="tab",
           #         ####           
                      theme = "green_yeti2.css",
                      # theme = "green.css", # seleciona um tema contido na pasta www
@@ -709,8 +709,10 @@ shinyUI(
                               # css pra fazer o asterisco vermelho
                               shinyjs::inlineCSS(appCSS),
                               
-                              bsModalNoClose(id="formbs","Por favor preencha essas informações antes de fazer o download",
-                                               trigger= 'downloadtab',
+                              bsModalNoClose(id="formbs",
+                                             #"Por favor preencha essas informações antes de fazer o download",
+                                             "Para prosseguir para o download, por favor preencha as informações abaixo",
+                                              trigger= 'downloadtab',
                                              div(
                                                id = "form",
                                                h3("Por favor, preencha as informações abaixo para fazer o download", 

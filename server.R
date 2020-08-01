@@ -84,7 +84,10 @@ estratos_names <- c("TALHAO", "Talhao", "talhao","COD_TALHAO","Cod_Talhao","cod_
 
 shinyServer(function(input, output, session) {
 
-  
+  shinyalert::shinyalert("Bem vindo ao app Inventário de Nativas!",
+                         text = "Estamos investindo em melhorias para o app!",
+                         type = "info",
+                         closeOnEsc = TRUE)
   # Importação ####
   
   #ui
@@ -2574,6 +2577,12 @@ shinyServer(function(input, output, session) {
       
       # fecha modal
       shinyBS::toggleModal(session, 'formbs', toggle = "close")
+      
+      
+      # botão de enviado ao final do app
+      shinyalert::shinyalert("Enviado!",
+                             type = "success",
+                             closeOnEsc = TRUE)
       
     }
   }) 
