@@ -16,34 +16,14 @@ library(ggthemes)
 library(openxlsx)
 library(rmarkdown)
 library(stringr)
-library(googledrive)
+#library(googledrive)
 library(googlesheets)
 library(rgeolocate)
-library(shinyalert)
+#library(shinyalert)
+suppressPackageStartupMessages(library(shinyBS))
+#suppressPackageStartupMessages(library(shinyjs))
 
-#library(DT)
-library(digest)
-library(shinyjs)
-library(shinyforms)
-
-# shinyforms
-questions <- list(
-  list(id = "nome", type = "text", title = "Nome", mandatory = TRUE),
-  list(id = "email", type = "text", title = "e-mail", mandatory = TRUE),
-  list(id = "prof", type = "text", title = "Profissão (estudante, Engenheiro, etc...)", mandatory = TRUE) )
-
-formInfo <- list(
-  id = "basicinfo",
-  questions = questions,
-  storage = list(
-    # Right now, only flat file storage is supported
-    type = STORAGE_TYPES$FLATFILE,
-    # The path where responses are stored
-    path = "responses"
-  )
-)
-
-fieldsMandatory <- c("name", "email","prof","motiv")
+fieldsMandatory <- c("name", "email","cidade","estado","prof","emp_inst","motiv")
 
 
 # Data e functions ####
@@ -2541,7 +2521,7 @@ shinyServer(function(input, output, session) {
   # a aba download for clicada pela primeira vez 
   observeEvent(downtab$downtab,ignoreInit=TRUE,once=TRUE,{
     if(downtab$downtab==1){
-      toggleModal(session, 'formbs', toggle = "open") }
+      shinyBS::toggleModal(session, 'formbs', toggle = "open") }
   })
   
   
@@ -2565,16 +2545,35 @@ shinyServer(function(input, output, session) {
   observeEvent(input$button_enviar,{
     formenviar <- input$button_enviar
     if(formenviar>0){
+      
+      # converter data pro timezone correto
+      # pega informacoes com base no ip e salva em um df
+      geolo <- rgeolocate::ip_api(input$ipid)
+      systime <- lubridate::with_tz(Sys.time(), tzone = geolo$timezone)
       #data frame pra preencher planilha. nomes das colunas tem que ser iguais ao da planilha
-      resp <- data.frame(nome=input$name,email=input$email,profissao=input$prof,aplicacao=input$motiv)
+      resp <- data.frame(nome=input$name,
+                         email=input$email,
+                         cidade=input$cidade,
+                         estado=input$estado,
+                         profissao=input$prof,
+                         emp_inst=input$emp_inst,
+                         aplicacao=input$motiv,
+                         data = format(systime, "%d/%m/%Y"),
+                         dia = format(systime, "%d"),
+                         mes = format(systime, "%B"),
+                         ano = format(systime, "%Y"),
+                         hora=format(systime, "%X") )
+      #loga no googlesheets com token
+      suppressWarnings(googlesheets::gs_auth("googlesheets_token.rds",verbose = FALSE))
       
-      gs_auth("googlesheets_token.rds",verbose = FALSE)
-      
-      gs_add_row(gs_title("form_usecase",verbose=TRUE), 
+      #procura a planilha pelo nome, e adiciona a tabela resp como uma nova linha
+      googlesheets::gs_add_row(googlesheets::gs_title("form_usecase",verbose=FALSE), 
                  ws = 1,
                  input = resp,
                  verbose = TRUE)
-      toggleModal(session, 'formbs', toggle = "close")
+      
+      # fecha modal
+      shinyBS::toggleModal(session, 'formbs', toggle = "close")
       
     }
   }) 

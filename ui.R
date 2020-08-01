@@ -1,4 +1,5 @@
 options(shiny.sanitize.errors = FALSE)
+options(shiny.maxRequestSize=30*1024^2) 
 library(shiny)
 suppressPackageStartupMessages(library(DT))
 #library(plotly)
@@ -15,33 +16,16 @@ library(ggthemes)
 library(openxlsx)
 library(rmarkdown)
 library(stringr)
-library(googledrive)
+#library(googledrive)
 library(googlesheets)
 library(rgeolocate)
-library(shinyalert)
-library(shinyBS)
-library(shinyforms)
+#library(shinyalert)
+suppressPackageStartupMessages(library(shinyBS))
+#suppressPackageStartupMessages(library(shinyjs))
 
-# shinyforms
-questions <- list(
-  list(id = "nome", type = "text", title = "Nome", mandatory = TRUE),
-  list(id = "email", type = "text", title = "e-mail", mandatory = TRUE),
-  list(id = "prof", type = "text", title = "Profissão (estudante, Engenheiro, etc...)", mandatory = TRUE) )
-
-
-formInfo <- list(
-  id = "basicinfo",
-  questions = questions,
-  storage = list(
-    # Right now, only flat file storage is supported
-    type = STORAGE_TYPES$FLATFILE,
-    # The path where responses are stored
-    path = "responses"
-  )
-)
 
 bsModalNoClose <-function(...) {
-  b = bsModal(...)
+  b = shinyBS::bsModal(...)
   b[[2]]$`data-backdrop` = "static"
   b[[2]]$`data-keyboard` = "false"
   return(b)
@@ -727,19 +711,21 @@ shinyUI(
                               
                               bsModalNoClose(id="formbs","Por favor preencha essas informações antes de fazer o download",
                                                trigger= 'downloadtab',
-                                               #uiOutput("form")
-                                               #shinyforms::formUI(formInfo),
                                              div(
                                                id = "form",
                                                h3("Por favor, preencha as informações abaixo para fazer o download", 
                                                   style = "text-align: center;"),
                                                textInput("name", labelMandatory("Nome"), ""),
                                                textInput("email", labelMandatory("e-mail")),
+                                               textInput("cidade", labelMandatory("Cidade"), ""),
+                                               textInput("estado", labelMandatory("Estado"), ""),
                                                radioButtons("prof", labelMandatory("Profissão"),
                                                            c( "Eng. Florestal","Estudante",
                                                              "Eng. Agrônomo", "Biólogo", "Outro"),inline=TRUE,selected = character(0)),
+                                               textInput("emp_inst", labelMandatory("Empresa/Instituição"), ""),
                                                radioButtons("motiv", labelMandatory("Aplicação do app"),
                                                             c( "Consultoria","Pesquisa", "Outro"),inline=TRUE,selected = character(0)),
+                                               
                                                actionButton("button_enviar", "Enviar", class = "btn-primary")
                                              ),
                                              
