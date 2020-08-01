@@ -28,11 +28,9 @@ library(shinyforms)
 
 # shinyforms
 questions <- list(
-  list(id = "name", type = "text", title = "Name", mandatory = TRUE),
-  list(id = "age", type = "numeric", title = "Age"),
-  list(id = "favourite_pkg", type = "text", title = "Favourite R package"),
-  list(id = "terms", type = "checkbox", title = "I agree to the terms")
-)
+  list(id = "nome", type = "text", title = "Nome", mandatory = TRUE),
+  list(id = "email", type = "text", title = "e-mail", mandatory = TRUE),
+  list(id = "prof", type = "text", title = "Profissão (estudante, Engenheiro, etc...)", mandatory = TRUE) )
 
 formInfo <- list(
   id = "basicinfo",
@@ -44,6 +42,8 @@ formInfo <- list(
     path = "responses"
   )
 )
+
+fieldsMandatory <- c("name", "email","prof","motiv")
 
 
 # Data e functions ####
@@ -2523,6 +2523,10 @@ shinyServer(function(input, output, session) {
   
  # print(input$tab)
   
+  
+  
+  
+  # Abre o pop=up quando se clica na aba de download (aqui observa-se o tabpanel)
   observeEvent(input$tab,{
     tabname <- input$tab
     if(tabname=="downloadtab"){
@@ -2530,7 +2534,29 @@ shinyServer(function(input, output, session) {
   }  
   })
   
+  # desabilitar o botao de enviar se os campos nao forem preenchidos
+  observe({
+    # check if all mandatory fields have a value
+    mandatoryFilled <-
+      vapply(fieldsMandatory,
+             function(x) {
+               !is.null(input[[x]]) && input[[x]] != ""
+             },
+             logical(1))
+    mandatoryFilled <- all(mandatoryFilled)
+    
+    # enable/disable the submit button
+    shinyjs::toggleState(id = "button_enviar", condition = mandatoryFilled)
+  })
   
+  
+  # fecha o pop-up quando o formulario e enviado (observamos o botao de enviar)
+  observeEvent(input$button_enviar,{
+    formenviar <- input$button_enviar
+    if(formenviar>0){
+      toggleModal(session, 'formbs', toggle = "close")
+    }
+  }) 
   
   
 

@@ -24,11 +24,10 @@ library(shinyforms)
 
 # shinyforms
 questions <- list(
-  list(id = "name", type = "text", title = "Name", mandatory = TRUE),
-  list(id = "age", type = "numeric", title = "Age"),
-  list(id = "favourite_pkg", type = "text", title = "Favourite R package"),
-  list(id = "terms", type = "checkbox", title = "I agree to the terms")
-)
+  list(id = "nome", type = "text", title = "Nome", mandatory = TRUE),
+  list(id = "email", type = "text", title = "e-mail", mandatory = TRUE),
+  list(id = "prof", type = "text", title = "Profissão (estudante, Engenheiro, etc...)", mandatory = TRUE) )
+
 
 formInfo <- list(
   id = "basicinfo",
@@ -40,6 +39,24 @@ formInfo <- list(
     path = "responses"
   )
 )
+
+bsModalNoClose <-function(...) {
+  b = bsModal(...)
+  b[[2]]$`data-backdrop` = "static"
+  b[[2]]$`data-keyboard` = "false"
+  return(b)
+}
+
+
+labelMandatory <- function(label) {
+  tagList(
+    label,
+    span("*", class = "mandatory_star")
+  )
+}
+
+appCSS <-
+  ".mandatory_star { color: red; }"
 
 
 inputUserid <- function(inputId, value='') {
@@ -703,10 +720,31 @@ shinyUI(
                      tabPanel("Download",value="downloadtab",
                                 # Painel Download Tabelas ####
                               
-                              shinyBS::bsModal(id="formbs","Por favor preencha essas informações antes de fazer o download",
-                                               trigger= 'downloadtab',size="large",
+                              #shinyjs e mandatorio para escondermos o botao de enviar antes de tudo ser preenchido
+                              shinyjs::useShinyjs(),
+                              # css pra fazer o asterisco vermelho
+                              shinyjs::inlineCSS(appCSS),
+                              
+                              bsModalNoClose(id="formbs","Por favor preencha essas informações antes de fazer o download",
+                                               trigger= 'downloadtab',
                                                #uiOutput("form")
-                                               shinyforms::formUI(formInfo) ),
+                                               #shinyforms::formUI(formInfo),
+                                             div(
+                                               id = "form",
+                                               h3("Por favor, preencha as informações abaixo para fazer o download", 
+                                                  style = "text-align: center;"),
+                                               textInput("name", labelMandatory("Nome"), ""),
+                                               textInput("email", labelMandatory("e-mail")),
+                                               radioButtons("prof", labelMandatory("Profissão"),
+                                                           c( "Eng. Florestal","Estudante",
+                                                             "Eng. Agrônomo", "Biólogo", "Outro"),inline=TRUE,selected = character(0)),
+                                               radioButtons("motiv", labelMandatory("Aplicação do app"),
+                                                            c( "Consultoria","Pesquisa", "Outro"),inline=TRUE,selected = character(0)),
+                                               actionButton("button_enviar", "Enviar", class = "btn-primary")
+                                             ),
+                                             
+                                             tags$head(tags$style("#formbs .modal-footer{display:none}
+                                                                           .modal-header{display:none}")) ),
                               fluidPage(
                                 
                                 
