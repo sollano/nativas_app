@@ -36,16 +36,16 @@ selecter <- function(df, arvore,parcelas,especies,cap,dap,ht,
     #  lista_var_novas <- "estrato"
     #}else{lista_var_novas <- paste("estrato", 1:length(estrato),sep="")}
     
-     #funcao para adicionar varios estratos
-     ft <- function(var1,var2,df1,df2){df1[[var1]] <- df2[[var2]]; return(df1[var1]) }
+    #funcao para adicionar varios estratos
+    ft <- function(var1,var2,df1,df2){df1[[var1]] <- df2[[var2]]; return(df1[var1]) }
     
     # cria as colunas separadas com os nomes de 1 a n.
     # depois junta com o dado original utilizando bind_cols
     dfmod <- as.data.frame(
       dplyr::bind_cols(
-       purrr::map2(.x = estrato, .y = estrato, ~ft(.x,.y, dfmod, df ) ),
-      dfmod
-    )
+        purrr::map2(.x = estrato, .y = estrato, ~ft(.x,.y, dfmod, df ) ),
+        dfmod
+      )
     )
     
   }
@@ -232,6 +232,20 @@ selecter <- function(df, arvore,parcelas,especies,cap,dap,ht,
   }else{
     dfmod[[idade]] <- df[[idade]]
   }
+  
+  # se obs nao for fornecido, for igual "", nulo ou NA, criar variavel vazia 
+  # se existir e nao for character,  parar
+  if(missing(obs) || is.null(obs) || is.na(obs) || obs == "" ){
+  }else if(!is.character(obs)){
+    stop("'obs' must be a character containing a variable name", call.=F)
+  }else if(length(obs)!=1){
+    stop("Length of 'obs' must be 1", call.=F)
+  }else if(check_names(df, obs)==F){
+    
+  }else{
+    dfmod[[obs]] <- df[[obs]]
+  }
+  
   
   # se di nao for fornecido, for igual "", nulo ou NA, criar variavel vazia 
   # se existir e nao for character,  parar
