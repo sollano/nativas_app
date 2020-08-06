@@ -2512,7 +2512,7 @@ shinyServer(function(input, output, session) {
   downtab <- reactiveValues(downtab=0)
   observeEvent(input$tab,{
     tabname <- input$tab
-    if(tabname=="downloadtab"){
+    if(tabname=="Download"){
       downtab$downtab <- downtab$downtab+1
     }
     #print(downtab$downtab)
