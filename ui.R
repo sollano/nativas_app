@@ -701,7 +701,7 @@ shinyUI(
                      ),  # navbarMenu Quantificacao end ####
                      
                      # navbarMenu  Download ####
-                     tabPanel("Download",value="downloadtab",
+                     tabPanel("Download",
                                 # Painel Download Tabelas ####
                               
                               #shinyjs e mandatorio para escondermos o botao de enviar antes de tudo ser preenchido

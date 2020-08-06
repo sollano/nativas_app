@@ -2504,9 +2504,9 @@ shinyServer(function(input, output, session) {
   
   # Download tabelas ####
   
- # print(input$tab)
+  ## pop-up formulario antes de fazer download ####
   
-  
+  # print(input$tab)
   # Criar um valor reativo que tem +1 toda vez que alguem clica na aba de downloads
   # para isso observamos os nomes das tabelas
   downtab <- reactiveValues(downtab=0)
@@ -2565,7 +2565,8 @@ shinyServer(function(input, output, session) {
                          dia = format(systime, "%d"),
                          mes = format(systime, "%B"),
                          ano = format(systime, "%Y"),
-                         hora=format(systime, "%X") )
+                         hora=format(systime, "%X"),
+                         app="App Inventário de Nativas")
       #loga no googlesheets com token
       suppressWarnings(googlesheets::gs_auth("googlesheets_token.rds",verbose = FALSE))
       
@@ -2589,7 +2590,7 @@ shinyServer(function(input, output, session) {
   
   
   
-  
+  ## pop-up de doação e envio de download para o drive ####
 
   # Cria um valor inicial zero para verificar se o usuario fez algum download ou nao.
   # Se o usuario clicar em algum botao de download, sera add a esse valor uma unidade.
@@ -2619,7 +2620,7 @@ shinyServer(function(input, output, session) {
                            cancelButtonText = ":(",
                            confirmButtonText = "Doar!") }, ignoreInit = TRUE)
     
-  
+  ## shiny download code ####
   
   output$checkbox_df_download <- renderUI({
     
