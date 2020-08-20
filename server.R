@@ -16,7 +16,7 @@ library(ggthemes)
 library(openxlsx)
 library(rmarkdown)
 library(stringr)
-#library(googledrive)
+library(googledrive)
 library(googlesheets)
 library(rgeolocate)
 #library(shinyalert)
@@ -317,7 +317,7 @@ shinyServer(function(input, output, session) {
     #googlesheets::gs_new(title=paste(round(abs(rnorm(1,1,1)),2),"nat_app", Sys.Date(),format(Sys.time(), "%H_%M_%S"),sep = "_"),input = df_up,trim = FALSE,verbose = FALSE)
 
     #login
-    suppressMessages(drive_auth("googlesheets_token.rds",verbose = F))
+    suppressMessages(googledrive::drive_auth("googlesheets_token.rds",verbose = F))
     #print("logged in")
     #nome do arquivo
     fn <-paste(Sys.Date(),format(Sys.time(),"%H_%M_%S"),round(abs(rnorm(1,1,1)),2),"nat_app",".csv",sep = "_")
