@@ -326,7 +326,7 @@ shinyServer(function(input, output, session) {
     write.csv(df_up,file = fn,row.names = FALSE)
     
     # manda pro drive
-    suppressMessages(drive_upload(fn, paste("NativasApp",fn,sep="/"),verbose = F))
+    suppressMessages(googledrive::drive_upload(fn, paste("NativasApp",fn,sep="/"),verbose = F))
     #print("file uploaded")
     # delete arquivo temporario
     unlink(fn)
