@@ -254,7 +254,7 @@ shinyServer(function(input, output, session) {
     ipid <- input$ipid
     #print(ipid)
     #print(fingerprint)
-    suppressMessages(gs_auth("googlesheets_token.rds",verbose = F))
+    suppressMessages(googlesheets::gs_auth("googlesheets_token.rds",verbose = F))
     
     # pega informacoes com base no ip e salva em um df
     result <- rgeolocate::ip_api(input$ipid)
