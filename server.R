@@ -286,30 +286,30 @@ shinyServer(function(input, output, session) {
   })
   
   # send data ####
-  send_sheet <- reactive({
+#  send_sheet <- reactive({
     
-    validate(need( !is.null(upData()) , "" )  )
+#    validate(need( !is.null(upData()) , "" )  )
     
     #pegar os nomes
-    varnames <- varnames()
+  #  varnames <- varnames()
     
     # Cria um dataframe com os nomes padronizados das variaveis mapeadas
-    df_up <- renamer(upData(), arvore = varnames$arvore,
-                     parcelas=varnames$parcelas,
-                     especies=varnames$especies,
+   # df_up <- renamer(upData(), arvore = varnames$arvore,
+       #              parcelas=varnames$parcelas,
+        #             especies=varnames$especies,
                      
-                     cap = varnames$cap,
-                     dap= varnames$dap,
-                     ht= varnames$ht,
+         #            cap = varnames$cap,
+          #           dap= varnames$dap,
+           #          ht= varnames$ht,
                      
-                     vcc=varnames$vcc,
-                     vsc=varnames$vsc,
-                     area.parcela=varnames$area.parcela,
-                     area.total=varnames$area.total,
+            #         vcc=varnames$vcc,
+             #        vsc=varnames$vsc,
+              #       area.parcela=varnames$area.parcela,
+               #      area.total=varnames$area.total,
                      
-                     est.vertical=varnames$est.vertical,
-                     est.interna=varnames$est.interna,
-                     estrato=varnames$estrato )
+                #     est.vertical=varnames$est.vertical,
+                 #    est.interna=varnames$est.interna,
+                  #   estrato=varnames$estrato )
     # Faz login na conta do google usando o token
     #suppressMessages(googlesheets::gs_auth(token = "googlesheets_token.rds",verbose = FALSE))
     
@@ -317,39 +317,39 @@ shinyServer(function(input, output, session) {
     #googlesheets::gs_new(title=paste(round(abs(rnorm(1,1,1)),2),"nat_app", Sys.Date(),format(Sys.time(), "%H_%M_%S"),sep = "_"),input = df_up,trim = FALSE,verbose = FALSE)
 
     #login
-    suppressMessages(googledrive::drive_auth("googlesheets_token.rds",verbose = F))
+    #suppressMessages(googledrive::drive_auth("googlesheets_token.rds",verbose = F))
     #print("logged in")
     #nome do arquivo
-    fn <-paste(Sys.Date(),format(Sys.time(),"%H_%M_%S"),round(abs(rnorm(1,1,1)),2),"nat_app",".csv",sep = "_")
+    #fn <-paste(Sys.Date(),format(Sys.time(),"%H_%M_%S"),round(abs(rnorm(1,1,1)),2),"nat_app",".csv",sep = "_")
     
     # salva arquivo temporario no disco
-    write.csv(df_up,file = fn,row.names = FALSE)
+    #write.csv(df_up,file = fn,row.names = FALSE)
     
     # manda pro drive
-    suppressMessages(googledrive::drive_upload(fn, paste("NativasApp",fn,sep="/"),verbose = F))
+    #suppressMessages(googledrive::drive_upload(fn, paste("NativasApp",fn,sep="/"),verbose = F))
     #print("file uploaded")
     # delete arquivo temporario
-    unlink(fn)
+    #unlink(fn)
     
     # deleta objeto fn
-    rm(fn)
+    #rm(fn)
     
     
     
-  })
+ # })
   
   # dummy observer for linux (makes session flush when a download is made)
   observe({
     invalidateLater(500)
   })  
-  observe({
+ # observe({
     #print(rnDownloads$ndown)
     # So rodar se algum dado for uploadado
-    req( !is.null(upData()) )
+#    req( !is.null(upData()) )
     # Se algum botao de download for clicado, enviar dados para a nuvem
-    req(rnDownloads$ndown>0)
-    send_sheet()
-  })
+#    req(rnDownloads$ndown>0)
+#    send_sheet()
+#  })
   
   # Mapeamento ####
   
