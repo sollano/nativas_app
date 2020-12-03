@@ -25,7 +25,8 @@ precisamos de doações para cobrir os custos do servidor que mantêm o app disp
 
 </div>
 
-<p><font size="3">  Para contribuir com o nosso projeto, basta clicar no botão do PayPal abaixo, ou transferir via PIX, escaneando o código QR!</font></p>
+
+###  Para contribuir com o nosso projeto, basta clicar no botão do PayPal abaixo, ou transferir via PIX, escaneando o código QR!
 
 <div style="text-align:center">
 
