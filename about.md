@@ -44,7 +44,6 @@ Com este app, é possível realizar análises fitossociológicas, calcular índi
 </div>
 
 
-
 Conheça nossos outros projetos:
 [App Inventário Florestal](http://52.87.251.141/shiny/inventario_app/),
 [App Cubagem](http://52.87.251.141/shiny/cubagem_app/),
