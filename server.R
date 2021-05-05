@@ -759,7 +759,7 @@ shinyServer(function(input, output, session) {
                    label = "Selecione o modelo para ser utilizado:",
                    choices = c(
                      "LN(VFCC) = b0 + b1 * LN(DAP) + b2 * LN(HT) + e",
-                     "VFCC = b0 + b1^DAP + b2^HT + e",
+                     "VFCC = b0 + DAP^b1 + HT^b2 + e",
                      "VFCC = b0 + b1 * DAP² + e",
                      "VFCC = b0 + b1 * DAP + b2 * DAP² + e",
                      "LN(VFCC) = b0 + b1 * DAP + b2 * DAP² + e",
@@ -989,8 +989,8 @@ shinyServer(function(input, output, session) {
         data <- data %>% select(VCC, everything())
       }
       # Schumacher e Hall
-      if(input$modelo_estvcc == "VFCC = b0 + b1^DAP + b2^HT + e"){
-        data$VCC <- input$b0_estvcc + input$b1_estvcc^data[[nm$dap]] + input$b2_estvcc^data[[input$col.ht]]    
+      if(input$modelo_estvcc == "VFCC = b0 + DAP^b1 + HT^b2 + e"){
+        data$VCC <- input$b0_estvcc + data[[nm$dap]]^input$b1_estvcc + data[[input$col.ht]]^input$b2_estvcc    
         data <- data %>% select(VCC, everything())
       }
     }
